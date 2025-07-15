@@ -64,7 +64,7 @@ function	App()
 			<button className={buttonStyle} onClick={() => onNavigate("/login")}>Login</button>
 			<button className={buttonStyle} onClick={() => onNavigate("/home")}>home</button>
 			<button className={buttonStyle} onClick={() => onNavigate("/configuration")}>configuration</button>
-			<button className={buttonStyle} onClick={() => onNavigate("/dasshboard")}>dashboard</button>
+			<button className={buttonStyle} onClick={() => onNavigate("/dashboard")}>dashboard</button>
 			<button className={buttonStyle} onClick={() => onNavigate("/scrap-data")}>scrap data</button>
 		</div>
 	);
