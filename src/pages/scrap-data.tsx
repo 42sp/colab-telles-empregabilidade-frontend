@@ -1,4 +1,4 @@
-function	ScrapData()
+function	ScrapData(props)
 {
 	return (
 		<h1>This is Scrap data page</h1>

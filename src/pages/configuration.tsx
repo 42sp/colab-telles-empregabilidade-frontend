@@ -1,4 +1,4 @@
-function	Configuration()
+function	Configuration(props)
 {
 	return (
 		<h1>This is Configuration page</h1>
