@@ -1,0 +1,15 @@
+@reference "tailwindcss";
+
+.logo-container {
+	@apply w-[80px]
+		h-[80px]
+		rounded-full
+		flex
+		justify-center
+		items-center;
+}
+
+.logoIcon {
+	@apply w-[45px]
+		h-[45px];
+}

@@ -7,10 +7,7 @@ const LoginHeader = () => {
 	return (
 		<>
 			<Logo />
-
-			<h2 className="text-black font-geist text-2xl font-bold leading-[42px] mt-3">
-				Students Manager
-			</h2>
+			<h2 className="loginHeaderTitle font-geist">Students Manager</h2>
 		</>
 	);
 };

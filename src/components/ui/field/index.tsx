@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import "./style.css";
 
 interface FieldProps {
 	id: string;
@@ -12,17 +13,16 @@ interface FieldProps {
 	iconPrepend?: string;
 	iconAppend?: string;
 	onIconPrependClick?: () => void;
+	onIconAppendClick?: () => void;
 }
 
 const Field = (props: FieldProps) => {
 	return (
-		<div
-			className={`"grid w-full max-w-sm items-center gap-3 ${props.className}`}
-		>
+		<div className={`field-container ${props.className}`}>
 			<Label htmlFor={props.id}>{props.label}</Label>
 			<div className="relative">
 				{props.iconPrepend && (
-					<span className="absolute inset-y-0 left-0 flex items-center pl-3">
+					<span className="prependIcon">
 						<img
 							src={props.iconPrepend}
 							alt="Icon Prepend"
@@ -38,8 +38,13 @@ const Field = (props: FieldProps) => {
 					className={`${props.iconPrepend ? "pl-10" : ""}`}
 				/>
 				{props.iconAppend && (
-					<span className="absolute inset-y-0 right-0 flex items-center pr-3">
-						<img src={props.iconAppend} alt="Icon Append" className="" />
+					<span className="appendIcon">
+						<img
+							src={props.iconAppend}
+							alt="Icon Append"
+							className=""
+							onChange={props.onIconAppendClick}
+						/>
 					</span>
 				)}
 			</div>

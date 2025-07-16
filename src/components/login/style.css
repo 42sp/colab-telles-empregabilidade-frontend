@@ -1,5 +1,13 @@
 @reference "tailwindcss";
 
+.loginHeaderTitle {
+	@apply text-black
+		text-2xl
+		font-bold
+		leading-[42px]
+		mt-3;
+}
+
 .loginBodyContainer {
 	@apply w-[450px]
 		h-[456px]

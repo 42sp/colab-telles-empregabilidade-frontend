@@ -1,4 +1,5 @@
 import IconsSvg from "@/utils/IconsSvg";
+import "./style.css";
 
 interface LogoProps {
 	className?: string;
@@ -7,12 +8,12 @@ interface LogoProps {
 const Logo = ({ className }: LogoProps) => {
 	return (
 		<div
-			className={`w-[80px] h-[80px] rounded-full flex justify-center items-center ${className}`}
+			className={`logo-container ${className}`}
 			style={{
 				background: "linear-gradient(89.99999deg, #6366F1 0%, #4F46E5 100%)",
 			}}
 		>
-			<img src={IconsSvg.logo} className="w-[45px] h-[45px]" alt="STA logo" />
+			<img src={IconsSvg.logo} className="logoIcon" alt="STA logo" />
 		</div>
 	);
 };
