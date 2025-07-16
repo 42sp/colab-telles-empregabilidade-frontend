@@ -26,7 +26,7 @@ export default tseslint.config([
 			globals: globals.browser,
 		},
 		rules: {
-			"prettier/prettier": "error",
+			"prettier/prettier": ["error", { endOfLine: "auto" }],
 		},
 	},
 ]);
