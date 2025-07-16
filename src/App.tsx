@@ -1,7 +1,6 @@
-import ScreenLogin from './screen/login';
+import ScreenLogin from "./screen/login";
 
 function App() {
-
 	return (
 		<>
 			<ScreenLogin />

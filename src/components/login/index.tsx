@@ -1,6 +1,7 @@
 import { Field } from "../ui/field";
 import { Logo } from "../ui/logo";
 import IconsSvg from "@/utils/IconsSvg";
+import "./style.css";
 
 const LoginHeader = () => {
 	return (
@@ -12,20 +13,14 @@ const LoginHeader = () => {
 			</h2>
 		</>
 	);
-}
+};
 
 const LoginBody = () => {
 	return (
-		<div
-			className="w-[450px] h-[456px] mt-[32px] bg-white shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.10),0px_4px_6px_-1px_rgba(0,0,0,0.10)] border border-[#E5E7EB] rounded-[8px] p-4"
-		>
-			<h2
-				className="text-[#09090B] font-geist text-[24px] font-semibold leading-[36px] tracking-[-0.6px] text-center"
-			>
-				Sign in to your account
-			</h2>
+		<div className="loginBodyContainer">
+			<h2 className="loginBodyTitle font-geist">Sign in to your account</h2>
 
-			<div className='mt-9 flex flex-col items-center'>
+			<div className="loginBodyContent">
 				<Field
 					id="email"
 					label="Email address"
@@ -40,11 +35,11 @@ const LoginBody = () => {
 					type="password"
 					placeholder="••••••••"
 					iconPrepend={IconsSvg.password}
-					className='mt-4'
+					className="mt-4"
 				/>
 			</div>
 		</div>
 	);
-}
+};
 
-export { LoginHeader, LoginBody }
+export { LoginHeader, LoginBody };

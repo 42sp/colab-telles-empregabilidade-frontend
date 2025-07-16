@@ -1,0 +1,29 @@
+@reference "tailwindcss";
+
+.loginBodyContainer {
+	@apply w-[450px]
+		h-[456px]
+		mt-[32px]
+		bg-white
+		shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.10),0px_4px_6px_-1px_rgba(0,0,0,0.10)]
+		border
+		border-[#E5E7EB]
+		rounded-[8px]
+		p-4;
+}
+
+.loginBodyTitle {
+	@apply text-[#09090B]
+	text-[24px]
+	font-semibold
+	leading-[36px]
+	tracking-[-0.6px]
+	text-center;
+}
+
+.loginBodyContent {
+	@apply mt-9
+	flex
+	flex-col
+	items-center;
+}
