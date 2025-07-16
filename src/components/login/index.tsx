@@ -1,37 +1,46 @@
+import React, { useState } from "react";
 import { Field } from "../ui/field";
 import { Logo } from "../ui/logo";
 import IconsSvg from "@/utils/IconsSvg";
+import "./style.css";
+import { Button } from "../ui/button";
+import { Checkbox } from "../ui/checkbox";
+import { Label } from "../ui/label";
+import { Link } from "react-router-dom";
+import { ShieldCheck } from "lucide-react";
 
 const LoginHeader = () => {
 	return (
 		<>
 			<Logo />
-
-			<h2 className="text-black font-geist text-2xl font-bold leading-[42px] mt-3">
-				Students Manager
-			</h2>
+			<h2 className="login-headerTitle font-geist">Students Manager</h2>
 		</>
 	);
-}
+};
 
 const LoginBody = () => {
-	return (
-		<div
-			className="w-[450px] h-[456px] mt-[32px] bg-white shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.10),0px_4px_6px_-1px_rgba(0,0,0,0.10)] border border-[#E5E7EB] rounded-[8px] p-4"
-		>
-			<h2
-				className="text-[#09090B] font-geist text-[24px] font-semibold leading-[36px] tracking-[-0.6px] text-center"
-			>
-				Sign in to your account
-			</h2>
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [rememberMe, setRememberMe] = useState(false);
 
-			<div className='mt-9 flex flex-col items-center'>
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		console.log("Login attempt with:", { email, password, rememberMe });
+	};
+
+	return (
+		<div className="login-body-Container">
+			<h2 className="login-body-Title font-geist">Sign in to your account</h2>
+
+			<form className="login-body-Content" onSubmit={handleSubmit}>
 				<Field
 					id="email"
 					label="Email address"
 					type="email"
 					placeholder="name@example.com"
 					iconPrepend={IconsSvg.email}
+					onChange={e => setEmail(e.target.value)}
+					required
 				/>
 
 				<Field
@@ -40,11 +49,48 @@ const LoginBody = () => {
 					type="password"
 					placeholder="••••••••"
 					iconPrepend={IconsSvg.password}
-					className='mt-4'
+					className="mt-[22px]"
+					onChange={e => setPassword(e.target.value)}
+					required
 				/>
+
+				<div className="login-body-rememberMeContainer">
+					<div className="login-body-rememberMeCheckboxContainer">
+						<Checkbox
+							id="remember-me"
+							checked={rememberMe}
+							onCheckedChange={checked => setRememberMe(!!checked)}
+						/>
+						<Label htmlFor="remember-me" className="login-body-rememberMeLabel">
+							Remember me
+						</Label>
+					</div>
+					<Link to="/forgot-password" className="login-body-forgotPasswordLink">
+						Forgot password?
+					</Link>
+				</div>
+
+				<Button type="submit" className="login-body-button">
+					Sign In
+				</Button>
+			</form>
+			<div className="login-body-newConnectlyContainer">
+				<span className="login-body-newConnectlyTitle">New to Connectly?</span>{" "}
+				<Link to="/register" className="login-body-newConnectlyLink">
+					Create an account
+				</Link>
 			</div>
 		</div>
 	);
-}
+};
 
-export { LoginHeader, LoginBody }
+const LoginFooter = () => {
+	return (
+		<div className="login-footer-container">
+			<ShieldCheck className="h-4 w-4 mr-1" color="#6366F1" />
+			Secure login • ISO 27001 Certified
+		</div>
+	);
+};
+
+export { LoginHeader, LoginBody, LoginFooter };
