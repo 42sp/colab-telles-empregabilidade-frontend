@@ -1,6 +1,6 @@
 @reference "tailwindcss";
 
-.loginHeaderTitle {
+.login-headerTitle {
 	@apply text-black
 		text-2xl
 		font-bold
@@ -8,10 +8,10 @@
 		mt-3;
 }
 
-.loginBodyContainer {
+.login-body-Container {
 	@apply w-[450px]
 		h-[456px]
-		mt-[32px]
+		mt-[35px]
 		bg-white
 		shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.10),0px_4px_6px_-1px_rgba(0,0,0,0.10)]
 		border
@@ -20,7 +20,7 @@
 		p-4;
 }
 
-.loginBodyTitle {
+.login-body-Title {
 	@apply text-[#09090B]
 	text-[24px]
 	font-semibold
@@ -29,9 +29,65 @@
 	text-center;
 }
 
-.loginBodyContent {
-	@apply mt-9
+.login-body-Content {
+	@apply mt-[40px]
 	flex
 	flex-col
 	items-center;
+}
+
+.login-body-rememberMeContainer {
+	@apply flex
+		w-[400px]
+		items-center
+		justify-between
+		mt-[22px];
+}
+
+.login-body-rememberMeCheckboxContainer {
+	@apply flex
+		items-center
+		space-x-2;
+}
+
+.login-body-rememberMeLabel {
+	@apply text-sm;
+}
+
+.login-body-forgotPasswordLink {
+	@apply text-sm
+		text-indigo-600
+		hover:text-indigo-500;
+}
+
+.login-body-button {
+	@apply w-[400px]
+		mt-[22px]
+		bg-indigo-500
+		hover:bg-indigo-600;
+}
+
+.login-body-newConnectlyContainer {
+	@apply mt-[22px]
+		text-center
+		text-sm;
+}
+
+.login-body-newConnectlyTitle {
+	@apply text-gray-600;
+}
+
+.login-body-newConnectlyLink {
+	@apply text-indigo-600
+		hover:text-indigo-500;
+}
+
+.login-footer-container {
+	@apply mt-[111px]
+		text-center
+		text-xs
+		text-gray-500
+		flex
+		items-center
+		justify-center;
 }

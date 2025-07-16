@@ -27,7 +27,7 @@ const Field = (props: FieldProps) => {
 							src={props.iconPrepend}
 							alt="Icon Prepend"
 							className=""
-							onChange={props.onIconPrependClick}
+							onClick={props.onIconPrependClick}
 						/>
 					</span>
 				)}
@@ -36,6 +36,8 @@ const Field = (props: FieldProps) => {
 					id={props.id}
 					placeholder={props.placeholder}
 					className={`${props.iconPrepend ? "pl-10" : ""}`}
+					value={props.value}
+					onChange={props.onChange}
 				/>
 				{props.iconAppend && (
 					<span className="appendIcon">
@@ -43,7 +45,7 @@ const Field = (props: FieldProps) => {
 							src={props.iconAppend}
 							alt="Icon Append"
 							className=""
-							onChange={props.onIconAppendClick}
+							onClick={props.onIconAppendClick}
 						/>
 					</span>
 				)}
