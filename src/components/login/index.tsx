@@ -40,6 +40,7 @@ const LoginBody = () => {
 					placeholder="name@example.com"
 					iconPrepend={IconsSvg.email}
 					onChange={e => setEmail(e.target.value)}
+					required
 				/>
 
 				<Field
@@ -50,6 +51,7 @@ const LoginBody = () => {
 					iconPrepend={IconsSvg.password}
 					className="mt-[22px]"
 					onChange={e => setPassword(e.target.value)}
+					required
 				/>
 
 				<div className="login-body-rememberMeContainer">
