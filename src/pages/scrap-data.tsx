@@ -5,23 +5,31 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 
 import { LinkedInAuth } from "@/components/scrap-data/LinkedInAuth";
-import { NewOpForm } from "@/components/scrap-data/NewOpForm";
+import { NewOperation } from "@/components/scrap-data/NewOperation";
 import { ActiveBooking } from "@/components/scrap-data/ActiveBooking";
-import { OpHistory } from "@/components/scrap-data/OpHistory";
+import { OperationHistory } from "@/components/scrap-data/OperationHistory";
 
-// 1. Schema de validação com Zod
+// LinkedIn Auth Schema
 const linkedInFormSchema = z.object({
 	linkedinUser: z.string().min(1, "Usuário obrigatório"),
 	linkedinPassword: z.string().min(1, "Senha obrigatória"),
 	linkedinToken: z.string().optional(),
 });
 
-// 2. Tipagem inferida a partir do schema
+// New Operation Schema
+const newOperationSchema = z.object({
+	date: z.string().min(1, "Data obrigatória"),
+	time: z.string().min(1, "Hora obrigatória"),
+	name: z.string().min(1, "Nome da operação obrigatório"),
+});
+
+// Combined Schema Type
 type LinkedInFormData = z.infer<typeof linkedInFormSchema>;
+type NewOperationData = z.infer<typeof newOperationSchema>;
 
 function ScrapData() {
-	// 3. Instância do form
-	const form = useForm<LinkedInFormData>({
+	// LinkedIn Auth Form
+	const linkedInForm = useForm<LinkedInFormData>({
 		resolver: zodResolver(linkedInFormSchema),
 		defaultValues: {
 			linkedinUser: "",
@@ -30,13 +38,26 @@ function ScrapData() {
 		},
 	});
 
-	function onSubmit(data: LinkedInFormData) {
-		console.log("Dados enviados do LinkedInAuth:", data);
+	// New Operation Form
+	const newOpForm = useForm<NewOperationData>({
+		resolver: zodResolver(newOperationSchema),
+		defaultValues: {
+			date: "",
+			time: "",
+			name: "",
+		},
+	});
+
+	function onLinkedInSubmit(data: LinkedInFormData) {
+		console.log("LinkedIn Auth Data:", data);
+	}
+
+	function onNewOpSubmit(data: NewOperationData) {
+		console.log("New Operation Data:", data);
 	}
 
 	return (
 		<div className="container mx-auto p-6 space-y-8">
-			{/* Header */}
 			<div className="space-y-2">
 				<h1 className="text-2xl font-bold">Scrap Data</h1>
 				<p className="text-muted-foreground">
@@ -44,15 +65,26 @@ function ScrapData() {
 				</p>
 			</div>
 
-			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+			<Form {...linkedInForm}>
+				<form
+					onSubmit={linkedInForm.handleSubmit(onLinkedInSubmit)}
+					className="space-y-6"
+				>
 					<LinkedInAuth />
 				</form>
 			</Form>
 
-			<NewOpForm />
+			<Form {...newOpForm}>
+				<form
+					onSubmit={newOpForm.handleSubmit(onNewOpSubmit)}
+					className="space-y-6"
+				>
+					<NewOperation />
+				</form>
+			</Form>
+
 			<ActiveBooking />
-			<OpHistory />
+			<OperationHistory />
 		</div>
 	);
 }

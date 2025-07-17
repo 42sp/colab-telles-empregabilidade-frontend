@@ -4,9 +4,13 @@ import { UserRound, Lock, Key } from "lucide-react";
 
 export function LinkedInAuth() {
 	return (
-		<Card>
+		<Card role="form" aria-label="Autenticação LinkedIn">
 			<CardContent>
-				<div className="flex flex-col md:flex-row flex-wrap gap-6">
+				<div
+					className="flex flex-col md:flex-row flex-wrap gap-6"
+					role="group"
+					aria-label="Campos de autenticação LinkedIn"
+				>
 					<div className="flex-1 min-w-[240px]">
 						<FormInput
 							name="linkedinUser"
