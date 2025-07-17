@@ -10,7 +10,6 @@ function Home()
 			<Link to="/login" className="text-blue-500 hover:underline">
 				Go to Login
 			</Link> */}
-			{SideBar()}
 			{StudentsList()}
 		</div>
 	);
