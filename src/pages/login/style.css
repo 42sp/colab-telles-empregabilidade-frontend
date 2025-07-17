@@ -1,0 +1,10 @@
+@reference "tailwindcss";
+
+.pages-login-container {
+	@apply flex
+		flex-col
+		items-center
+
+		w-[100vw]
+		h-[100vh];
+}

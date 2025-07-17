@@ -1,8 +1,9 @@
 import { LoginBody, LoginFooter, LoginHeader } from "@/components/login";
+import "./style.css";
 
 const ScreenLogin = () => {
 	return (
-		<div className="flex items-center justify-center flex-col space-y-3 h-[100vh]">
+		<div className="pages-login-container">
 			<LoginHeader />
 			<LoginBody />
 			<LoginFooter />

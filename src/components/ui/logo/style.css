@@ -1,7 +1,15 @@
 @reference "tailwindcss";
 
 .logo-container {
-	@apply w-[80px]
+	@apply /* sm */
+		max-sm:w-[70px]
+		max-sm:h-[70px]
+
+		/* 2xl width >= 1536px */
+		2xl:w-[90px]
+		2xl:h-[90px]
+
+		w-[80px]
 		h-[80px]
 		rounded-full
 		flex
@@ -10,6 +18,14 @@
 }
 
 .logoIcon {
-	@apply w-[45px]
-		h-[45px];
+	@apply /* sm */
+		max-sm:w-[35px]
+		max-sm:h-[35px]
+
+		w-[45px]
+		h-[45px]
+
+		/* 2xl width >= 1536px */
+		2xl:w-[50px]
+		2xl:h-[50px];
 }
