@@ -1,0 +1,150 @@
+@reference "tailwindcss";
+
+.container-header {
+	@apply flex
+		flex-col
+		flex-1
+		shadow-sm border-b-gray-300
+
+		/* max-sm ( width < 640px ) */
+		/* sm ( width >= 640px ) */
+
+		/* max-md ( width < 768px ) */
+		/* md ( width >= 768px ) */
+
+		/* max-lg ( width < 1024px ) */
+		/* lg ( width >= 1024px ) */
+
+		/* max-xl ( width < 1280px ) */
+		/* xl ( width >= 1280px ) */
+
+		/* max-2xl ( width < 1536px ) */
+		/* 2xl ( width >= 1536px ) */
+		py-[25px]
+		px-[24px]
+
+		/* text-sm */
+
+		/* text-base */
+
+		/* text-lg */
+
+		/* text-xl */
+
+		/* text-2xl */
+
+		/* */;
+}
+
+.container-upload-arquivo {
+	@apply flex
+		flex-col
+		flex-1
+
+		shadow-sm border border-gray-300 rounded-lg
+
+		/* max-sm ( width < 640px ) */
+		/* sm ( width >= 640px ) */
+
+		/* max-md ( width < 768px ) */
+		/* md ( width >= 768px ) */
+
+		/* max-lg ( width < 1024px ) */
+		/* lg ( width >= 1024px ) */
+
+		/* max-xl ( width < 1280px ) */
+		/* xl ( width >= 1280px ) */
+
+		/* max-2xl ( width < 1536px ) */
+		/* 2xl ( width >= 1536px ) */
+		py-[25px]
+		px-[24px]
+
+		my-[25px]
+		mx-[24px]
+
+		/* text-sm */
+
+		/* text-base */
+
+		/* text-lg */
+
+		/* text-xl */
+
+		/* text-2xl */
+
+		/* */;
+}
+
+.drop-zone {
+	@apply flex
+		items-center
+		justify-center
+
+		border-2 border-dashed border-gray-300 rounded-lg
+		/* bg-red-400 */
+
+		/* max-sm ( width < 640px ) */
+		/* sm ( width >= 640px ) */
+
+		/* max-md ( width < 768px ) */
+		/* md ( width >= 768px ) */
+
+		/* max-lg ( width < 1024px ) */
+		/* lg ( width >= 1024px ) */
+
+		/* max-xl ( width < 1280px ) */
+		/* xl ( width >= 1280px ) */
+
+		/* max-2xl ( width < 1536px ) */
+		/* 2xl ( width >= 1536px ) */
+		h-[160px]
+		my-[12px]
+
+		/* text-sm */
+
+		/* text-base */
+
+		/* text-lg */
+
+		/* text-xl */
+
+		/* text-2xl */
+
+		/* */;
+}
+
+.btn-upload {
+	@apply flex
+		my-[12px]
+		bg-[#2563EB]
+		text-white
+		rounded-lg
+		hover:bg-[#1E4DB7]
+		/* max-sm ( width < 640px ) */
+		/* sm ( width >= 640px ) */
+
+		/* max-md ( width < 768px ) */
+		/* md ( width >= 768px ) */
+
+		/* max-lg ( width < 1024px ) */
+		/* lg ( width >= 1024px ) */
+
+		/* max-xl ( width < 1280px ) */
+		/* xl ( width >= 1280px ) */
+
+		/* max-2xl ( width < 1536px ) */
+		/* 2xl ( width >= 1536px ) */
+
+		/* text-sm */
+
+		/* text-base */
+
+		/* text-lg */
+
+		/* text-xl */
+
+		/* text-2xl */
+
+		/* */;
+}
