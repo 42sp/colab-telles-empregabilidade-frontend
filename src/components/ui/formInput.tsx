@@ -33,6 +33,7 @@ interface FormInputProps {
 	mask?: string;
 	wrapperClassName?: string;
 	inputClassName?: string;
+	autocomplete?: string;
 }
 
 export function FormInput({
@@ -45,6 +46,7 @@ export function FormInput({
 	mask,
 	wrapperClassName = "",
 	inputClassName = "",
+	autocomplete,
 }: FormInputProps) {
 	const [showPassword, setShowPassword] = useState(false);
 	const isPasswordField = type === "password";
@@ -141,6 +143,7 @@ export function FormInput({
 												type={inputType}
 												placeholder={placeholder}
 												className={inputBaseClasses}
+												autoComplete={autocomplete}
 											/>
 										)}
 									</InputMask>
@@ -151,6 +154,7 @@ export function FormInput({
 										type={inputType}
 										placeholder={placeholder}
 										className={inputBaseClasses}
+										autoComplete={autocomplete}
 									/>
 								)}
 

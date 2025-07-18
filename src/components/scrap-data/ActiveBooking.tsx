@@ -90,7 +90,7 @@ export function ActiveBooking() {
 														onKeyDown={e => {
 															if (e.key === "Enter" || e.key === " ") {
 																e.preventDefault();
-																// Add your delete handler here
+																// Delete handler aqui
 															}
 														}}
 													>

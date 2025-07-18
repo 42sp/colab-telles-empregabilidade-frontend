@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { FormInput } from "@/components/ui/formInput";
 import { UserRound, Lock, Key } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function LinkedInAuth() {
 	return (
@@ -17,6 +18,7 @@ export function LinkedInAuth() {
 							label="Usuário LinkedIn"
 							placeholder="Seu usuário do LinkedIn"
 							iconPrepend={<UserRound />}
+							autocomplete="username"
 						/>
 					</div>
 
@@ -27,6 +29,7 @@ export function LinkedInAuth() {
 							type="password"
 							placeholder="Sua senha do LinkedIn"
 							iconPrepend={<Lock />}
+							autocomplete="current-password"
 						/>
 					</div>
 
@@ -38,6 +41,17 @@ export function LinkedInAuth() {
 							iconPrepend={<Key />}
 						/>
 					</div>
+				</div>
+
+				{/* Botão de envio, alinhado à direita */}
+				<div className="flex justify-end mt-6">
+					<Button
+						type="submit"
+						className="h-[42px] min-w-[130px]"
+						aria-label="Entrar com LinkedIn"
+					>
+						Entrar
+					</Button>
 				</div>
 			</CardContent>
 		</Card>
