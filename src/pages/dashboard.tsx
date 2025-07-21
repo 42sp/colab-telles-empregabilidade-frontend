@@ -18,6 +18,8 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { SyncStatusTable } from "@/components/dashboard/SyncStatusTable";
 import { ChartPlaceholder } from "@/components/dashboard/ChartPlaceholder";
 import { dashboardData } from "@/data/dashboard";
+import { EmploymentStatusChart } from "@/components/dashboard/EmploymentStatusChart";
+import { SectorDistributionChart } from "@/components/dashboard/SectorDistributionChart";
 
 export function Dashboard() {
 	return (
@@ -80,20 +82,8 @@ export function Dashboard() {
 			</div>
 
 			<div className="grid grid-cols-2 gap-3 md:gap-5 lg:gap-10 mb-10">
-				<ChartPlaceholder
-					title="Status de Emprego por Mês"
-					subtitle="Comparação entre alunos trabalhando e sem trabalho"
-					icon={<ChartColumn className="h-5 w-5" />}
-					message="Gráfico de linhas mostrando tendência mensal"
-					className="lg:col-span-1"
-				/>
-				<ChartPlaceholder
-					title="Distribuição por Setor"
-					subtitle="Porcentagem de alunos por setor de atuação"
-					icon={<ChartPie className="h-5 w-5" />}
-					message="Gráfico de torta mostrando a distribuição por setor"
-					className="lg:col-span-1"
-				/>
+				<EmploymentStatusChart />
+				<SectorDistributionChart />
 			</div>
 
 			<div className="grid grid-cols-2 gap-3 md:gap-5 lg:gap-10 mb-10">
