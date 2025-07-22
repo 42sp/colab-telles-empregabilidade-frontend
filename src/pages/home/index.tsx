@@ -1,4 +1,4 @@
-import { SideBar } from "./sideBar";
+import { SideBar } from "../layout/sideBar";
 import { StudentsList } from "./studentsList";
 
 function Home()

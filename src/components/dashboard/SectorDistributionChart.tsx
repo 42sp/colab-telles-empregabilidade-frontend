@@ -8,6 +8,7 @@ import {
 	Tooltip,
 	Legend,
 } from "recharts";
+import { memo } from "react";
 
 const data = [
 	{ name: "Tecnologia", value: 42 },
@@ -19,7 +20,13 @@ const data = [
 
 const COLORS = ["#f97316", "#10b981", "#0ea5e9", "#f59e0b", "#8b5cf6"];
 
-export function SectorDistributionChart() {
+const renderCustomizedLabel = (props: { name?: string; percent?: number }) => {
+	const { name, percent } = props;
+	if (percent === undefined || name === undefined) return null;
+	return `${name}: ${(percent * 100).toFixed(0)}%`;
+};
+
+export const SectorDistributionChart = memo(() => {
 	return (
 		<Card className="bg-white">
 			<CardHeader className="pb-0">
@@ -42,10 +49,7 @@ export function SectorDistributionChart() {
 								cx="50%"
 								cy="50%"
 								labelLine={true}
-								label={({ name, percent }) => {
-									if (percent === undefined) return name;
-									return `${name}: ${(percent * 100).toFixed(0)}%`;
-								}}
+								label={renderCustomizedLabel}
 								outerRadius={100}
 								fill="#8884d8"
 								dataKey="value"
@@ -65,4 +69,4 @@ export function SectorDistributionChart() {
 			</CardContent>
 		</Card>
 	);
-}
+});

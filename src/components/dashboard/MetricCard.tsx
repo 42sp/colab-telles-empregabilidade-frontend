@@ -1,5 +1,6 @@
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { ArrowUp } from "lucide-react";
+import { memo } from "react";
 
 interface MetricCardProps {
 	title: string;
@@ -10,7 +11,7 @@ interface MetricCardProps {
 	className?: string;
 }
 
-export function MetricCard({
+export const MetricCard = memo(function MetricCard({
 	title,
 	value,
 	description,
@@ -51,4 +52,4 @@ export function MetricCard({
 			</div>
 		</Card>
 	);
-}
+});

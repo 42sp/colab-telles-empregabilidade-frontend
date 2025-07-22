@@ -9,6 +9,7 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from "recharts";
+import { memo } from "react";
 
 const data = [
 	{ range: "Até R$2.000", alunos: 120 },
@@ -23,7 +24,7 @@ interface SalaryDistributionChartProps {
 	className?: string;
 }
 
-export function SalaryDistributionChart({
+export const SalaryDistributionChart = memo(function SalaryDistributionChart({
 	className,
 }: SalaryDistributionChartProps) {
 	return (
@@ -78,4 +79,4 @@ export function SalaryDistributionChart({
 			</CardContent>
 		</Card>
 	);
-}
+});

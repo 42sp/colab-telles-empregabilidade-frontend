@@ -10,6 +10,7 @@ import {
 	Legend,
 	ResponsiveContainer,
 } from "recharts";
+import { memo } from "react";
 
 const data = [
 	{ month: "Jan", Trabalhando: 650, "Sem Trabalho": 300 },
@@ -22,7 +23,7 @@ const data = [
 	{ month: "Ago", Trabalhando: 820, "Sem Trabalho": 220 },
 ];
 
-export function EmploymentStatusChart() {
+export const EmploymentStatusChart = memo(function EmploymentStatusChart() {
 	return (
 		<Card className="bg-white">
 			<CardHeader className="pb-0">
@@ -57,4 +58,4 @@ export function EmploymentStatusChart() {
 			</CardContent>
 		</Card>
 	);
-}
+});
