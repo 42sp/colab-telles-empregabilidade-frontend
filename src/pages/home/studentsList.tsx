@@ -129,6 +129,10 @@ function	searchBar(dataRows)
 		initialFilter.name = "";
 		return (initialFilter);
 	});
+	//Page config
+	const	rowsPerPage = 5;
+	const	startPage = page  * rowsPerPage;
+	const	visibleRows = dataRows.slice(startPage, startPage + rowsPerPage);
 	function	updateFilter(field:string, value:string)
 	{
 		setFilter(prev => ({...prev, [field]: value}));
@@ -143,6 +147,9 @@ function	searchBar(dataRows)
 			return (String(rowValue).toLowerCase().includes(value.toLowerCase()));
 		})
 	);
+
+	const	endPage = (filteredRows.length / rowsPerPage) + startPage + 1;
+
 	const	[activeFilter, setActiveFilter] = useState<string | null>(null);
 
 	function	drawButtons()
@@ -240,10 +247,6 @@ function	searchBar(dataRows)
 			([_,col]) => col.isVisible
 		);
 
-		//Page config
-		const	rowsPerPage = 5;
-		const	startPage = page  * rowsPerPage;
-		const	visibleRows = dataRows.slice(startPage, startPage + rowsPerPage);
 		function	pagination()
 		{
 			const	nextPage = page + 1;
@@ -313,7 +316,7 @@ function	searchBar(dataRows)
 				{/*	botao para atualizar o estado das paginas*/}
 				<div className="flex border-b border-gray-200">
 					<p className="p-4 text-slate-400">
-						Template-Texto das paginas encontradas
+						Mostrando {startPage + 1} a {endPage} de {filteredRows.length} resultados
 					</p>
 					<div className="ml-auto p-4">
 						{pagination()}
