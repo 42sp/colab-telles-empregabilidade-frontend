@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScreenLogin from "./pages/login";
 import Home from "./pages/home";
-import Configuration from "./pages/configuration";
+import Import from "./pages/import";
 import ScrapData from "./pages/scrap-data";
 import Dashboard from "./pages/dashboard";
 import { DefaultLayout } from "./layouts/DefaultLayout";
@@ -16,7 +16,7 @@ function App() {
 				{/* Protected routes with sidebar */}
 				<Route element={<DefaultLayout />}>
 					<Route path="/home" element={<Home />} />
-					<Route path="/configuration" element={<Configuration />} />
+					<Route path="/import" element={<Import />} />
 					<Route path="/scrap-data" element={<ScrapData />} />
 					<Route path="/dashboard" element={<Dashboard />} />
 				</Route>
