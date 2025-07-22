@@ -131,8 +131,7 @@ function	searchBar(dataRows)
 	});
 	//Page config
 	const	rowsPerPage = 5;
-	const	startPage = page  * rowsPerPage;
-	const	visibleRows = dataRows.slice(startPage, startPage + rowsPerPage);
+	const	startPage = page * rowsPerPage;
 	function	updateFilter(field:string, value:string)
 	{
 		setFilter(prev => ({...prev, [field]: value}));
@@ -147,8 +146,8 @@ function	searchBar(dataRows)
 			return (String(rowValue).toLowerCase().includes(value.toLowerCase()));
 		})
 	);
-
-	const	endPage = (filteredRows.length / rowsPerPage) + startPage + 1;
+	const	visibleRows = filteredRows.slice(startPage, startPage + rowsPerPage);
+	const	endPage = Math.min((page + 1) * rowsPerPage, filteredRows.length);
 
 	const	[activeFilter, setActiveFilter] = useState<string | null>(null);
 
