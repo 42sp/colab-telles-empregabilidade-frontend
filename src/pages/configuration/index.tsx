@@ -1,5 +1,7 @@
 import {
+	ConfigurationFooter,
 	ConfigurationHeader,
+	ConfigurationIntegracaoApi,
 	ConfigurationUploadArquivo,
 } from "@/components/configuration";
 
@@ -8,6 +10,8 @@ const Configuration = () => {
 		<div>
 			<ConfigurationHeader />
 			<ConfigurationUploadArquivo />
+			<ConfigurationIntegracaoApi />
+			<ConfigurationFooter />
 		</div>
 	);
 };
