@@ -4,7 +4,7 @@ function	Configuration(props)
 {
 	return (
 		<div className="flex">
-			{SideBar()}
+			{/* {SideBar()} */}
 			<div><h1>This is Configuration page</h1></div>
 		</div>
 	);

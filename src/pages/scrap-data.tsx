@@ -4,10 +4,10 @@ function	ScrapData(props)
 {
 	return (
 		<div className="flex">
-			{SideBar()}
+			{/* {SideBar()} */}
 			<h1>This is Scrap data page</h1>
 		</div>
 	);
 }
 
-export default	ScrapData;
+export default ScrapData;

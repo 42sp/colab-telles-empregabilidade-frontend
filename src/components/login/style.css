@@ -1,32 +1,59 @@
 @reference "tailwindcss";
 
-.login-headerTitle {
+.login-header-container {
+	@apply flex-1
+		flex
+		flex-col
+		w-[100%]
+		justify-center
+		items-center
+
+		/* */;
+}
+
+.login-header-title {
 	@apply text-black
-		text-2xl
 		font-bold
+
+		/* sm */
+		max-sm:text-xl
+
+		text-3xl
+
 		leading-[42px]
 		mt-3;
 }
 
 .login-body-Container {
-	@apply w-[450px]
-		h-[456px]
-		mt-[35px]
-		bg-white
+	@apply flex-1
+	flex-col
+
+		/* sm */
+		max-sm:w-[350px]
+		max-sm:h-[400px]
+
 		shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.10),0px_4px_6px_-1px_rgba(0,0,0,0.10)]
 		border
 		border-[#E5E7EB]
 		rounded-[8px]
-		p-4;
+		p-4
+
+		/* */;
 }
 
 .login-body-Title {
 	@apply text-[#09090B]
-	text-[24px]
-	font-semibold
-	leading-[36px]
-	tracking-[-0.6px]
-	text-center;
+		font-semibold
+		tracking-[-0.6px]
+		leading-[36px]
+		text-center
+
+		/* sm */
+		max-sm:text-lg
+
+
+		text-[24px]
+		/* */;
 }
 
 .login-body-Content {
@@ -38,10 +65,16 @@
 
 .login-body-rememberMeContainer {
 	@apply flex
-		w-[400px]
 		items-center
 		justify-between
-		mt-[22px];
+		mt-[22px]
+
+		/* sm */
+		max-sm:w-[320px]
+
+		w-[400px]
+
+		/* */;
 }
 
 .login-body-rememberMeCheckboxContainer {
@@ -61,10 +94,16 @@
 }
 
 .login-body-button {
-	@apply w-[400px]
+	@apply bg-indigo-500
+	hover:bg-indigo-600
+
+		/* sm */
+		max-sm:w-[320px]
+
 		mt-[22px]
-		bg-indigo-500
-		hover:bg-indigo-600;
+		w-[400px]
+
+		/* */;
 }
 
 .login-body-newConnectlyContainer {
@@ -83,11 +122,34 @@
 }
 
 .login-footer-container {
-	@apply mt-[111px]
-		text-center
+	@apply text-center
 		text-xs
 		text-gray-500
 		flex
 		items-center
-		justify-center;
+		justify-center
+
+		absolute
+		bottom-[18px];
+}
+
+@media (max-height: 700px) {
+	.login-footer-container {
+		@apply static
+			my-4;
+	}
+}
+
+@media (max-width: 320px) {
+	.login-body-Container {
+		@apply w-[300px];
+	}
+
+	.login-body-rememberMeContainer {
+		@apply w-[270px];
+	}
+
+	.login-body-button {
+		@apply w-[270px];
+	}
 }
