@@ -6,17 +6,10 @@ import {
 	UserX,
 	Building2,
 	DollarSign,
-	CheckCircle2,
-	PieChart,
-	BarChart2,
-	LineChart,
-	ChartColumn,
-	ChartPie,
-	ChartSpline,
 } from "lucide-react";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { SyncStatusTable } from "@/components/dashboard/SyncStatusTable";
-import { ChartPlaceholder } from "@/components/dashboard/ChartPlaceholder";
+import { SalaryDistributionChart } from "@/components/dashboard/SalaryDistributionChart";
 import { dashboardData } from "@/data/dashboard";
 import { EmploymentStatusChart } from "@/components/dashboard/EmploymentStatusChart";
 import { SectorDistributionChart } from "@/components/dashboard/SectorDistributionChart";
@@ -87,13 +80,7 @@ export function Dashboard() {
 			</div>
 
 			<div className="grid grid-cols-2 gap-3 md:gap-5 lg:gap-10 mb-10">
-				<ChartPlaceholder
-					title="Distribuição por Faixa Salarial"
-					subtitle="Quantidade de alunos por faixa salarial"
-					icon={<ChartSpline className="h-5 w-5" />}
-					message="Gráfico de barras mostrando distribuição"
-					className="lg:col-span-2"
-				/>
+				<SalaryDistributionChart className="lg:col-span-2" />
 
 				<Card className="lg:col-span-2 p-6">
 					<CardHeader className="mb-6">

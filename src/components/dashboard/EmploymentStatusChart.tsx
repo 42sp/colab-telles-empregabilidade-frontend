@@ -49,8 +49,8 @@ export function EmploymentStatusChart() {
 							<YAxis />
 							<Tooltip />
 							<Legend />
-							<Bar dataKey="Trabalhando" fill="#f97316" />
 							<Bar dataKey="Sem Trabalho" fill="#10b981" />
+							<Bar dataKey="Trabalhando" fill="#f97316" />
 						</BarChart>
 					</ResponsiveContainer>
 				</div>
