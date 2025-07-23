@@ -54,7 +54,7 @@ function	drawBody()
 	//Other vaariables
 	let	background: string = "flex flex-col flex-wrap bg-white border border-b border-gray-300 w-full min-h-screen p-4 gap-4";
 
-	//DataBases
+	//DataBases - isso eh um template enquanto n temos os dados
 	const dataRows = [
 		{ name: "Ana Silva", email: "ana@email.com", celNumber: "(11) 91234-5678", gender: "Feminino", sector: "RH", orientation: "Heterossexual", race: "Parda", pcd: "Não", linkedinLink: "linkedin.com/in/ana", isWorkin: "Sim", rent: 3000, isStudying: true },
 		{ name: "João Souza", email: "joao@email.com", celNumber: "(21) 99876-5432", gender: "Masculino", sector: "TI", orientation: "Homosexual", race: "Branco", pcd: "Sim", linkedinLink: "linkedin.com/in/joao", isWorkin: "Não", rent: 4000, isStudying: false },
@@ -77,6 +77,7 @@ function	drawBody()
 		{ name: "Patrícia Silva", email: "patricia@email.com", celNumber: "(21) 98444-2233", gender: "Feminino", sector: "RH", orientation: "Bissexual", race: "Branca", pcd: "Não", linkedinLink: "linkedin.com/in/patricia", isWorkin: "Sim", rent: 3700, isStudying: true },
 		{ name: "Bruno Oliveira", email: "bruno@email.com", celNumber: "(16) 98555-6677", gender: "Masculino", sector: "TI", orientation: "Homossexual", race: "Pardo", pcd: "Não", linkedinLink: "linkedin.com/in/bruno", isWorkin: "Sim", rent: 5800, isStudying: false },
 	];
+
 	const	filteredRows = dataRows.filter(row => {
 		//Filtro por campo (Nome, setor, etc...)
 		const	matches = Object.entries(filter).every(([field, value]) => {
@@ -395,37 +396,42 @@ function	drawBody()
 
 			return (
 				<div className="flex flex-col border border-gray-200 rounded-md bg-white w-full h-full">
-					{/*	Header	*/}
-					<div className="flex flex-wrap gap-4 p-4 justify-start items-start bg-white border-b border-gray-200 w-full">
-						{visibleColums.map(([key, col]) => (
-							<div key={key} className="flex font-bold text-zinc-400 flex-grow justify-start items-start">
+					<table className="table-auto w-full border-collapse">
+						{/* Header */}
+						<thead className="bg-white border-b border-gray-200 text-zinc-400 font-bold">
+							<tr>
+							{visibleColums.map(([key, col]) => (
+								<th key={key} className="text-left px-4 py-2">
 								{col.label}
-							</div>
-						))}
-					</div>
-					{/*	Data	
-						-Fixar o tamanho dos itens
-						-Usar grid
-						-truncate
-					*/}
-					<div className="flex flex-col border-b p-4 border-gray-200 justify-betwee gap-4 w-full">
-						{visibleRows.map((row, i) => (
-							<div key={i} className="flex flex-wrap gap-4 w-full">
+								</th>
+							))}
+							</tr>
+						</thead>
+
+						{/* Body */}
+						<tbody className="text-black font-medium">
+							{visibleRows.map((row, i) => (
+							<tr key={i} className="border-b border-gray-200">
 								{visibleColums.map(([key]) => (
-									<div key={key} className="flex flex-grow text-black font-medium justify-start items-start">
-										{
-											key === "rent"
-											? new Intl.NumberFormat("pt-BR", {
-												style: "currency",
-												currency: "BRL",
-											}).format(row[key as keyof typeof row] as number)
-											: row[key as keyof typeof row]
-										}
-									</div>
+								<td
+									key={key}
+									className="px-4 py-2 truncate max-w-[200px]"
+									title={String(row[key as keyof typeof row])}
+								>
+									{
+									key === "rent"
+									? new Intl.NumberFormat("pt-BR", {
+										style: "currency",
+										currency: "BRL",
+										}).format(row[key as keyof typeof row] as number)
+									: String(row[key as keyof typeof row])
+									}
+								</td>
 								))}
-							</div>
-						))}
-					</div>
+							</tr>
+							))}
+						</tbody>
+						</table>
 					{/*	botao para atualizar o estado das paginas*/}
 					<div className="flex border-b border-gray-200">
 						<p className="p-4 text-slate-400">
@@ -443,7 +449,7 @@ function	drawBody()
 		{
 			setFilter(prev => ({
 				...prev,
-				[toRemove]: ""
+				[toRemove]: "",
 			}))
 			setPage(0);
 		}
@@ -476,7 +482,6 @@ function	drawBody()
 					{Object.entries(filter)
 							.filter(([_, value]) => value.trim() !== "")
 							.map(([key, value]) => (
-							
 								<span key={key} className="flex font-medium bg-slate-200 px-4 py-1 gap-4 border border-gray-200 rounded-md">
 									{colums[key]?.label || key}:{value}
 									<button
@@ -494,7 +499,6 @@ function	drawBody()
 		);
 	}
 
-	console.log("Filtro ativo: " + activeFilter);
 	return (
 		<div className={background}>
 			{drawStatus(dataRows)}
