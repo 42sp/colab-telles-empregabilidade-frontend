@@ -198,7 +198,7 @@ function	drawBody()
 		const	startPage = page * rowsPerPage;
 		const	visibleRows = filteredRows.slice(startPage, startPage + rowsPerPage);
 		const	endPage = Math.min((page + 1) * rowsPerPage, filteredRows.length);
-		const	exportName = "estudantes";
+		const	exportName = "relatório";
 		
 		function	downloadPdf(rows: typeof filteredRows)
 		{
