@@ -42,7 +42,7 @@ export function SideBar() {
 			ref={sidebarRef}
 			className={`${
 				isCollapsed ? "w-20" : "w-64"
-			} bg-white text-black py-4 flex flex-col justify-between border-r border-gray-200 min-h-screen transition-all duration-300 ease-in-out max-w-[235px] relative`}
+			} bg-white text-black py-4 flex flex-col justify-between border-r border-gray-200 min-h-screen transition-all duration-300 ease-in-out max-w-[235px] relative will-change-[width] z-10`}
 		>
 			<div className="flex flex-col gap-4">
 				<SidebarHeader isCollapsed={isCollapsed} toggleCollapse={toggleCollapse} />

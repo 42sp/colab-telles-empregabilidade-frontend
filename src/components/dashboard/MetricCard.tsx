@@ -37,7 +37,7 @@ export const MetricCard = memo(function MetricCard({
 					</CardHeader>
 
 					<CardContent className="p-0 flex gap-4">
-						<div className="text-3xl font-bold">{value}</div>
+						<div className="text-2xl font-bold">{value}</div>
 						<div className="flex items-baseline-last text-sm text-gray-500 mt-1">
 							{trend && trend > 0 && (
 								<span className="flex items-center text-green-500 mr-1">

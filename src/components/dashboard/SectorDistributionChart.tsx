@@ -9,6 +9,7 @@ import {
 	Legend,
 } from "recharts";
 import { memo } from "react";
+import { LazyLoadWrapper } from "./LazyLoadWrapper";
 
 const data = [
 	{ name: "Tecnologia", value: 42 },
@@ -26,7 +27,7 @@ const renderCustomizedLabel = (props: { name?: string; percent?: number }) => {
 	return `${name}: ${(percent * 100).toFixed(0)}%`;
 };
 
-export const SectorDistributionChart = memo(() => {
+const SectorDistributionChart = () => {
 	return (
 		<Card className="bg-white">
 			<CardHeader className="pb-0">
@@ -41,32 +42,41 @@ export const SectorDistributionChart = memo(() => {
 				</div>
 			</CardHeader>
 			<CardContent>
-				<div className="h-[300px] w-full">
-					<ResponsiveContainer width="100%" height="100%">
-						<PieChart>
-							<Pie
-								data={data}
-								cx="50%"
-								cy="50%"
-								labelLine={true}
-								label={renderCustomizedLabel}
-								outerRadius={100}
-								fill="#8884d8"
-								dataKey="value"
-							>
-								{data.map((_, index) => (
-									<Cell
-										key={`cell-${index}`}
-										fill={COLORS[index % COLORS.length]}
-									/>
-								))}
-							</Pie>
-							<Tooltip />
-							<Legend />
-						</PieChart>
-					</ResponsiveContainer>
+				<div className="h-[300px]">
+					<LazyLoadWrapper
+						className="h-full flex items-center justify-center"
+						loadingComponent={
+							<div className="w-10 h-10 border-4 border-t-4 border-black border-t-white rounded-full animate-spin" />
+						}
+					>
+						<ResponsiveContainer width="100%" height="100%">
+							<PieChart>
+								<Pie
+									data={data}
+									cx="50%"
+									cy="50%"
+									labelLine={true}
+									label={renderCustomizedLabel}
+									outerRadius={100}
+									fill="#8884d8"
+									dataKey="value"
+								>
+									{data.map((_, index) => (
+										<Cell
+											key={`cell-${index}`}
+											fill={COLORS[index % COLORS.length]}
+										/>
+									))}
+								</Pie>
+								<Tooltip />
+								<Legend />
+							</PieChart>
+						</ResponsiveContainer>
+					</LazyLoadWrapper>
 				</div>
 			</CardContent>
 		</Card>
 	);
-});
+};
+
+export default memo(SectorDistributionChart);

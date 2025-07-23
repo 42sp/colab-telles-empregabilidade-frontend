@@ -9,13 +9,23 @@ import {
 } from "lucide-react";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { SyncStatusTable } from "@/components/dashboard/SyncStatusTable";
-import { SalaryDistributionChart } from "@/components/dashboard/SalaryDistributionChart";
 import { dashboardData } from "@/data/dashboard";
-import { EmploymentStatusChart } from "@/components/dashboard/EmploymentStatusChart";
-import { SectorDistributionChart } from "@/components/dashboard/SectorDistributionChart";
-import { useMemo } from "react";
+import { lazy, useEffect } from "react";
+import { motion } from "framer-motion";
+import { FadeInOnScroll } from "@/components/utils/FadeInOnScroll"; // certifique-se que o path esteja correto
 
-const memoizedIcons = {
+// Lazy charts
+const EmploymentStatusChart = lazy(
+	() => import("@/components/dashboard/EmploymentStatusChart")
+);
+const SectorDistributionChart = lazy(
+	() => import("@/components/dashboard/SectorDistributionChart")
+);
+const SalaryDistributionChart = lazy(
+	() => import("@/components/dashboard/SalaryDistributionChart")
+);
+
+const icons = {
 	refreshIcon: <RefreshCcw className="h-5 w-5" />,
 	usersIcon: <Users className="h-5 w-5" />,
 	briefcaseIcon: <Briefcase className="h-5 w-5" />,
@@ -25,75 +35,36 @@ const memoizedIcons = {
 };
 
 export function Dashboard() {
-	const metricsSection = useMemo(
-		() => (
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 lg:gap-10 mb-10">
-				{/* Card 1: Sincronia de Dados */}
-				<MetricCard
-					title="Sincronia de Dados"
-					value="98%"
-					description="Última atualização: 15 min atrás"
-					icon={memoizedIcons.refreshIcon}
-				/>
-				{/* Card 2: Total de Alunos */}
-				<MetricCard
-					title="Total de Alunos"
-					value="1.248"
-					description="Desde o último mês"
-					trend={12}
-					icon={memoizedIcons.usersIcon}
-				/>
-				{/* Card 3: Alunos Trabalhando */}
-				<MetricCard
-					title="Alunos Trabalhando"
-					value="876"
-					description="70,2% do total de alunos"
-					icon={memoizedIcons.briefcaseIcon}
-				/>
-				{/* Card 4: Alunos sem Trabalho */}
-				<MetricCard
-					title="Alunos sem Trabalho"
-					value="372"
-					description="29,8% do total de alunos"
-					icon={memoizedIcons.userXIcon}
-				/>
+	useEffect(() => {
+		let timeout: NodeJS.Timeout;
+		const observer = new MutationObserver(() => {
+			clearTimeout(timeout);
+			timeout = setTimeout(() => {
+				window.dispatchEvent(new Event("resize"));
+			}, 300);
+		});
 
-				{/* Card 5: Empresas Pesquisadas */}
-				<MetricCard
-					title="Empresas Pesquisadas"
-					value="342"
-					description="Desde o último mês"
-					trend={8}
-					icon={memoizedIcons.buildingIcon}
-				/>
+		const sidebar = document.querySelector(".sidebar");
+		if (sidebar) {
+			observer.observe(sidebar, {
+				attributes: true,
+				attributeFilter: ["class"],
+			});
+		}
 
-				{/* Card 6: Salário Médio */}
-				<MetricCard
-					title="Salário Médio"
-					value="R$ 3.850"
-					description="desde o último mês"
-					trend={5}
-					icon={memoizedIcons.dollarIcon}
-				/>
-			</div>
-		),
-		[]
-	);
+		return () => observer.disconnect();
+	}, []);
 
-	const chartsSection = useMemo(
-		() => (
-			<div className="grid grid-cols-2 gap-3 md:gap-5 lg:gap-10 mb-10">
-				<EmploymentStatusChart />
-				<SectorDistributionChart />
-				<SalaryDistributionChart className="lg:col-span-2" />
-			</div>
-		),
-		[]
-	);
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			window.dispatchEvent(new Event("resize"));
+		}, 500);
+		return () => clearTimeout(timer);
+	}, []);
 
 	return (
-		<div className="bg-slate-50 min-h-screen">
-			<div className="container mx-auto p-6 space-y-8 ">
+		<div className="bg-slate-50 contain-layout">
+			<div className="container mx-auto p-6 space-y-8">
 				<div className="space-y-1">
 					<h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
 					<p className="text-md text-gray-600">
@@ -101,12 +72,80 @@ export function Dashboard() {
 					</p>
 				</div>
 
-				{metricsSection}
+				{/* Métricas */}
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 lg:gap-10 mb-10">
+					{[
+						{
+							title: "Sincronia de Dados",
+							value: "98%",
+							description: "Última atualização: 15 min atrás",
+							icon: icons.refreshIcon,
+						},
+						{
+							title: "Total de Alunos",
+							value: "1.248",
+							description: "Desde o último mês",
+							trend: 12,
+							icon: icons.usersIcon,
+						},
+						{
+							title: "Alunos Trabalhando",
+							value: "876",
+							description: "70,2% do total de alunos",
+							icon: icons.briefcaseIcon,
+						},
+						{
+							title: "Alunos sem Trabalho",
+							value: "372",
+							description: "29,8% do total de alunos",
+							icon: icons.userXIcon,
+						},
+						{
+							title: "Empresas Pesquisadas",
+							value: "342",
+							description: "Desde o último mês",
+							trend: 8,
+							icon: icons.buildingIcon,
+						},
+						{
+							title: "Salário Médio",
+							value: "R$ 3.850",
+							description: "desde o último mês",
+							trend: 5,
+							icon: icons.dollarIcon,
+						},
+					].map((metric, index) => (
+						<motion.div
+							key={index}
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.4, delay: index * 0.1 }}
+						>
+							<MetricCard {...metric} />
+						</motion.div>
+					))}
+				</div>
 
-				{chartsSection}
-
-				{/* Card 7: Status de Sincronia de Dados */}
+				{/* Charts */}
 				<div className="grid grid-cols-2 gap-3 md:gap-5 lg:gap-10 mb-10">
+					<FadeInOnScroll>
+						<EmploymentStatusChart />
+					</FadeInOnScroll>
+
+					<FadeInOnScroll delay={0.1}>
+						<SectorDistributionChart />
+					</FadeInOnScroll>
+
+					<FadeInOnScroll className="lg:col-span-2" delay={0.2}>
+						<SalaryDistributionChart />
+					</FadeInOnScroll>
+				</div>
+
+				{/* Tabela de Status */}
+				<FadeInOnScroll
+					className="grid grid-cols-2 gap-3 md:gap-5 lg:gap-10 mb-10"
+					delay={0.3}
+				>
 					<Card className="lg:col-span-2 p-6">
 						<CardHeader className="mb-6">
 							<CardTitle className="flex items-center gap-2 text-2xl font-bold">
@@ -120,7 +159,7 @@ export function Dashboard() {
 							<SyncStatusTable data={dashboardData.syncStatus} />
 						</CardContent>
 					</Card>
-				</div>
+				</FadeInOnScroll>
 			</div>
 		</div>
 	);

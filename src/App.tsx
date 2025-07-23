@@ -4,7 +4,7 @@ import Home from "./pages/home";
 import Import from "./pages/import";
 import ScrapData from "./pages/scrap-data";
 import Dashboard from "./pages/dashboard";
-import { DefaultLayout } from "./layouts/DefaultLayout";
+import { DefaultLayout } from "./components/utils/DefaultLayout";
 
 function App() {
 	return (
