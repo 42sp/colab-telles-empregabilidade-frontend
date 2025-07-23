@@ -1,7 +1,6 @@
 import { useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import type { MotionProps } from "framer-motion";
-import { useInView } from "framer-motion";
 
 interface FadeInOnScrollProps extends MotionProps {
 	children: React.ReactNode;
@@ -16,7 +15,11 @@ export function FadeInOnScroll({
 	...props
 }: FadeInOnScrollProps) {
 	const ref = useRef(null);
-	const isInView = useInView(ref, { once: true, margin: "-100px" });
+	const isInView = useInView(ref, {
+		once: true,
+		margin: "-20px",
+		amount: "some",
+	});
 
 	return (
 		<motion.div

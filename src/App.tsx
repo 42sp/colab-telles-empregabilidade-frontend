@@ -4,24 +4,27 @@ import Home from "./pages/home";
 import Import from "./pages/import";
 import ScrapData from "./pages/scrap-data";
 import Dashboard from "./pages/dashboard";
-import { DefaultLayout } from "./components/utils/DefaultLayout";
+import { DefaultLayout } from "./pages/layout/DefaultLayout";
+import { SidebarProvider } from "@/contexts/SidebarContext";
 
 function App() {
 	return (
-		<BrowserRouter>
-			<Routes>
-				<Route path="/" element={<Navigate to="/login" replace />} />
-				<Route path="/login" element={<ScreenLogin />} />
+		<SidebarProvider>
+			<BrowserRouter>
+				<Routes>
+					<Route path="/" element={<Navigate to="/login" replace />} />
+					<Route path="/login" element={<ScreenLogin />} />
 
-				{/* Protected routes with sidebar */}
-				<Route element={<DefaultLayout />}>
-					<Route path="/home" element={<Home />} />
-					<Route path="/import" element={<Import />} />
-					<Route path="/scrap-data" element={<ScrapData />} />
-					<Route path="/dashboard" element={<Dashboard />} />
-				</Route>
-			</Routes>
-		</BrowserRouter>
+					{/* Protected routes with sidebar */}
+					<Route element={<DefaultLayout />}>
+						<Route path="/home" element={<Home />} />
+						<Route path="/import" element={<Import />} />
+						<Route path="/scrap-data" element={<ScrapData />} />
+						<Route path="/dashboard" element={<Dashboard />} />
+					</Route>
+				</Routes>
+			</BrowserRouter>
+		</SidebarProvider>
 	);
 }
 
