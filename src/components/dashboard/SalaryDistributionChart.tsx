@@ -40,7 +40,7 @@ function SalaryDistributionChart({ className }: SalaryDistributionChartProps) {
 				</div>
 			</CardHeader>
 			<CardContent>
-				<div className="h-[300px]">
+				<div className="h-[300px] w-[1123px] 2xl:w-[1385px] m-auto">
 					<LazyLoadWrapper
 						className="h-full flex items-center justify-center"
 						loadingComponent={

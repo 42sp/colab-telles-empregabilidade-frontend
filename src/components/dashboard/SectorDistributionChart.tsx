@@ -42,7 +42,7 @@ const SectorDistributionChart = () => {
 				</div>
 			</CardHeader>
 			<CardContent>
-				<div className="h-[300px]">
+				<div className="h-[300px] m-auto">
 					<LazyLoadWrapper
 						className="h-full flex items-center justify-center"
 						loadingComponent={

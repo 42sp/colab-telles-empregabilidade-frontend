@@ -73,12 +73,12 @@ export function Dashboard() {
 				</div>
 
 				{/* Métricas */}
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 lg:gap-10 mb-10">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 lg:gap-6 mb-10">
 					{[
 						{
 							title: "Sincronia de Dados",
 							value: "98%",
-							description: "Última atualização: 15 min atrás",
+							description: "Última atualização: 15 min",
 							icon: icons.refreshIcon,
 						},
 						{
@@ -108,9 +108,9 @@ export function Dashboard() {
 							icon: icons.buildingIcon,
 						},
 						{
-							title: "Salário Médio",
-							value: "R$ 3.850",
-							description: "desde o último mês",
+							title: "Salário Médio (R$)",
+							value: "3.850",
+							description: "Desde o último mês",
 							trend: 5,
 							icon: icons.dollarIcon,
 						},

@@ -40,14 +40,13 @@ function EmploymentStatusChart() {
 			</CardHeader>
 
 			<CardContent>
-				<div className="h-[300px]">
+				<div className="h-[300px] w-[520px] m-auto">
 					<LazyLoadWrapper
 						className="h-full flex items-center justify-center"
 						loadingComponent={
 							<div className="w-10 h-10 border-4 border-t-4 border-black border-t-white rounded-full animate-spin" />
 						}
 					>
-						{/* Esse gráfico só será montado após um pequeno delay */}
 						<ResponsiveContainer width="100%" height="100%">
 							<BarChart
 								data={data}

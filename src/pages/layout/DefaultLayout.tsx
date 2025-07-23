@@ -9,7 +9,7 @@ export function DefaultLayout() {
 		<div className="flex">
 			{/* Reserva o espaço da sidebar para evitar que o conteúdo "pule" */}
 			<div
-				className={`${isCollapsed ? "w-20" : "w-58"} transition-all duration-300`}
+				className={`${isCollapsed ? "w-20" : "w-45"} transition-all duration-300`}
 			/>
 			{/* Sidebar fixa na tela */}
 			<SideBar />
