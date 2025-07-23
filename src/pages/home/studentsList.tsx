@@ -204,7 +204,10 @@ function	drawBody()
 			const	doc = new jsPDF({
 				orientation: "landscape",
 			});
-			let		y = 10;
+			const	margin = 10;
+			const	pageHeight = doc.internal.pageSize.getHeight();
+			const	lineHeight = margin;
+			let		y = margin;
 			// const	visibleKeys = Object.keys(colums).filter(key => colums[key].isVisible);
 			// const	headers =  visibleKeys.map(key => columsLabels[key] || key);
 
@@ -217,13 +220,14 @@ function	drawBody()
 			doc.setFont("helvetica", "normal");
 			row.forEach((row) => {
 				const	text = Object.values(row).join(" | ");
-				doc.text(text, 10, y);
-				y += 10;
-				if (y > 280)
+
+				if (y + lineHeight > 280)
 				{
 					doc.addPage();
-					y = 10;
+					y = margin;
 				}
+				doc.text(text, 10, y);
+				y += lineHeight;
 			});
 			doc.save(exportName + ".pdf");
 		}
