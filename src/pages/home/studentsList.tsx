@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Funnel, Columns2, Download, ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { Funnel, Columns2, Download, ChevronLeft, ChevronRight, Check, File, FileText, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@radix-ui/react-checkbox";
+import jsPDF from "jspdf"
 
 type	StatusType = {
 	label: string,
@@ -27,6 +28,7 @@ function	drawTitle(title: string)
 }
 function	drawBody()
 {
+	//States
 	const	[activeLabel, setActiveLabel] = useState("Todos");
 	const	[page, setPage] = useState(0);
 	const	[colums, setColums] = useState({
@@ -44,11 +46,15 @@ function	drawBody()
 	});
 	const	[filter, setFilter] = useState(() => {
 		const initialFilter = Object.fromEntries(Object.keys(colums).map(key => [key, ""]));
+
 		return (initialFilter);
 	});
+	const	[activeFilter, setActiveFilter] = useState("");
 
-	const	[activeFilter, setActiveFilter] = useState("name");
+	//Other vaariables
 	let	background: string = "flex flex-col flex-wrap bg-white border border-b border-gray-300 w-full min-h-screen p-4 gap-4";
+
+	//DataBases
 	const dataRows = [
 		{ name: "Ana Silva", email: "ana@email.com", celNumber: "(11) 91234-5678", gender: "Feminino", sector: "RH", orientation: "Heterossexual", race: "Parda", pcd: "Não", linkedinLink: "linkedin.com/in/ana", isWorkin: "Sim", rent: 3000, isStudying: true },
 		{ name: "João Souza", email: "joao@email.com", celNumber: "(21) 99876-5432", gender: "Masculino", sector: "TI", orientation: "Homosexual", race: "Branco", pcd: "Sim", linkedinLink: "linkedin.com/in/joao", isWorkin: "Não", rent: 4000, isStudying: false },
@@ -71,13 +77,14 @@ function	drawBody()
 		{ name: "Patrícia Silva", email: "patricia@email.com", celNumber: "(21) 98444-2233", gender: "Feminino", sector: "RH", orientation: "Bissexual", race: "Branca", pcd: "Não", linkedinLink: "linkedin.com/in/patricia", isWorkin: "Sim", rent: 3700, isStudying: true },
 		{ name: "Bruno Oliveira", email: "bruno@email.com", celNumber: "(16) 98555-6677", gender: "Masculino", sector: "TI", orientation: "Homossexual", race: "Pardo", pcd: "Não", linkedinLink: "linkedin.com/in/bruno", isWorkin: "Sim", rent: 5800, isStudying: false },
 	];
-
 	const	filteredRows = dataRows.filter(row => {
 		//Filtro por campo (Nome, setor, etc...)
 		const	matches = Object.entries(filter).every(([field, value]) => {
 			if (!value)
 				return true;
+
 			const	rowValue = row[field];
+
 			if (rowValue === undefined || rowValue === null)
 				return false;
 			return (String(rowValue).toLowerCase().includes(value.toLowerCase()));
@@ -110,12 +117,10 @@ function	drawBody()
 				return (0);
 
 			const	sum = myRent.reduce((total, now) => total + now, 0);
+
 			return (sum / myRent.length);
 		}
-		/*
-			The real values should be replaced when we have access to API
-			it might be recieved as params
-		*/
+
 		const	status: StatusType[] = [
 			{label: "Total de estudantes", value: filteredRows.length},
 			{label: "Trabalhando", value: filteredRows.filter((row) => row.isWorkin == "Sim").length},
@@ -129,6 +134,7 @@ function	drawBody()
 				variant: null,
 				size: "default",
 			};
+
 			return (
 				<div className="flex">
 					{buttons.map(({label}) => {
@@ -185,23 +191,55 @@ function	drawBody()
 			setFilter(prev => ({...prev, [activeFilter]: value}));
 			setPage(0);
 		}
-
-		// const	filteredRows = dataRows.filter(row =>
-		// 	Object.entries(filter).every(([field, value]) => {
-		// 		if (!value) return true;
-		// 		const	rowValue = row[field];
-		// 		if (rowValue === undefined || rowValue === null) return false;
-		// 		return (String(rowValue).toLowerCase().includes(value.toLowerCase()));
-		// 	})
-		// );
-
 		//Page config
 		const	rowsPerPage = 5;
 		const	startPage = page * rowsPerPage;
 		const	visibleRows = filteredRows.slice(startPage, startPage + rowsPerPage);
 		const	endPage = Math.min((page + 1) * rowsPerPage, filteredRows.length);
-
+		const	exportName = "estudantes";
 		
+		function	downloadPdf(row: typeof filteredRows)
+		{
+			const	doc = new jsPDF({
+				orientation: "landscape",
+			});
+			let		y = 10;
+			// const	visibleKeys = Object.keys(colums).filter(key => colums[key].isVisible);
+			// const	headers =  visibleKeys.map(key => columsLabels[key] || key);
+
+			//Header
+			// doc.setFont("helvetica", "bold");
+			// doc.text(headers.join(" | "), 10, y);
+			// y += 10;
+
+			//Datarow
+			doc.setFont("helvetica", "normal");
+			row.forEach((row) => {
+				const	text = Object.values(row).join(" | ");
+				doc.text(text, 10, y);
+				y += 10;
+				if (y > 280)
+				{
+					doc.addPage();
+					y = 10;
+				}
+			});
+			doc.save(exportName + ".pdf");
+		}
+
+		function	downloadCsv(row: typeof filteredRows)
+		{
+			const header = Object.keys(row[0] || {}).join(",");
+			const body = row.map(row => Object.values(row).join(",")).join("\n");
+			const csvContent = `${header}\n${body}`;
+			
+			const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement("a");
+			link.setAttribute("href", url);
+			link.setAttribute("download", exportName + "");
+			link.click();
+		}
 
 		function	drawButtons()
 		{
@@ -210,7 +248,8 @@ function	drawBody()
 				{label: "Colunas", icon: Columns2},
 				{label: "Exportar", icon: Download},
 			];
-
+			const	buttonHover = "bg-white hover:bg-blue-200"
+			const	popoverBox = "w-80 flex flex-col gap-4 border border-b border-slate-400 overflow-y-auto max-h-70"
 			const	FilterIcon = buttons[0].icon;
 			const	ColumnIcon = buttons[1].icon;
 			const	ExportIcon = buttons[2].icon;
@@ -219,22 +258,24 @@ function	drawBody()
 				<div className="flex w-full">
 					<Popover>
 						<PopoverTrigger asChild>
-							<Button {...buttonProps}>
+							<Button {...buttonProps} className={buttonHover}>
 								<FilterIcon />
 								{buttons[0].label}
 							</Button>
 						</PopoverTrigger>
-						<PopoverContent className="w-80 flex flex-col gap-4 border border-b border-slate-400 overflow-y-auto max-h-70">
+						<PopoverContent className={popoverBox}>
 							{Object.entries(colums).map(([key, col]) => (
-								<div key={key} onClick={(e) => {
+								<Button
+									{...buttonProps}
+									className={buttonHover}
+									key={key}
+									onClick={() => {
 										setActiveFilter(key);
-										updateFilter(key, "");
+										// updateFilter(key);
 									}}
-									className={`flex gap-2 border border-b rounded-md ${activeFilter === key ? "bg-blue-600 text-white" : "bg-white"}`}>
-									<label htmlFor={`filter-${key}`} className="cursor-pointer select-none">
-										{col.label}
-									</label>
-								</div>	
+								>
+									{col.label}
+								</Button>
 							))}
 						</PopoverContent>
 					</Popover>
@@ -250,12 +291,12 @@ function	drawBody()
 						})} */}
 						<Popover>
 							<PopoverTrigger asChild>
-								<Button {...buttonProps}>
+								<Button {...buttonProps} className={buttonHover}>
 									<ColumnIcon />
 									Colunas
 								</Button>
 							</PopoverTrigger>
-							<PopoverContent className="w-80 flex flex-col gap-4 border border-b border-slate-400 overflow-y-auto max-h-70">
+							<PopoverContent className={popoverBox}>
 								{Object.entries(colums).map(([key, col]) => {
 									return (
 										<div className="flex gap-2">
@@ -283,10 +324,26 @@ function	drawBody()
 								}
 							</PopoverContent>
 						</Popover>
-						<Button {...buttonProps}>
-							<ExportIcon/>
-							{buttons[2].label}
-						</Button>
+						<Popover>
+							<PopoverTrigger asChild>
+								<Button {...buttonProps}
+									className={buttonHover}
+									>
+									<ExportIcon/>
+									{buttons[2].label}
+								</Button>
+							</PopoverTrigger>
+							<PopoverContent className={popoverBox}>
+									<Button {...buttonProps} onClick={() => downloadPdf(filteredRows)} className={buttonHover}>
+										<FileText />
+										Exportar como PDF
+									</Button>
+									<Button {...buttonProps} onClick={() => downloadCsv(filteredRows)} className={buttonHover}>
+										<File />
+										Exportar como CSV
+									</Button>
+							</PopoverContent>
+						</Popover>
 					</div>
 				</div>
 			);
@@ -376,29 +433,63 @@ function	drawBody()
 				</div>
 			);
 		}
+
+		function	removeFilter(toRemove: string)
+		{
+			setFilter(prev => ({
+				...prev,
+				[toRemove]: ""
+			}))
+			setPage(0);
+		}
 		return (
-			<div className="flex flex-col w-full gap-4">
+			<div className="flex flex-col gap-4">
 				<div className="flex bg-white w-full gap-4 p-4 border border-b rounded-md">
 					<Input
 						className="w-64"
 						value={inputValue}
 						placeholder="Buscar estudante..."
-						onChange={e => updateFilter(e.target.value)}
+						onChange={e => {
+							setFilter(prev => ({
+								...prev,
+								[activeFilter] : e.target.value
+							}));
+						}}
+						onKeyDown={k => {
+							if (k.key === "Enter")
+							{
+								const	input = k.target as HTMLInputElement;
+								updateFilter(input.value);
+							}
+						}}
 					/>
 					{drawButtons()}
-					{Object.entries(filter).filter(([_, value]) => value.trim() !== "").map(([key, value]) => (
-						<div
-							key={key}
-							className="flex bg-slate-300 "
-						>
-
-						</div>
-					))}
+				</div>
+				<div
+					className="flex items-start gap-2"
+				>
+					{Object.entries(filter)
+							.filter(([_, value]) => value.trim() !== "")
+							.map(([key, value]) => (
+							
+								<span className="flex font-medium bg-slate-200 px-4 py-1 gap-4 border border-gray-200 rounded-md">
+									{colums[key]?.label || key}:{value}
+									<button
+										className="h-5 w-5"
+										onClick={() => removeFilter(key)}
+									>
+										<X />
+									</button>
+								</span>
+							))
+					}
 				</div>
 				{drawResults(filteredRows)}
 			</div>
 		);
 	}
+
+
 	return (
 		<div className={background}>
 			{drawStatus(dataRows)}
