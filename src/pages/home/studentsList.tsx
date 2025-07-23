@@ -226,17 +226,33 @@ function	drawBody()
 			doc.save(exportName + ".pdf");
 		}
 
-		function	downloadCsv(row: typeof filteredRows)
+		function	downloadCsv(rows: typeof filteredRows)
 		{
-			const header = Object.keys(row[0] || {}).join(",");
-			const body = row.map(row => Object.values(row).join(",")).join("\n");
-			const csvContent = `${header}\n${body}`;
-			
-			const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-			const url = URL.createObjectURL(blob);
-			const link = document.createElement("a");
+			const	visibleKey = Object.keys(colums).filter(key => colums[key].isVisible);
+			const	header = visibleKey.map(key => colums[key].label || key).join(", ");
+			const	body = rows.map(row => 
+				visibleKey.map(key => {
+					if (key === "rent")
+					{
+						const	value  = row.rent.toLocaleString("pt-br", {
+							style: "currency",
+							currency: "BRL",
+						});
+						return (`"${value}"`);
+					}
+					const	value = row[key];
+					if (typeof value === "string" && value.includes(","))
+						return (`"${value}"`);
+					return (value);
+				}).join(",")
+			).join("\n");
+
+			const	csvContent = `${header}\n${body}`;
+			const	blob = new Blob([csvContent], {type: "text/csv;charset=utf-8;"});
+			const	url = URL.createObjectURL(blob);
+			const	link = document.createElement("a");
 			link.setAttribute("href", url);
-			link.setAttribute("download", exportName + "");
+			link.setAttribute("download", exportName + ".csv");
 			link.click();
 		}
 
