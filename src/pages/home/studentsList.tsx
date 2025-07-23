@@ -49,7 +49,7 @@ function	drawBody()
 
 		return (initialFilter);
 	});
-	const	[activeFilter, setActiveFilter] = useState("");
+	const	[activeFilter, setActiveFilter] = useState("name");
 
 	//Other vaariables
 	let	background: string = "flex flex-col flex-wrap bg-white border border-b border-gray-300 w-full min-h-screen p-4 gap-4";
@@ -143,7 +143,7 @@ function	drawBody()
 						const	buttonStyle: string = `flex items-center gap-2 justify-start font-geist text-base px-4 py-2 ${textColour}`;
 
 						return (
-							<Button {...buttonProps} className={buttonStyle} onClick={() => {setActiveLabel(label)}}>
+							<Button key={label} {...buttonProps} className={buttonStyle} onClick={() => {setActiveLabel(label)}}>
 								{label}
 							</Button>
 						);
@@ -160,7 +160,7 @@ function	drawBody()
 						const	displayValue = (label === "Salário Médio") ? value.toLocaleString("pt-BR", {style: "currency", currency: "BRL"}) : value;
 
 						return (
-							<div className={background}>
+							<div key={label} className={background}>
 								<h2 className="text-xl text-zinc-500">{label}</h2>
 								<h1 className="w-full text-3xl font-bold whitespace-nowrap">{displayValue}</h1>
 							</div>
@@ -264,19 +264,24 @@ function	drawBody()
 							</Button>
 						</PopoverTrigger>
 						<PopoverContent className={popoverBox}>
-							{Object.entries(colums).map(([key, col]) => (
-								<Button
-									{...buttonProps}
-									className={buttonHover}
-									key={key}
-									onClick={() => {
-										setActiveFilter(key);
-										// updateFilter(key);
-									}}
-								>
-									{col.label}
-								</Button>
-							))}
+							{Object.entries(colums).map(([key, col]) => {
+								const	isActive = key === activeFilter;
+								const	activeClass = isActive ? "bg-blue-200" : "bg-white";
+
+								return (
+									<Button
+										{...buttonProps}
+										className={`${buttonHover} ${activeClass}`}
+										key={key}
+										onClick={() => {
+											setActiveFilter(key);
+											// updateFilter(key);
+										}}
+									>
+										{col.label}
+									</Button>
+								);	
+							})}
 						</PopoverContent>
 					</Popover>
 
@@ -472,7 +477,7 @@ function	drawBody()
 							.filter(([_, value]) => value.trim() !== "")
 							.map(([key, value]) => (
 							
-								<span className="flex font-medium bg-slate-200 px-4 py-1 gap-4 border border-gray-200 rounded-md">
+								<span key={key} className="flex font-medium bg-slate-200 px-4 py-1 gap-4 border border-gray-200 rounded-md">
 									{colums[key]?.label || key}:{value}
 									<button
 										className="h-5 w-5"
@@ -489,7 +494,7 @@ function	drawBody()
 		);
 	}
 
-
+	console.log("Filtro ativo: " + activeFilter);
 	return (
 		<div className={background}>
 			{drawStatus(dataRows)}
