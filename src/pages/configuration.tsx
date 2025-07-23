@@ -1,13 +1,13 @@
 import { SideBar } from "./home/sideBar";
 
-function	ScrapData(props)
+function	Configuration(props)
 {
 	return (
 		<div className="flex">
 			{/* {SideBar()} */}
-			<h1>This is Scrap data page</h1>
+			<div><h1>This is Configuration page</h1></div>
 		</div>
 	);
 }
 
-export default ScrapData;
+export default	Configuration;
