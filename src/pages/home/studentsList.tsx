@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Funnel, Columns2, Download, ChevronLeft, ChevronRight, Check, File, FileText, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@radix-ui/react-checkbox";
-import jsPDF from "jspdf"
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 type	StatusType = {
 	label: string,
@@ -199,36 +200,29 @@ function	drawBody()
 		const	endPage = Math.min((page + 1) * rowsPerPage, filteredRows.length);
 		const	exportName = "estudantes";
 		
-		function	downloadPdf(row: typeof filteredRows)
+		function	downloadPdf(rows: typeof filteredRows)
 		{
-			const	doc = new jsPDF({
-				orientation: "landscape",
+			const	doc = new jsPDF({orientation: "landscape"});
+			const	visibleKey = Object.keys(colums).filter(key => colums[key].isVisible);
+			const	headers = visibleKey.map(key => colums[key].label);
+			const	data = rows.map(row => 
+				visibleKey.map(key => {
+					if (key === "rent")
+						return (row.rent.toLocaleString("pt-br", {
+							style: "currency",
+							currency: "BRL",
+						}));
+					return (row[key]);
+				})
+			);
+
+			autoTable(doc, {
+				head: [headers],
+				body: data,
+				startY: 10,
+				margin: { left: 10, right: 10 },
 			});
-			const	margin = 10;
-			const	pageHeight = doc.internal.pageSize.getHeight();
-			const	lineHeight = margin;
-			let		y = margin;
-			// const	visibleKeys = Object.keys(colums).filter(key => colums[key].isVisible);
-			// const	headers =  visibleKeys.map(key => columsLabels[key] || key);
 
-			//Header
-			// doc.setFont("helvetica", "bold");
-			// doc.text(headers.join(" | "), 10, y);
-			// y += 10;
-
-			//Datarow
-			doc.setFont("helvetica", "normal");
-			row.forEach((row) => {
-				const	text = Object.values(row).join(" | ");
-
-				if (y + lineHeight > 280)
-				{
-					doc.addPage();
-					y = margin;
-				}
-				doc.text(text, 10, y);
-				y += lineHeight;
-			});
 			doc.save(exportName + ".pdf");
 		}
 
