@@ -6,6 +6,7 @@ import ScrapData from "./pages/scrap-data";
 import Dashboard from "./pages/dashboard";
 import { DefaultLayout } from "./layouts/DefaultLayout";
 
+
 function App() {
 	return (
 		<BrowserRouter>
