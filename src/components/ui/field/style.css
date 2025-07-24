@@ -3,7 +3,6 @@
 .field-container {
 	@apply grid
 		w-full
-		max-w-sm
 		items-center
 		gap-3;
 }
