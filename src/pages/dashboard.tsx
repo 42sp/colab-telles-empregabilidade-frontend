@@ -12,7 +12,7 @@ import { SyncStatusTable } from "@/components/dashboard/SyncStatusTable";
 import { dashboardData } from "@/data/dashboard";
 import { lazy, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FadeInOnScroll } from "@/components/utils/FadeInOnScroll"; // certifique-se que o path esteja correto
+import { FadeInOnScroll } from "@/components/utils/FadeInOnScroll";
 
 // Lazy charts
 const EmploymentStatusChart = lazy(

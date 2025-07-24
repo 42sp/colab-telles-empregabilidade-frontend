@@ -22,7 +22,7 @@ export function LazyLoadWrapper({
 			setTimeout(() => {
 				setIsVisible(true);
 				window.dispatchEvent(new Event("resize")); // força recalcular o chart
-			}, 50); // ou 100ms dependendo do efeito visual
+			}, 50);
 			return;
 		}
 

@@ -15,7 +15,6 @@ function App() {
 					<Route path="/" element={<Navigate to="/login" replace />} />
 					<Route path="/login" element={<ScreenLogin />} />
 
-					{/* Protected routes with sidebar */}
 					<Route element={<DefaultLayout />}>
 						<Route path="/home" element={<Home />} />
 						<Route path="/import" element={<Import />} />
