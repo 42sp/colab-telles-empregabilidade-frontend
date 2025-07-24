@@ -319,7 +319,7 @@ function	drawBody()
 							<PopoverContent className={popoverBox}>
 								{Object.entries(colums).map(([key, col]) => {
 									return (
-										<div className="flex gap-2">
+										<div key={key} className="flex gap-2">
 											<Checkbox
 												id={`checkbox-${key}`} 
 												checked={col.isVisible}
