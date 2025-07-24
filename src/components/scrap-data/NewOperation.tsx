@@ -2,20 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/formInput";
 import { Calendar, Clock, Tag } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 export function NewOperation() {
-	const form = useForm({
-		defaultValues: {
-			date: "",
-			time: "",
-			name: "",
-		},
-	});
-
-	const onSubmit = (data: { date: string; time: string; name: string }) => {
-		console.log(data);
-	};
+	const { handleSubmit } = useFormContext();
 
 	return (
 		<Card role="form" aria-labelledby="new-operation-title">
@@ -32,8 +22,7 @@ export function NewOperation() {
 			</CardHeader>
 
 			<CardContent>
-				<form
-					onSubmit={form.handleSubmit(onSubmit)}
+				<div
 					className="flex flex-col gap-8"
 					aria-describedby="new-operation-description"
 				>
@@ -78,7 +67,7 @@ export function NewOperation() {
 							Agendar
 						</Button>
 					</div>
-				</form>
+				</div>
 			</CardContent>
 		</Card>
 	);
