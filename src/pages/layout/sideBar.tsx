@@ -43,27 +43,37 @@ export function SideBar() {
 				isCollapsed ? "w-20" : "w-45"
 			} bg-white text-black py-4 flex flex-col justify-between border-r border-gray-200 min-h-screen transition-all duration-300 ease-in-out max-w-[235px] fixed will-change-[width] z-10`}
 		>
-			<div className="flex flex-col gap-4">
+			<div className="flex flex-col gap-4 relative h-[252px]">
 				<SidebarHeader
 					isCollapsed={isCollapsed}
 					toggleCollapse={toggleSidebar}
 				/>
-				{isCollapsed && (
-					<div className="absolute top-4 right-2">
-						<Button size="icon" variant="ghost" onClick={toggleSidebar}>
+
+				{/* Botão de expandir reservado com height fixa para evitar layout shift */}
+				<div className="absolute top-4 right-2 w-8 h-8">
+					{isCollapsed && (
+						<Button
+							size="icon"
+							variant="ghost"
+							onClick={toggleSidebar}
+							className="w-8 h-8"
+						>
 							<ChevronRight size={16} />
 						</Button>
-					</div>
-				)}
+					)}
+				</div>
+
 				<hr className="border-gray-300 border-t-2" />
+
 				<NavigationButtons
 					isCollapsed={isCollapsed}
 					pathname={location.pathname}
 				/>
+
 				<hr className="border-gray-300 border-t-2" />
 			</div>
 
-			<div className="flex flex-col gap-2 items-start">
+			<div className="flex flex-col gap-2 items-stretch">
 				<SettingsMenu
 					isCollapsed={isCollapsed}
 					isLocked={isLocked}

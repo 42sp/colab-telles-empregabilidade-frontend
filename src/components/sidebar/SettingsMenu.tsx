@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Settings } from "lucide-react";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 export const SettingsMenu = ({
 	isCollapsed,
@@ -19,13 +20,15 @@ export const SettingsMenu = ({
 	settingsOpen: boolean;
 	toggleSettings: () => void;
 }) => {
+	const { animationsEnabled, toggleAnimations } = useSidebar();
+
 	return (
 		<div className="w-full">
 			{/* Settings Options - Now positioned above the settings button */}
 			<div
 				className={`w-full transition-all duration-300 ease-in-out mb-2 ${
 					settingsOpen
-						? "max-h-[120px] opacity-100"
+						? "max-h-[180px] opacity-100"
 						: "max-h-0 opacity-0 overflow-hidden"
 				}`}
 			>
@@ -53,6 +56,18 @@ export const SettingsMenu = ({
 								setDarkMode(val);
 								console.log(`Tema: ${val ? "dark" : "light"}`);
 							}}
+							className="ml-auto"
+						/>
+					</div>
+
+					{/* Switch Animações */}
+					<div className="flex items-center justify-between w-full px-2">
+						<span className={`text-sm ${isCollapsed ? "hidden" : ""}`}>
+							Animações
+						</span>
+						<Switch
+							checked={animationsEnabled}
+							onCheckedChange={toggleAnimations}
 							className="ml-auto"
 						/>
 					</div>

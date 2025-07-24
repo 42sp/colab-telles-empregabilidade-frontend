@@ -40,7 +40,7 @@ function EmploymentStatusChart() {
 			</CardHeader>
 
 			<CardContent>
-				<div className="h-[300px] w-[520px] m-auto">
+				<div className="h-[300px] w-[550px] m-auto">
 					<LazyLoadWrapper
 						className="h-full flex items-center justify-center"
 						loadingComponent={

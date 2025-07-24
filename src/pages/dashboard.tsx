@@ -11,8 +11,8 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { SyncStatusTable } from "@/components/dashboard/SyncStatusTable";
 import { dashboardData } from "@/data/dashboard";
 import { lazy, useEffect } from "react";
-import { motion } from "framer-motion";
 import { FadeInOnScroll } from "@/components/utils/FadeInOnScroll";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 // Lazy charts
 const EmploymentStatusChart = lazy(
@@ -61,6 +61,8 @@ export function Dashboard() {
 		}, 500);
 		return () => clearTimeout(timer);
 	}, []);
+
+	const { animationsEnabled } = useSidebar();
 
 	return (
 		<div className="bg-slate-50 contain-layout">
@@ -115,28 +117,31 @@ export function Dashboard() {
 							icon: icons.dollarIcon,
 						},
 					].map((metric, index) => (
-						<motion.div
+						<FadeInOnScroll
 							key={index}
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.4, delay: index * 0.1 }}
+							delay={index * 0.1}
+							enabled={animationsEnabled}
 						>
 							<MetricCard {...metric} />
-						</motion.div>
+						</FadeInOnScroll>
 					))}
 				</div>
 
 				{/* Charts */}
 				<div className="grid grid-cols-2 gap-3 md:gap-5 lg:gap-10 mb-10">
-					<FadeInOnScroll>
+					<FadeInOnScroll enabled={animationsEnabled}>
 						<EmploymentStatusChart />
 					</FadeInOnScroll>
 
-					<FadeInOnScroll delay={0.1}>
+					<FadeInOnScroll delay={0.1} enabled={animationsEnabled}>
 						<SectorDistributionChart />
 					</FadeInOnScroll>
 
-					<FadeInOnScroll className="lg:col-span-2" delay={0.2}>
+					<FadeInOnScroll
+						className="lg:col-span-2"
+						delay={0.2}
+						enabled={animationsEnabled}
+					>
 						<SalaryDistributionChart />
 					</FadeInOnScroll>
 				</div>
@@ -145,6 +150,7 @@ export function Dashboard() {
 				<FadeInOnScroll
 					className="grid grid-cols-2 gap-3 md:gap-5 lg:gap-10 mb-10"
 					delay={0.3}
+					enabled={animationsEnabled}
 				>
 					<Card className="lg:col-span-2 p-6">
 						<CardHeader className="mb-6">

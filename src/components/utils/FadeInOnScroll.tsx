@@ -6,12 +6,14 @@ interface FadeInOnScrollProps extends MotionProps {
 	children: React.ReactNode;
 	delay?: number;
 	className?: string;
+	enabled?: boolean;
 }
 
 export function FadeInOnScroll({
 	children,
 	delay = 0,
 	className = "",
+	enabled = true,
 	...props
 }: FadeInOnScrollProps) {
 	const ref = useRef(null);
@@ -20,6 +22,14 @@ export function FadeInOnScroll({
 		margin: "-20px",
 		amount: "some",
 	});
+
+	if (!enabled) {
+		return (
+			<div ref={ref} className={className}>
+				{children}
+			</div>
+		);
+	}
 
 	return (
 		<motion.div
