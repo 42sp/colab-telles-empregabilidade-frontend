@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScreenLogin from "./pages/login";
 import Home from "./pages/home";
-import Import from "./pages/import";
+import Import from "./pages/import/index";
 import ScrapData from "./pages/scrap-data";
 import Dashboard from "./pages/dashboard";
 import { DefaultLayout } from "./pages/layout/DefaultLayout";
