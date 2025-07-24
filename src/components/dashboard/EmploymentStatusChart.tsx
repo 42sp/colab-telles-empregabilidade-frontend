@@ -39,7 +39,7 @@ function EmploymentStatusChart() {
 				</div>
 			</CardHeader>
 
-			<CardContent>
+			<CardContent className="p-0">
 				<div className="h-[300px] w-[550px] m-auto">
 					<LazyLoadWrapper
 						className="h-full flex items-center justify-center"
