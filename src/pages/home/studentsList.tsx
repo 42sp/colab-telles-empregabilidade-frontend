@@ -524,9 +524,11 @@ function	drawBody()
 export function	StudentsList()
 {
 	return (
-		<div className="flex flex-col flex-wrap min-h-screen w-full">
-			{drawTitle("Lista de estudantes")}
-			{drawBody()}
+		<div className="contain-layout">
+			<div className="flex flex-col flex-wrap min-h-screen w-full">
+				{drawTitle("Lista de estudantes")}
+				{drawBody()}
+			</div>
 		</div>
 	);
 }
