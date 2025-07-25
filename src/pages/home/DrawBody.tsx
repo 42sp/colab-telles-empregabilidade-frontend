@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Funnel, Columns2, Download, ChevronLeft, ChevronRight, Check, File, FileText, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@radix-ui/react-checkbox";
@@ -39,30 +39,58 @@ export function	DrawBody()
 		"flex flex-col flex-wrap bg-white border border-b border-gray-300 w-full min-h-screen p-4 gap-4";
 
 	
+	//deve virar um estado
+	// const	filteredRows = dataRows.filter(row => {
+	// 	//Filtro por campo (Nome, setor, etc...)
+	// 	const	matches = Object.entries(filter).every(([field, value]) => {
+	// 		if (!value)
+	// 			return true;
 
-	const	filteredRows = dataRows.filter(row => {
-		//Filtro por campo (Nome, setor, etc...)
-		const	matches = Object.entries(filter).every(([field, value]) => {
-			if (!value)
-				return true;
+	// 		const	rowValue = row[field];
 
-			const	rowValue = row[field];
+	// 		if (rowValue === undefined || rowValue === null)
+	// 			return false;
+	// 		return (String(rowValue).toLowerCase().includes(value.toLowerCase()));
+	// 	});
 
-			if (rowValue === undefined || rowValue === null)
-				return false;
-			return (String(rowValue).toLowerCase().includes(value.toLowerCase()));
+	// 	//Filtro por ativo, inativo, todos
+	// 	const matchStatus =
+	// 		activeLabel === "Todos"
+	// 			? true
+	// 			: activeLabel === "Ativos"
+	// 			? row.isStudying === true
+	// 			: row.isStudying === false;
+		
+	// 	return (matches && matchStatus);
+	// });
+
+	const [filteredRows, setFilteredRows] = useState(dataRows);
+
+	useEffect(() => {
+		const newFiltered = dataRows.filter(row => {
+			// Filtro por campo
+			const matches = Object.entries(filter).every(([field, value]) => {
+				if (!value) return true;
+
+				const rowValue = row[field];
+				if (rowValue === undefined || rowValue === null) return false;
+
+				return String(rowValue).toLowerCase().includes(value.toLowerCase());
+			});
+
+			// Filtro por status
+			const matchStatus =
+				activeLabel === "Todos"
+					? true
+					: activeLabel === "Ativos"
+					? row.isStudying === true
+					: row.isStudying === false;
+
+			return matches && matchStatus;
 		});
 
-		//Filtro por ativo, inativo, todos
-		const matchStatus =
-			activeLabel === "Todos"
-				? true
-				: activeLabel === "Ativos"
-				? row.isStudying === true
-				: row.isStudying === false;
-		
-		return (matches && matchStatus);
-	});
+		setFilteredRows(newFiltered);
+	}, [filter, activeLabel]);
 
 	return (
 		<div className={background}>
@@ -70,6 +98,7 @@ export function	DrawBody()
 				activeLabel={activeLabel}
 				setActiveLabel={setActiveLabel}
 				filteredRows={filteredRows}
+				setFilteredRows={setFilteredRows}
 			/>
 			<SearchBar
 				filter={filter}
@@ -80,6 +109,8 @@ export function	DrawBody()
 				setActiveFilter={setActiveFilter}
 				colums={colums}
 				setColums={setColums}
+				setFilteredRows={setFilteredRows}
+				filteredRows={filteredRows}
 			/>
 		</div>
 	);
