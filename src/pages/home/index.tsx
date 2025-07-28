@@ -1,8 +1,6 @@
 import { StudentsList } from "./studentsList";
-import { useSidebar } from "@/contexts/SidebarContext";
 
 function Home() {
-	const { isCollapsed } = useSidebar();
 	const background: string = "flex flex-wrap flex-1 w-full";
 
 	return (

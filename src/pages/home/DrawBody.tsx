@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { dataRows } from "./types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
-import { number } from "zod";
 
 export function DrawBody() {
 	//States
