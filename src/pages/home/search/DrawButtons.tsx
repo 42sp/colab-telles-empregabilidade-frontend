@@ -114,7 +114,6 @@ export function DrawButtons(props) {
 								key={key}
 								onClick={() => {
 									props.setActiveFilter(key);
-									// updateFilter(key);
 								}}
 							>
 								{col.label}
@@ -125,14 +124,6 @@ export function DrawButtons(props) {
 			</Popover>
 
 			<div className="flex gap-4 ml-auto">
-				{/* {buttons.slice(1).map(({label, icon: Icon}) => {
-					return (
-						<Button {...buttonProps}>
-							<Icon />
-							{label}
-						</Button>
-					);
-				})} */}
 				<Popover>
 					<PopoverTrigger asChild>
 						<Button {...props.buttonProps} className={buttonHover}>

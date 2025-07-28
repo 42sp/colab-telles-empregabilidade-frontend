@@ -3,10 +3,13 @@ import { useSidebar } from "@/contexts/SidebarContext";
 
 function Home() {
 	const { isCollapsed } = useSidebar();
+	const background: string = "flex flex-wrap flex-1 w-full";
 
 	return (
-		<div className={`flex contain-layout ${isCollapsed ? "w-20" : "w-25"}`}>
-			<StudentsList />
+		<div className="contain-layout">
+			<div className={background}>
+				<StudentsList />
+			</div>
 		</div>
 	);
 }

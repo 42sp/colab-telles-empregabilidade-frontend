@@ -1,5 +1,6 @@
 export type drawTitleType = {
 	title: string;
+	description: string;
 };
 
 export type Data = {

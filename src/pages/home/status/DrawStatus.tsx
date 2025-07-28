@@ -36,7 +36,7 @@ export function DrawStatus(props) {
 	];
 
 	return (
-		<div className="flex flex-wrap gap-4 w-full">
+		<div className="flex flex-col flex-wrap gap-4 w-full">
 			<DrawStatusButton
 				buttons={buttons}
 				activeLabel={props.activeLabel}

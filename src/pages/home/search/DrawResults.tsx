@@ -53,7 +53,7 @@ export function DrawResults(props) {
 	}
 
 	return (
-		<div className="flex flex-col border border-gray-200 rounded-md bg-white min-w-full w-full h-full overflow-x-auto">
+		<div className="flex flex-col border border-gray-200 rounded-md bg-white min-w-full w-full h-full">
 			<table className="table-auto border-collapse">
 				{/* Header */}
 				<thead className="bg-white border-b border-gray-200 text-zinc-400 font-bold">

@@ -1,4 +1,4 @@
-export function DrawTotals(props) {
+export function DrawTotals(props: any) {
 	const background: string =
 		" flex flex-col flex-1 w-full bg-white rounded-md p-4 gap-4 border border-b border-gray-200 flex-shrink-0";
 
