@@ -26,17 +26,17 @@ export function DrawStatus(props) {
 		{ label: "Total de estudantes", value: props.filteredRows.length },
 		{
 			label: "Trabalhando",
-			value: props.filteredRows.filter((row) => row.isWorkin == "Sim").length,
+			value: props.filteredRows.filter(row => row.isWorkin == "Sim").length,
 		},
 		{
 			label: "Não Trabalhando",
-			value: props.filteredRows.filter((row) => row.isWorkin == "Não").length,
+			value: props.filteredRows.filter(row => row.isWorkin == "Não").length,
 		},
 		{ label: "Salário Médio", value: getAverange(props.filteredRows) },
 	];
 
 	return (
-		<div className="flex flex-col flex-wrap gap-4 w-full">
+		<div className="flex flex-wrap gap-4 w-full">
 			<DrawStatusButton
 				buttons={buttons}
 				activeLabel={props.activeLabel}

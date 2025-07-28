@@ -1,10 +1,11 @@
 import { StudentsList } from "./studentsList";
-import { DrawTitle } from "./DrawTitle";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 function Home() {
+	const { isCollapsed } = useSidebar();
+
 	return (
-		<div className="flex flex-col">
-			<DrawTitle title={"Lista de estudantes"} />
+		<div className={`flex contain-layout ${isCollapsed ? "w-20" : "w-25"}`}>
 			<StudentsList />
 		</div>
 	);

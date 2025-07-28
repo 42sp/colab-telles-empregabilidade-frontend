@@ -1,9 +1,8 @@
 import type { drawTitleType } from "./types";
 
 export function DrawTitle(props: drawTitleType) {
-	const background: string =
-		"flex flex-wrap bg-white border border-b border-gray-300 px-4 py-4.5 p-4";
-	const font: string = "font-bold font-geist  text-black text-2xl";
+	const background: string = "container mx-auto p-6 space-y-8";
+	const font: string = "text-2xl font-bold text-gray-800";
 
 	return (
 		<div className={background}>
