@@ -60,6 +60,15 @@ export type PropsType = {
 	setFilteredRows: React.Dispatch<React.SetStateAction<(typeof dataRows)[]>>;
 };
 
+type ButtonProps = {
+	variant: "outline" | "solid" | "ghost"; // ou os valores possíveis no seu design system
+	size: "default" | "sm" | "lg"; // idem aqui
+};
+
+export type DrawButtonsProps = PropsType & {
+	buttonProps: ButtonProps;
+};
+
 //DataBases - isso eh um template enquanto n temos os dados
 export const dataRows: Data[] = [
 	{

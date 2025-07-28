@@ -2,8 +2,9 @@ import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import { DrawResults } from "./DrawResults";
 import { DrawButtons } from "./DrawButtons";
+import type { PropsType } from "../types";
 
-export function SearchBar(props) {
+export function SearchBar(props: PropsType) {
 	const buttonProps = {
 		variant: "outline",
 		size: "default",

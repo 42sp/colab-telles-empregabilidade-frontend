@@ -15,8 +15,9 @@ import {
 import { Checkbox } from "@radix-ui/react-checkbox";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import type { DrawButtonsProps } from "../types";
 
-export function DrawButtons(props) {
+export function DrawButtons(props: DrawButtonsProps) {
 	const buttons = [
 		{ label: "Filtros", icon: Funnel },
 		{ label: "Colunas", icon: Columns2 },
