@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { dataRows } from "./types";
+import { dataRows, type ColumnVisibility } from "./types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
 
@@ -7,7 +7,7 @@ export function DrawBody() {
 	//States
 	const [activeLabel, setActiveLabel] = useState("Todos");
 	const [page, setPage] = useState(0);
-	const [colums, setColums] = useState({
+	const [colums, setColums] = useState<ColumnVisibility>({
 		name: { label: "Nome Social", isVisible: true },
 		email: { label: "Email", isVisible: true },
 		celNumber: { label: "Celular", isVisible: true },

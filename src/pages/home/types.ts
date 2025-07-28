@@ -27,6 +27,39 @@ export type ButtonType = {
 	label: string;
 };
 
+export type ColumnKey =
+	| "name"
+	| "email"
+	| "celNumber"
+	| "gender"
+	| "sector"
+	| "orientation"
+	| "race"
+	| "pcd"
+	| "linkedinLink"
+	| "isWorkin"
+	| "rent";
+
+export type ColumnVisibility = {
+	[key in ColumnKey]: {
+		label: string;
+		isVisible: boolean;
+	};
+};
+
+export type PropsType = {
+	filter: string;
+	setFilter: React.Dispatch<React.SetStateAction<string>>;
+	page: number;
+	setPage: React.Dispatch<React.SetStateAction<number>>;
+	activeFilter: string;
+	setActiveFilter: React.Dispatch<React.SetStateAction<string>>;
+	colums: ColumnVisibility;
+	setColums: React.Dispatch<React.SetStateAction<ColumnVisibility>>;
+	filteredRows: (typeof dataRows)[];
+	setFilteredRows: React.Dispatch<React.SetStateAction<(typeof dataRows)[]>>;
+};
+
 //DataBases - isso eh um template enquanto n temos os dados
 export const dataRows: Data[] = [
 	{
