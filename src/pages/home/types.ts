@@ -47,13 +47,17 @@ export type ColumnVisibility = {
 	};
 };
 
+export type FilterType = {
+	[k in ColumnKey]: string;
+};
+
 export type PropsType = {
-	filter: string;
-	setFilter: React.Dispatch<React.SetStateAction<string>>;
+	filter: FilterType;
+	setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
 	page: number;
 	setPage: React.Dispatch<React.SetStateAction<number>>;
-	activeFilter: string;
-	setActiveFilter: React.Dispatch<React.SetStateAction<string>>;
+	activeFilter: ColumnKey;
+	setActiveFilter: React.Dispatch<React.SetStateAction<ColumnKey>>;
 	colums: ColumnVisibility;
 	setColums: React.Dispatch<React.SetStateAction<ColumnVisibility>>;
 	filteredRows: (typeof dataRows)[];
