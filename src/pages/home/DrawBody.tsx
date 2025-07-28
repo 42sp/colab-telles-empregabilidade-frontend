@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { dataRows } from "./types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
+import { number } from "zod";
 
 export function DrawBody() {
 	//States
@@ -35,12 +36,12 @@ export function DrawBody() {
 	const [filteredRows, setFilteredRows] = useState(dataRows);
 
 	useEffect(() => {
-		const newFiltered = dataRows.filter(row => {
+		const newFiltered = dataRows.filter((row: (typeof dataRows)[number]) => {
 			// Filtro por campo
 			const matches = Object.entries(filter).every(([field, value]) => {
 				if (!value) return true;
 
-				const rowValue = row[field];
+				const rowValue = row[field as keyof typeof row];
 				if (rowValue === undefined || rowValue === null) return false;
 
 				return String(rowValue).toLowerCase().includes(value.toLowerCase());
