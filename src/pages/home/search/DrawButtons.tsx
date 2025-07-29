@@ -15,7 +15,7 @@ import {
 import { Checkbox } from "@radix-ui/react-checkbox";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { PropsType } from "../types";
+import type { Data, PropsType } from "../types";
 
 export function DrawButtons(props: PropsType) {
 	const buttons = [
@@ -35,12 +35,14 @@ export function DrawButtons(props: PropsType) {
 	const ExportIcon = buttons[2].icon;
 	const exportName = "relatório";
 
-	function downloadPdf(rows: typeof props.filteredRows) {
+	function downloadPdf(rows: Data[]) {
 		const doc = new jsPDF({ orientation: "landscape" });
 		const visibleKey = Object.keys(props.colums).filter(
-			key => props.colums[key].isVisible
+			key => props.colums[key as keyof typeof props.colums].isVisible
 		);
-		const headers = visibleKey.map(key => props.colums[key].label);
+		const headers = visibleKey.map(
+			key => props.colums[key as keyof typeof props.colums].label
+		);
 		const data = rows.map(row =>
 			visibleKey.map(key => {
 				if (key === "rent")
@@ -62,12 +64,12 @@ export function DrawButtons(props: PropsType) {
 		doc.save(exportName + ".pdf");
 	}
 
-	function downloadCsv(rows: typeof filteredRows) {
+	function downloadCsv(rows: Data[]) {
 		const visibleKey = Object.keys(props.colums).filter(
-			key => props.colums[key].isVisible
+			key => props.colums[key as keyof typeof props.colums].isVisible
 		);
 		const header = visibleKey
-			.map(key => props.colums[key].label || key)
+			.map(key => props.colums[key as keyof typeof props.colums].label || key)
 			.join(", ");
 		const body = rows
 			.map(row =>
