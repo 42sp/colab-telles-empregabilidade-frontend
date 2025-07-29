@@ -1,18 +1,15 @@
-import { SideBar } from "./sideBar";
 import { StudentsList } from "./studentsList";
 
-function Home()
-{
+function Home() {
+	const background: string = "flex flex-wrap flex-1 w-full";
+
 	return (
-		<div className="flex">
-			{/* <h1>welcome to the Home Page</h1>
-			<p>This is the home page of our application.</p>
-			<Link to="/login" className="text-blue-500 hover:underline">
-				Go to Login
-			</Link> */}
-			{StudentsList()}
+		<div className="contain-layout">
+			<div className={background}>
+				<StudentsList />
+			</div>
 		</div>
 	);
-};
+}
 
 export default Home;

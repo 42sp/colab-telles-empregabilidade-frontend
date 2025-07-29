@@ -1,4 +1,4 @@
-import { SideBar } from "@/pages/home/sideBar";
+import { SideBar } from "@/pages/layout/sideBar";
 import { Outlet } from "react-router-dom";
 
 export function DefaultLayout() {

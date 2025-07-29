@@ -3,7 +3,7 @@ import {
 	ConfigurationHeader,
 	ConfigurationIntegracaoApi,
 	ConfigurationUploadArquivo,
-} from "@/components/configuration";
+} from "@/components/import";
 
 const Configuration = () => {
 	return (

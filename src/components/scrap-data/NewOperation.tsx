@@ -2,10 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/formInput";
 import { Calendar, Clock, Tag } from "lucide-react";
-import { useFormContext } from "react-hook-form";
 
 export function NewOperation() {
-	const { handleSubmit } = useFormContext();
+	/*{const { handleSubmit } = useFormContext();*/
 
 	return (
 		<Card role="form" aria-labelledby="new-operation-title">
