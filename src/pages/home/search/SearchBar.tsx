@@ -55,7 +55,7 @@ export function SearchBar(props: PropsType) {
 						}
 					}}
 				/>
-				<DrawButtons {...props} buttonProps={buttonProps} />
+				<DrawButtons {...props} />
 			</div>
 			<div className="flex items-start gap-2">
 				{Object.entries(props.filter)

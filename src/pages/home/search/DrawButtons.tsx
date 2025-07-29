@@ -15,14 +15,18 @@ import {
 import { Checkbox } from "@radix-ui/react-checkbox";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { DrawButtonsProps } from "../types";
+import type { PropsType } from "../types";
 
-export function DrawButtons(props: DrawButtonsProps) {
+export function DrawButtons(props: PropsType) {
 	const buttons = [
 		{ label: "Filtros", icon: Funnel },
 		{ label: "Colunas", icon: Columns2 },
 		{ label: "Exportar", icon: Download },
 	];
+	const buttonProps = {
+		variant: "outline",
+		size: "default",
+	};
 	const buttonHover = "bg-white hover:bg-blue-200";
 	const popoverBox =
 		"w-80 flex flex-col gap-4 border border-b border-slate-400 overflow-y-auto max-h-70";
@@ -98,7 +102,7 @@ export function DrawButtons(props: DrawButtonsProps) {
 		<div className="flex w-full">
 			<Popover>
 				<PopoverTrigger asChild>
-					<Button {...props.buttonProps} className={buttonHover}>
+					<Button {...buttonProps} className={buttonHover}>
 						<FilterIcon />
 						{buttons[0].label}
 					</Button>
@@ -110,7 +114,7 @@ export function DrawButtons(props: DrawButtonsProps) {
 
 						return (
 							<Button
-								{...props.buttonProps}
+								{...buttonProps}
 								className={`${buttonHover} ${activeClass}`}
 								key={key}
 								onClick={() => {
@@ -127,7 +131,7 @@ export function DrawButtons(props: DrawButtonsProps) {
 			<div className="flex gap-4 ml-auto">
 				<Popover>
 					<PopoverTrigger asChild>
-						<Button {...props.buttonProps} className={buttonHover}>
+						<Button {...buttonProps} className={buttonHover}>
 							<ColumnIcon />
 							Colunas
 						</Button>
@@ -165,14 +169,14 @@ export function DrawButtons(props: DrawButtonsProps) {
 				</Popover>
 				<Popover>
 					<PopoverTrigger asChild>
-						<Button {...props.buttonProps} className={buttonHover}>
+						<Button {...buttonProps} className={buttonHover}>
 							<ExportIcon />
 							{buttons[2].label}
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className={popoverBox}>
 						<Button
-							{...props.buttonProps}
+							{...buttonProps}
 							onClick={() => downloadPdf(props.filteredRows)}
 							className={buttonHover}
 						>
@@ -180,7 +184,7 @@ export function DrawButtons(props: DrawButtonsProps) {
 							Exportar como PDF
 						</Button>
 						<Button
-							{...props.buttonProps}
+							{...buttonProps}
 							onClick={() => downloadCsv(props.filteredRows)}
 							className={buttonHover}
 						>
