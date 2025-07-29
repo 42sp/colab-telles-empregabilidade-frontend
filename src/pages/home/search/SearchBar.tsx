@@ -5,11 +5,6 @@ import { DrawButtons } from "./DrawButtons";
 import type { PropsType } from "../types";
 
 export function SearchBar(props: PropsType) {
-	const buttonProps = {
-		variant: "outline",
-		size: "default",
-	};
-
 	const inputValue = props.filter[props.activeFilter] || "";
 
 	function updateFilter(value: string) {
@@ -65,7 +60,8 @@ export function SearchBar(props: PropsType) {
 							key={key}
 							className="flex font-medium bg-slate-200 px-4 py-1 gap-4 border border-gray-200 rounded-md"
 						>
-							{props.colums[key]?.label || key}:{value}
+							{props.colums[key as keyof typeof props.colums]?.label || key}:
+							{value}
 							<button className="h-5 w-5" onClick={() => removeFilter(key)}>
 								<X />
 							</button>
@@ -75,7 +71,6 @@ export function SearchBar(props: PropsType) {
 			<DrawResults
 				{...props}
 				visibleRows={visibleRows}
-				buttonProps={buttonProps}
 				startPage={startPage}
 				endPage={endPage}
 			/>
