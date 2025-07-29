@@ -15,7 +15,7 @@ import {
 import { Checkbox } from "@radix-ui/react-checkbox";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { Data, PropsType } from "../types";
+import type { Data, PropsType, ColumnKey } from "../types";
 
 export function DrawButtons(props: PropsType) {
 	const buttons = [
@@ -115,14 +115,14 @@ export function DrawButtons(props: PropsType) {
 					{Object.entries(props.colums).map(([key, col]) => {
 						const isActive = key === props.activeFilter;
 						const activeClass = isActive ? "bg-blue-200" : "bg-white";
-
+						const typedKey = key as ColumnKey;
 						return (
 							<Button
 								{...buttonProps}
 								className={`${buttonHover} ${activeClass}`}
 								key={key}
 								onClick={() => {
-									props.setActiveFilter(key);
+									props.setActiveFilter(typedKey);
 								}}
 							>
 								{col.label}
@@ -142,6 +142,7 @@ export function DrawButtons(props: PropsType) {
 					</PopoverTrigger>
 					<PopoverContent className={popoverBox}>
 						{Object.entries(props.colums).map(([key, col]) => {
+							const typedKey = key as ColumnKey;
 							return (
 								<div key={key} className="flex gap-2">
 									<Checkbox
@@ -150,7 +151,7 @@ export function DrawButtons(props: PropsType) {
 										onCheckedChange={checked =>
 											props.setColums(prev => ({
 												...prev,
-												[key]: { ...prev[key], isVisible: !!checked },
+												[key]: { ...prev[typedKey], isVisible: !!checked },
 											}))
 										}
 									/>
