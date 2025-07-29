@@ -45,12 +45,13 @@ export function DrawButtons(props: PropsType) {
 		);
 		const data = rows.map(row =>
 			visibleKey.map(key => {
+				const typedKey = key as keyof Data;
 				if (key === "rent")
 					return row.rent.toLocaleString("pt-br", {
 						style: "currency",
 						currency: "BRL",
 					});
-				return row[key];
+				return row[typedKey];
 			})
 		);
 
@@ -75,6 +76,7 @@ export function DrawButtons(props: PropsType) {
 			.map(row =>
 				visibleKey
 					.map(key => {
+						const typedKey = key as keyof Data;
 						if (key === "rent") {
 							const value = row.rent.toLocaleString("pt-br", {
 								style: "currency",
@@ -82,7 +84,7 @@ export function DrawButtons(props: PropsType) {
 							});
 							return `"${value}"`;
 						}
-						const value = row[key];
+						const value = row[typedKey];
 						if (typeof value === "string" && value.includes(","))
 							return `"${value}"`;
 						return value;
