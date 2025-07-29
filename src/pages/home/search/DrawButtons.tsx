@@ -26,7 +26,7 @@ export function DrawButtons(props: PropsType) {
 	const buttonProps = {
 		variant: "outline",
 		size: "default",
-	};
+	} as const;
 	const buttonHover = "bg-white hover:bg-blue-200";
 	const popoverBox =
 		"w-80 flex flex-col gap-4 border border-b border-slate-400 overflow-y-auto max-h-70";
