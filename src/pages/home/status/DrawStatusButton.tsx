@@ -1,10 +1,21 @@
 import { Button } from "@/components/ui/button";
+import type { Dispatch, SetStateAction } from "react";
 
-export function DrawStatusButton(props) {
+interface MyButtontype {
+	label: string;
+}
+
+interface DrawStatusButtonType {
+	buttons: MyButtontype[];
+	activeLabel: string;
+	setActiveLabel: Dispatch<SetStateAction<string>>;
+}
+
+export function DrawStatusButton(props: DrawStatusButtonType) {
 	const buttonProps = {
 		variant: null,
 		size: "default",
-	};
+	} as const;
 
 	return (
 		<div className="contain-layout container flex">
