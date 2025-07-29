@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { dataRows, type ColumnVisibility, type FilterType } from "./types";
+import { dataRows, type ColumnKey, type ColumnVisibility, type FilterType } from "./types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
 
@@ -27,7 +27,7 @@ export function DrawBody() {
 
 		return initialFilter;
 	});
-	const [activeFilter, setActiveFilter] = useState("name");
+	const [activeFilter, setActiveFilter] = useState<ColumnKey>("name");
 
 	//Other variables
 	const background: string =
