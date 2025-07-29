@@ -1,9 +1,16 @@
+import type { Dispatch, SetStateAction } from "react";
 import { dataRows } from "../types";
-import type { ButtonType, StatusType } from "../types";
+import type { ButtonType, Data, StatusType } from "../types";
 import { DrawStatusButton } from "./DrawStatusButton";
 import { DrawTotals } from "./DrawTotals";
 
-export function DrawStatus(props) {
+interface DrawStatusProps {
+	activeLabel: string;
+	setActiveLabel: Dispatch<SetStateAction<string>>;
+	filteredRows: Data[];
+}
+
+export function DrawStatus(props: DrawStatusProps) {
 	const buttons: ButtonType[] = [
 		{ label: "Todos" },
 		{ label: "Ativos" },
