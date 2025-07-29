@@ -74,7 +74,6 @@ export function DrawBody() {
 				activeLabel={activeLabel}
 				setActiveLabel={setActiveLabel}
 				filteredRows={filteredRows}
-				setFilteredRows={setFilteredRows}
 			/>
 			<SearchBar
 				filter={filter}
