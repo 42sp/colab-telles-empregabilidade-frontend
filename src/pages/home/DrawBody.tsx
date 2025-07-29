@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { dataRows, type ColumnKey, type ColumnVisibility, type FilterType } from "./types";
+import {
+	dataRows,
+	type ColumnKey,
+	type ColumnVisibility,
+	type Data,
+	type FilterType,
+} from "./types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
 
@@ -22,10 +28,10 @@ export function DrawBody() {
 	});
 	const [filter, setFilter] = useState<FilterType>(() => {
 		const initialFilter = Object.fromEntries(
-			Object.keys(colums).map(key => [key, ""])
+			(Object.keys(colums) as ColumnKey[]).map(key => [key as ColumnKey, ""])
 		) as FilterType;
 
-		return initialFilter;
+		return initialFilter as FilterType;
 	});
 	const [activeFilter, setActiveFilter] = useState<ColumnKey>("name");
 
@@ -37,14 +43,16 @@ export function DrawBody() {
 	useEffect(() => {
 		const newFiltered = dataRows.filter((row: (typeof dataRows)[number]) => {
 			// Filtro por campo
-			const matches = Object.entries(filter).every(([field, value]) => {
-				if (!value) return true;
+			const matches = (Object.entries(filter) as [keyof Data, string][]).every(
+				([field, value]) => {
+					if (!value) return true;
 
-				const rowValue = row[field as keyof typeof row];
-				if (rowValue === undefined || rowValue === null) return false;
+					const rowValue = row[field];
+					if (rowValue === undefined || rowValue === null) return false;
 
-				return String(rowValue).toLowerCase().includes(value.toLowerCase());
-			});
+					return String(rowValue).toLowerCase().includes(value.toLowerCase());
+				}
+			);
 
 			// Filtro por status
 			const matchStatus =
