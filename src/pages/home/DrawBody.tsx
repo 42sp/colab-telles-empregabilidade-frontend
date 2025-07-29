@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { dataRows, type ColumnVisibility } from "./types";
+import { dataRows, type ColumnVisibility, type FilterType } from "./types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
 
@@ -20,10 +20,10 @@ export function DrawBody() {
 		isWorkin: { label: "Trabalhando", isVisible: true },
 		rent: { label: "Salário", isVisible: true },
 	});
-	const [filter, setFilter] = useState(() => {
+	const [filter, setFilter] = useState<FilterType>(() => {
 		const initialFilter = Object.fromEntries(
 			Object.keys(colums).map(key => [key, ""])
-		);
+		) as FilterType;
 
 		return initialFilter;
 	});

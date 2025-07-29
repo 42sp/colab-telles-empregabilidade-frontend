@@ -48,7 +48,7 @@ export type ColumnVisibility = {
 };
 
 export type FilterType = {
-	[k in ColumnKey]: string;
+	[k in keyof ColumnVisibility]: string;
 };
 
 export type PropsType = {
