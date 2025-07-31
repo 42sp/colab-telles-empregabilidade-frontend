@@ -15,14 +15,18 @@ import {
 import { Checkbox } from "@radix-ui/react-checkbox";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { DrawButtonsProps } from "../types";
+import type { Data, PropsType, ColumnKey } from "../types";
 
-export function DrawButtons(props: DrawButtonsProps) {
+export function DrawButtons(props: PropsType) {
 	const buttons = [
 		{ label: "Filtros", icon: Funnel },
 		{ label: "Colunas", icon: Columns2 },
 		{ label: "Exportar", icon: Download },
 	];
+	const buttonProps = {
+		variant: "outline",
+		size: "default",
+	} as const;
 	const buttonHover = "bg-white hover:bg-blue-200";
 	const popoverBox =
 		"w-80 flex flex-col gap-4 border border-b border-slate-400 overflow-y-auto max-h-70";
@@ -31,20 +35,23 @@ export function DrawButtons(props: DrawButtonsProps) {
 	const ExportIcon = buttons[2].icon;
 	const exportName = "relatório";
 
-	function downloadPdf(rows: typeof props.filteredRows) {
+	function downloadPdf(rows: Data[]) {
 		const doc = new jsPDF({ orientation: "landscape" });
 		const visibleKey = Object.keys(props.colums).filter(
-			key => props.colums[key].isVisible
+			key => props.colums[key as keyof typeof props.colums].isVisible
 		);
-		const headers = visibleKey.map(key => props.colums[key].label);
+		const headers = visibleKey.map(
+			key => props.colums[key as keyof typeof props.colums].label
+		);
 		const data = rows.map(row =>
 			visibleKey.map(key => {
+				const typedKey = key as keyof Data;
 				if (key === "rent")
 					return row.rent.toLocaleString("pt-br", {
 						style: "currency",
 						currency: "BRL",
 					});
-				return row[key];
+				return row[typedKey];
 			})
 		);
 
@@ -58,17 +65,18 @@ export function DrawButtons(props: DrawButtonsProps) {
 		doc.save(exportName + ".pdf");
 	}
 
-	function downloadCsv(rows: typeof filteredRows) {
+	function downloadCsv(rows: Data[]) {
 		const visibleKey = Object.keys(props.colums).filter(
-			key => props.colums[key].isVisible
+			key => props.colums[key as keyof typeof props.colums].isVisible
 		);
 		const header = visibleKey
-			.map(key => props.colums[key].label || key)
+			.map(key => props.colums[key as keyof typeof props.colums].label || key)
 			.join(", ");
 		const body = rows
 			.map(row =>
 				visibleKey
 					.map(key => {
+						const typedKey = key as keyof Data;
 						if (key === "rent") {
 							const value = row.rent.toLocaleString("pt-br", {
 								style: "currency",
@@ -76,7 +84,7 @@ export function DrawButtons(props: DrawButtonsProps) {
 							});
 							return `"${value}"`;
 						}
-						const value = row[key];
+						const value = row[typedKey];
 						if (typeof value === "string" && value.includes(","))
 							return `"${value}"`;
 						return value;
@@ -98,7 +106,7 @@ export function DrawButtons(props: DrawButtonsProps) {
 		<div className="flex w-full">
 			<Popover>
 				<PopoverTrigger asChild>
-					<Button {...props.buttonProps} className={buttonHover}>
+					<Button {...buttonProps} className={buttonHover}>
 						<FilterIcon />
 						{buttons[0].label}
 					</Button>
@@ -107,14 +115,14 @@ export function DrawButtons(props: DrawButtonsProps) {
 					{Object.entries(props.colums).map(([key, col]) => {
 						const isActive = key === props.activeFilter;
 						const activeClass = isActive ? "bg-blue-200" : "bg-white";
-
+						const typedKey = key as ColumnKey;
 						return (
 							<Button
-								{...props.buttonProps}
+								{...buttonProps}
 								className={`${buttonHover} ${activeClass}`}
 								key={key}
 								onClick={() => {
-									props.setActiveFilter(key);
+									props.setActiveFilter(typedKey);
 								}}
 							>
 								{col.label}
@@ -127,13 +135,14 @@ export function DrawButtons(props: DrawButtonsProps) {
 			<div className="flex gap-4 ml-auto">
 				<Popover>
 					<PopoverTrigger asChild>
-						<Button {...props.buttonProps} className={buttonHover}>
+						<Button {...buttonProps} className={buttonHover}>
 							<ColumnIcon />
 							Colunas
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className={popoverBox}>
 						{Object.entries(props.colums).map(([key, col]) => {
+							const typedKey = key as ColumnKey;
 							return (
 								<div key={key} className="flex gap-2">
 									<Checkbox
@@ -142,7 +151,7 @@ export function DrawButtons(props: DrawButtonsProps) {
 										onCheckedChange={checked =>
 											props.setColums(prev => ({
 												...prev,
-												[key]: { ...prev[key], isVisible: !!checked },
+												[key]: { ...prev[typedKey], isVisible: !!checked },
 											}))
 										}
 									/>
@@ -165,14 +174,14 @@ export function DrawButtons(props: DrawButtonsProps) {
 				</Popover>
 				<Popover>
 					<PopoverTrigger asChild>
-						<Button {...props.buttonProps} className={buttonHover}>
+						<Button {...buttonProps} className={buttonHover}>
 							<ExportIcon />
 							{buttons[2].label}
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className={popoverBox}>
 						<Button
-							{...props.buttonProps}
+							{...buttonProps}
 							onClick={() => downloadPdf(props.filteredRows)}
 							className={buttonHover}
 						>
@@ -180,7 +189,7 @@ export function DrawButtons(props: DrawButtonsProps) {
 							Exportar como PDF
 						</Button>
 						<Button
-							{...props.buttonProps}
+							{...buttonProps}
 							onClick={() => downloadCsv(props.filteredRows)}
 							className={buttonHover}
 						>

@@ -1,11 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { dataRows } from "../types";
+import { dataRows, type ColumnVisibility, type Data } from "../types";
 
-export function DrawResults(props) {
+interface DrawResultsProps {
+	colums: ColumnVisibility;
+	visibleRows: Data[];
+	page: number;
+	setPage: (page: number) => void;
+	startPage: number;
+	endPage: number;
+	filteredRows: Data[];
+}
+
+export function DrawResults(props: DrawResultsProps) {
 	const visibleColums = Object.entries(props.colums).filter(
 		([_, col]) => col.isVisible
 	);
+	const buttonProps = {
+		variant: "outline",
+		size: "default",
+	} as const;
 
 	function pagination() {
 		const nextPage = props.page + 1;
@@ -15,7 +29,7 @@ export function DrawResults(props) {
 		return (
 			<div className="flex justify-end items-end text-black">
 				<Button
-					{...props.buttonProps}
+					{...buttonProps}
 					onClick={() => {
 						if (prevPage >= 0) props.setPage(prevPage);
 					}}
@@ -31,7 +45,7 @@ export function DrawResults(props) {
 							<Button
 								className={`flex justify-end items-end ${isActive ? " font-bold text-black" : "text-slate-400"}`}
 								key={p}
-								{...props.buttonProps}
+								{...buttonProps}
 								onClick={() => {
 									props.setPage(p);
 								}}
@@ -41,7 +55,7 @@ export function DrawResults(props) {
 						);
 					})}
 				<Button
-					{...props.buttonProps}
+					{...buttonProps}
 					onClick={() => {
 						if (nextPage < dataRows.length / 5) props.setPage(nextPage);
 					}}

@@ -48,7 +48,7 @@ export type ColumnVisibility = {
 };
 
 export type FilterType = {
-	[k in ColumnKey]: string;
+	[k in keyof Data]?: string;
 };
 
 export type PropsType = {
@@ -60,8 +60,8 @@ export type PropsType = {
 	setActiveFilter: React.Dispatch<React.SetStateAction<ColumnKey>>;
 	colums: ColumnVisibility;
 	setColums: React.Dispatch<React.SetStateAction<ColumnVisibility>>;
-	filteredRows: (typeof dataRows)[];
-	setFilteredRows: React.Dispatch<React.SetStateAction<(typeof dataRows)[]>>;
+	filteredRows: Data[];
+	setFilteredRows: React.Dispatch<React.SetStateAction<Data[]>>;
 };
 
 type ButtonProps = {

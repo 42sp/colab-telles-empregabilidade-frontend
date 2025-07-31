@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { dataRows, type ColumnVisibility } from "./types";
+import {
+	dataRows,
+	type ColumnKey,
+	type ColumnVisibility,
+	type Data,
+	type FilterType,
+} from "./types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
 
@@ -20,14 +26,14 @@ export function DrawBody() {
 		isWorkin: { label: "Trabalhando", isVisible: true },
 		rent: { label: "Salário", isVisible: true },
 	});
-	const [filter, setFilter] = useState(() => {
+	const [filter, setFilter] = useState<FilterType>(() => {
 		const initialFilter = Object.fromEntries(
-			Object.keys(colums).map(key => [key, ""])
-		);
+			(Object.keys(colums) as ColumnKey[]).map(key => [key as ColumnKey, ""])
+		) as FilterType;
 
-		return initialFilter;
+		return initialFilter as FilterType;
 	});
-	const [activeFilter, setActiveFilter] = useState("name");
+	const [activeFilter, setActiveFilter] = useState<ColumnKey>("name");
 
 	//Other variables
 	const background: string =
@@ -37,14 +43,16 @@ export function DrawBody() {
 	useEffect(() => {
 		const newFiltered = dataRows.filter((row: (typeof dataRows)[number]) => {
 			// Filtro por campo
-			const matches = Object.entries(filter).every(([field, value]) => {
-				if (!value) return true;
+			const matches = (Object.entries(filter) as [keyof Data, string][]).every(
+				([field, value]) => {
+					if (!value) return true;
 
-				const rowValue = row[field as keyof typeof row];
-				if (rowValue === undefined || rowValue === null) return false;
+					const rowValue = row[field];
+					if (rowValue === undefined || rowValue === null) return false;
 
-				return String(rowValue).toLowerCase().includes(value.toLowerCase());
-			});
+					return String(rowValue).toLowerCase().includes(value.toLowerCase());
+				}
+			);
 
 			// Filtro por status
 			const matchStatus =
@@ -66,7 +74,6 @@ export function DrawBody() {
 				activeLabel={activeLabel}
 				setActiveLabel={setActiveLabel}
 				filteredRows={filteredRows}
-				setFilteredRows={setFilteredRows}
 			/>
 			<SearchBar
 				filter={filter}
