@@ -19,33 +19,33 @@ function App() {
 						<Route
 							path="/home"
 							element={
-								// <ProtecteRoute>
+								<ProtecteRoute>
 									<Home />
-								// </ProtecteRoute>
+								</ProtecteRoute>
 							}
 						/>
 						<Route
 							path="/import"
 							element={
-								// <ProtecteRoute>
+								<ProtecteRoute>
 									<Import />
-								// </ProtecteRoute>
+								</ProtecteRoute>
 							}
 						/>
 						<Route
 							path="/scrap-data"
 							element={
-								// <ProtecteRoute>
+								<ProtecteRoute>
 									<ScrapData />
-								// </ProtecteRoute>
+								</ProtecteRoute>
 							}
 						/>
 						<Route
 							path="/dashboard"
 							element={
-								// <ProtecteRoute>
+								<ProtecteRoute>
 									<Dashboard />
-								// </ProtecteRoute>
+								</ProtecteRoute>
 							}
 						/>
 					</Route>
