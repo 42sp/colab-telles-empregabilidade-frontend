@@ -1,3 +1,4 @@
+import { FadeInOnScroll } from "../utils/FadeInOnScroll";
 import { DrawBody } from "./DrawBody";
 import { DrawTitle } from "./DrawTitle";
 
@@ -8,7 +9,9 @@ export function StudentsList() {
 				title={"Lista de estudantes"}
 				description={"Gerencie e visualize os alunos registrados."}
 			/>
-			<DrawBody />
+			<FadeInOnScroll>
+				<DrawBody />
+			</FadeInOnScroll>
 		</div>
 	);
 }

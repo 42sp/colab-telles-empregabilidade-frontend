@@ -26,14 +26,37 @@ export function DrawBody() {
 		isWorkin: { label: "Trabalhando", isVisible: true },
 		rent: { label: "Salário", isVisible: true },
 	});
+	// const [filter, setFilter] = useState<FilterType>(() => {
+	// 	const initialFilter = Object.fromEntries(
+	// 		(Object.keys(colums) as ColumnKey[]).map(key => [key as ColumnKey, ""])
+	// 	) as FilterType;
+
+	// 	return initialFilter as FilterType;
+	// });
+
+	const [activeFilter, setActiveFilter] = useState<ColumnKey>("name");
+
 	const [filter, setFilter] = useState<FilterType>(() => {
+		const saved = sessionStorage.getItem("userFilter");
+
+		if (saved) {
+			try {
+				return JSON.parse(saved) as FilterType;
+			} catch (error) {
+				console.log(error);
+			}
+		}
+
 		const initialFilter = Object.fromEntries(
 			(Object.keys(colums) as ColumnKey[]).map(key => [key as ColumnKey, ""])
 		) as FilterType;
 
 		return initialFilter as FilterType;
 	});
-	const [activeFilter, setActiveFilter] = useState<ColumnKey>("name");
+
+	useEffect(() => {
+		sessionStorage.setItem("userFilter", JSON.stringify(filter));
+	}, [filter]);
 
 	//Other variables
 	const background: string =
