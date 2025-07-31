@@ -19,9 +19,9 @@ function App() {
 						<Route
 							path="/home"
 							element={
-								<ProtecteRoute>
+								// <ProtecteRoute>
 									<Home />
-								</ProtecteRoute>
+								// </ProtecteRoute>
 							}
 						/>
 						<Route

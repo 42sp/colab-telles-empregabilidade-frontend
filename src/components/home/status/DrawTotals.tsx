@@ -1,4 +1,5 @@
 import type { StatusType } from "../types";
+import { motion } from "framer-motion";
 
 interface DrawTotalsProps {
 	status: StatusType[];
@@ -22,9 +23,15 @@ export function DrawTotals({ status }: DrawTotalsProps) {
 				return (
 					<div key={label} className={background}>
 						<h2 className="text-xl text-zinc-500">{label}</h2>
-						<h1 className="text-3xl font-bold whitespace-nowrap">
+						<motion.h1
+							key={displayValue}
+							initial={{ opacity: 0, scale: 0.8 }}
+							animate={{ scale: 1, opacity: 1 }}
+							transition={{ duration: 0.3 }}
+							className="text-3xl font-bold whitespace-nowrap"
+						>
 							{displayValue}
-						</h1>
+						</motion.h1>
 					</div>
 				);
 			})}
