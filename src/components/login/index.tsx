@@ -6,8 +6,9 @@ import "./style.css";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
+import { useServices } from "@/hooks/useServices";
 
 const LoginHeader = () => {
 	return (
@@ -23,9 +24,21 @@ const LoginBody = () => {
 	const [password, setPassword] = useState("");
 	const [rememberMe, setRememberMe] = useState(false);
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const $service = useServices();
+	const navigate = useNavigate();
+
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log("Login attempt with:", { email, password, rememberMe });
+
+		const response = await $service.postAuthentication({
+			email,
+			password,
+			strategy: "local",
+		});
+
+		if ([200, 201].includes(response.status)) {
+			navigate("/home");
+		}
 	};
 
 	return (

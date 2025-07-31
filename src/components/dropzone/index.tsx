@@ -9,8 +9,23 @@ interface DropzoneProps {
 }
 
 const Dropzone = (props: DropzoneProps) => {
-	const onDrop = useCallback((acceptedFiles: File[]) => {
-		console.log(acceptedFiles);
+	const onDrop = useCallback(async (acceptedFiles: File[]) => {
+		console.log("Accepted files:", acceptedFiles);
+		// const response = await $axios.get("/users");
+		// const file = acceptedFiles[0];
+		// if (file) {
+		// 	const stream = file.stream();
+		// 	const reader = stream.getReader();
+		// 	async function readChunks() {
+		// 		let result = await reader.read();
+		// 		while (!result.done) {
+		// 			const chunk = result.value;
+		// 			// console.log("Chunk received:", chunk);
+		// 			result = await reader.read();
+		// 		}
+		// 	}
+		// 	readChunks();
+		// }
 	}, []);
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
