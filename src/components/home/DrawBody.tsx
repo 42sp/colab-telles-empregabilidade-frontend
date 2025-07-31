@@ -5,7 +5,7 @@ import {
 	type ColumnVisibility,
 	type Data,
 	type FilterType,
-} from "./types";
+} from "../../pages/home/types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
 

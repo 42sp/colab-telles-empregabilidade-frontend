@@ -1,4 +1,4 @@
-import type { StatusType } from "../types";
+import type { StatusType } from "../../../pages/home/types";
 
 interface DrawTotalsProps {
 	status: StatusType[];

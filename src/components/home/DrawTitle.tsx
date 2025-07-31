@@ -1,4 +1,4 @@
-import type { drawTitleType } from "./types";
+import type { drawTitleType } from "../../pages/home/types";
 
 export function DrawTitle(props: drawTitleType) {
 	const background: string = "p-6 space-y-1";

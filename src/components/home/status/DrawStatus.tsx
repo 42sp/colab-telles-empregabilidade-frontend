@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
-import { dataRows } from "../types";
-import type { ButtonType, Data, StatusType } from "../types";
+import { dataRows } from "../../../pages/home/types";
+import type { ButtonType, Data, StatusType } from "../../../pages/home/types";
 import { DrawStatusButton } from "./DrawStatusButton";
 import { DrawTotals } from "./DrawTotals";
 
