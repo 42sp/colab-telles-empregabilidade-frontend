@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Navigate } from "react-router";
-import "./style.css";
 
 const ProtecteRoute = ({ children }: { children: ReactNode }) => {
 	const accessToken = sessionStorage.getItem("accessToken");

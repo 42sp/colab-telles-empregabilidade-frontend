@@ -1,31 +1,28 @@
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import IconsSvg from "@/utils/IconsSvg";
+import type { fileProps } from "@/types/requests/interfaces/fileProps";
+import { v4 as uuidv4 } from "uuid";
 
 interface DropzoneProps {
 	className?: string;
 	textClassName?: string;
 	onClick?: () => void;
+	setFiles: React.Dispatch<React.SetStateAction<fileProps[]>>;
 }
 
 const Dropzone = (props: DropzoneProps) => {
 	const onDrop = useCallback(async (acceptedFiles: File[]) => {
-		console.log("Accepted files:", acceptedFiles);
-		// const response = await $axios.get("/users");
-		// const file = acceptedFiles[0];
-		// if (file) {
-		// 	const stream = file.stream();
-		// 	const reader = stream.getReader();
-		// 	async function readChunks() {
-		// 		let result = await reader.read();
-		// 		while (!result.done) {
-		// 			const chunk = result.value;
-		// 			// console.log("Chunk received:", chunk);
-		// 			result = await reader.read();
-		// 		}
-		// 	}
-		// 	readChunks();
-		// }
+		acceptedFiles.forEach(file => {
+			const fileWithStatus: fileProps = {
+				...file,
+				status: "Pendente",
+				lastModified: file.lastModified,
+				name: file.name,
+				id: uuidv4(),
+			};
+			props.setFiles(prevFiles => [...prevFiles, fileWithStatus]);
+		});
 	}, []);
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
