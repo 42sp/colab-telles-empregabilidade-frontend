@@ -3,7 +3,12 @@ import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/formInput";
 import { Calendar, Clock, Tag } from "lucide-react";
 
-export function NewOperation() {
+type NewOperationProps = {
+	isSubmitting: boolean;
+};
+
+
+export function NewOperation({ isSubmitting }: NewOperationProps) {
 	/*{const { handleSubmit } = useFormContext();*/
 
 	return (
@@ -60,10 +65,11 @@ export function NewOperation() {
 					<div className="flex justify-end">
 						<Button
 							type="submit"
+							disabled={isSubmitting}
 							className="h-[42px] min-w-[130px]"
 							aria-label="Agendar nova operação"
 						>
-							Agendar
+							{isSubmitting ? 'Enviando...' : 'Agendar'}
 						</Button>
 					</div>
 				</div>

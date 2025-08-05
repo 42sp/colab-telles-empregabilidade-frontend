@@ -1,22 +1,30 @@
-import { SideBar } from "@/pages/layout/sideBar";
+// src/pages/layout/DefaultLayout.tsx
+import { SideBar } from "./sideBar";
+import { SideBarFloating } from "./SideBarFloating";
 import { Outlet } from "react-router-dom";
 import { useSidebar } from "@/contexts/SidebarContext";
 
 export function DefaultLayout() {
-	const { isCollapsed } = useSidebar();
+  const { isCollapsed } = useSidebar();
 
-	return (
-		<div className="flex">
-			{/* Reserva o espaço da sidebar para evitar que o conteúdo "pule" */}
-			<div
-				className={`${isCollapsed ? "w-20" : "w-45"} transition-all duration-300`}
-			/>
-			{/* Sidebar fixa na tela */}
-			<SideBar />
-			{/* Conteúdo principal, ocupa o restante */}
-			<main className="flex-1">
-				<Outlet />
-			</main>
-		</div>
-	);
+  // valores em px que batem com suas classes:
+  const collapsedWidth = 80;   // w-20 -> 5rem -> 80px
+  const expandedWidth = 235;   // max-w-[235px]
+
+  return (
+    <div className="min-h-screen relative">
+      <SideBar /> {/* mantém a versão no fluxo se precisar */}
+      <SideBarFloating />
+
+      {/* main agora tem margin-left dinâmica para "respeitar" o fixed */}
+      <main
+        className="transition-all duration-300"
+        style={{
+          marginLeft: `${isCollapsed ? collapsedWidth : expandedWidth}px`,
+        }}
+      >
+        <Outlet />
+      </main>
+    </div>
+  );
 }

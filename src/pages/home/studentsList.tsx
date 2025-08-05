@@ -525,9 +525,11 @@ export function	StudentsList()
 {
 	return (
 		<div className="contain-layout">
-			<div className="flex flex-col flex-wrap min-h-screen w-full">
-				{drawTitle("Lista de estudantes")}
-				{drawBody()}
+			<div className="container mx-auto p-6 space-y-8">
+				<div className="flex flex-col flex-wrap min-h-screen w-full">
+					{drawTitle("Lista de estudantes")}
+					{drawBody()}
+				</div>
 			</div>
 		</div>
 	);
