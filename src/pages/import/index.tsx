@@ -4,14 +4,21 @@ import {
 	ConfigurationIntegracaoApi,
 	ConfigurationUploadArquivo,
 } from "@/components/import";
+import { FadeInOnScroll } from "@/components/utils/FadeInOnScroll";
 
 const Configuration = () => {
 	return (
 		<div>
 			<ConfigurationHeader />
-			<ConfigurationUploadArquivo />
-			<ConfigurationIntegracaoApi />
-			<ConfigurationFooter />
+			<FadeInOnScroll>
+				<ConfigurationUploadArquivo />
+			</FadeInOnScroll>
+			<FadeInOnScroll>
+				<ConfigurationIntegracaoApi />
+			</FadeInOnScroll>
+			<FadeInOnScroll>
+				<ConfigurationFooter />
+			</FadeInOnScroll>
 		</div>
 	);
 };

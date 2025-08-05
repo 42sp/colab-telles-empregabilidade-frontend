@@ -14,6 +14,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
 import { SelectGroup, SelectValue } from "@radix-ui/react-select";
 import { Label } from "../ui/label";
 import { Dropzone } from "../dropzone";
+import { useState } from "react";
+import type { fileProps } from "@/types/requests/interfaces/fileProps";
+import { Trash2 } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 
 const ConfigurationHeader = () => {
 	return (
@@ -27,6 +31,8 @@ const ConfigurationHeader = () => {
 };
 
 const ConfigurationUploadArquivo = () => {
+	const [files, setFiles] = useState<fileProps[]>([]);
+
 	return (
 		<div className="container-upload-arquivo">
 			<div className="flex-1">
@@ -39,14 +45,36 @@ const ConfigurationUploadArquivo = () => {
 				<Dropzone
 					className="drop-zone"
 					textClassName="text-center text-gray-500"
+					setFiles={setFiles}
 				/>
 				<div className="container-selecionar-arquivo">
 					<Button
 						className="configuration-btns"
-						onClick={() => console.log("Selecionar")}
+						onClick={() => {
+							document.getElementById("file-input")?.click();
+						}}
 					>
 						Selecionar arquivo
 					</Button>
+					<input
+						id="file-input"
+						type="file"
+						accept=".csv,.xls,.xlsx"
+						style={{ display: "none" }}
+						onChange={e => {
+							const selectedFiles = e.target.files;
+							if (selectedFiles && selectedFiles.length > 0) {
+								const fileArray = Array.from(selectedFiles).map(file => {
+									const f = file as fileProps;
+									f.status = "Pendente";
+									f.id = uuidv4();
+									return f;
+								});
+								setFiles(prev => [...prev, ...fileArray]);
+							}
+						}}
+						multiple
+					/>
 				</div>
 			</div>
 			<div className="flex-1">
@@ -60,28 +88,43 @@ const ConfigurationUploadArquivo = () => {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						<TableRow>
-							<TableCell>
-								<span className="table-cell-base">estudantes_2023.csv</span>
-							</TableCell>
-							<TableCell>
-								<span className="table-cell-base">10/05/2023 13:40</span>
-							</TableCell>
-							<TableCell>
-								<span className="table-cell-status font-Geist">Concluído</span>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell>
-								<span className="table-cell-base">teste.csv</span>
-							</TableCell>
-							<TableCell>
-								<span className="table-cell-base">10/05/2020 06:40</span>
-							</TableCell>
-							<TableCell>
-								<span className="table-cell-status font-Geist">Concluído</span>
-							</TableCell>
-						</TableRow>
+						{files.map(m => (
+							<TableRow key={m.id}>
+								<TableCell>
+									<span className="table-cell-base">{m.name}</span>
+								</TableCell>
+								<TableCell>
+									<span className="table-cell-base">
+										{new Date(m.lastModified).toLocaleString("pt-BR", {
+											day: "2-digit",
+											month: "2-digit",
+											year: "numeric",
+											hour: "2-digit",
+											minute: "2-digit",
+											hour12: false,
+										})}
+									</span>
+								</TableCell>
+								<TableCell>
+									<span
+										className={`${m.status == "success" ? "table-cell-status-success" : "table-cell-status-pending"} font-Geist`}
+									>
+										{m.status}
+									</span>
+								</TableCell>
+								<TableCell>
+									<Button
+										onClick={() => {
+											setFiles(files.filter(file => file.id !== m.id));
+										}}
+										variant="destructive"
+										className="p-2 bg-red-700 hover:bg-red-800 text-white"
+									>
+										<Trash2 className="w-5 h-5" />
+									</Button>
+								</TableCell>
+							</TableRow>
+						))}
 					</TableBody>
 				</Table>
 			</div>
