@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Field } from "../ui/field";
 import { Logo } from "../ui/logo";
 import IconsSvg from "@/utils/IconsSvg";
@@ -9,6 +9,7 @@ import { Label } from "../ui/label";
 import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
 import { useServices } from "@/hooks/useServices";
+import { ToastContainer, toast } from "react-toastify";
 
 const LoginHeader = () => {
 	return (
@@ -27,22 +28,57 @@ const LoginBody = () => {
 	const $service = useServices();
 	const navigate = useNavigate();
 
+	useEffect(() => {
+		sessionStorage.removeItem("accessToken");
+		const login = localStorage.getItem("login");
+		if (login) {
+			const { email, password, rememberMe } = JSON.parse(login);
+
+			setEmail(email);
+			setPassword(password);
+			setRememberMe(rememberMe);
+		}
+	}, []);
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		const response = await $service.postAuthentication({
-			email,
-			password,
-			strategy: "local",
-		});
+		const promiseFn = async () => {
+			const res = await $service.postAuthentication({
+				email,
+				password,
+				strategy: "local",
+			});
 
-		if ([200, 201].includes(response.status)) {
-			navigate("/home");
+			return res;
+		};
+
+		try {
+			const response = await toast.promise(promiseFn(), {
+				pending: "Fazendo login...",
+				success: "Login realizado com sucesso 👌",
+				error: "Login ou senha incorretos 🤯",
+			});
+
+			if ([200, 201].includes(response.status)) {
+				if (rememberMe) {
+					localStorage.setItem(
+						"login",
+						JSON.stringify({ email, password, rememberMe })
+					);
+				} else {
+					localStorage.removeItem("login");
+				}
+				navigate("/home");
+			}
+		} catch (err) {
+			console.error("Erro ao fazer login", err);
 		}
 	};
 
 	return (
 		<div className="max-sm:flex-3 sm:flex-2">
+			<ToastContainer position="top-center" hideProgressBar={true} />
 			<div className="login-body-Container">
 				<h2 className="login-body-Title font-geist">Sign in to your account</h2>
 
@@ -54,6 +90,7 @@ const LoginBody = () => {
 						placeholder="name@example.com"
 						iconPrepend={IconsSvg.email}
 						onChange={e => setEmail(e.target.value)}
+						value={email}
 						required
 					/>
 
@@ -65,6 +102,7 @@ const LoginBody = () => {
 						iconPrepend={IconsSvg.password}
 						className="mt-[22px]"
 						onChange={e => setPassword(e.target.value)}
+						value={password}
 						required
 					/>
 
