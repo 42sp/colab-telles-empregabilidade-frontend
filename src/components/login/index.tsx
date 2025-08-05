@@ -43,22 +43,19 @@ const LoginBody = () => {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		const promiseFn = async () => {
-			const res = await $service.postAuthentication({
-				email,
-				password,
-				strategy: "local",
-			});
-
-			return res;
-		};
-
 		try {
-			const response = await toast.promise(promiseFn(), {
-				pending: "Fazendo login...",
-				success: "Login realizado com sucesso 👌",
-				error: "Login ou senha incorretos 🤯",
-			});
+			const response = await toast.promise(
+				$service.postAuthentication({
+					email,
+					password,
+					strategy: "local",
+				}),
+				{
+					pending: "Fazendo login...",
+					success: "Login realizado com sucesso 👌",
+					error: "Login ou senha incorretos 🤯",
+				}
+			);
 
 			if ([200, 201].includes(response.status)) {
 				if (rememberMe) {
