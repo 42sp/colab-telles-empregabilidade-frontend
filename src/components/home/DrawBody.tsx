@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {
-	dataRows,
+	useStudentsRows,
 	type ColumnKey,
 	type Data,
 	type FilterType,
@@ -36,6 +36,7 @@ export function DrawBody() {
 
 	// 	return initialFilter as FilterType;
 	// });
+	const { dataRows, loadMore } = useStudentsRows();
 	const [colums, setColums] = useState<ColumnsMap>({});
 
 	useEffect(() => {
@@ -48,24 +49,27 @@ export function DrawBody() {
 	}, []);
 	const [activeFilter, setActiveFilter] = useState<ColumnKey>("name");
 
-	const [filter, setFilter] = useState<FilterType>(() => {
+	const [filter, setFilter] = useState<FilterType>({});
+
+	useEffect(() => {
 		const saved = sessionStorage.getItem("userFilter");
 
 		if (saved) {
 			try {
-				return JSON.parse(saved) as FilterType;
+				const parsed = JSON.parse(saved) as FilterType;
+				setFilter(parsed);
+				return;
 			} catch (error) {
 				console.log(error);
 			}
 		}
 
 		const initialFilter = Object.fromEntries(
-			(Object.keys(colums) as ColumnKey[]).map(key => [key as ColumnKey, ""])
+			(Object.keys(colums) as ColumnKey[]).map(key => [key, ""])
 		) as FilterType;
 
-		return initialFilter as FilterType;
-	});
-
+		setFilter(initialFilter);
+	}, [colums]);
 	useEffect(() => {
 		sessionStorage.setItem("userFilter", JSON.stringify(filter));
 	}, [filter]);
@@ -103,7 +107,6 @@ export function DrawBody() {
 		setFilteredRows(newFiltered);
 	}, [filter, activeLabel]);
 
-	console.log(colums);
 	return (
 		<div className={background}>
 			<DrawStatus
