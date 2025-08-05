@@ -6,19 +6,20 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
 
 type Props = {
-	id: string;
+	id?: number;
+	uuid: string;
 	name: string;
 	onDeleted: () => void;
 };
 
-export function DeleteButton({ id, name, onDeleted }: Props) {
+export function DeleteButton({ id, uuid, name, onDeleted }: Props) {
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
 
 	async function handleDelete() {
 		setLoading(true);
 		try {
-			await scrapService.remove(id);
+			await scrapService.remove(uuid);
 			toast.success(`Operação "${name}" excluída com sucesso.`);
 			onDeleted();
 		} catch (err) {

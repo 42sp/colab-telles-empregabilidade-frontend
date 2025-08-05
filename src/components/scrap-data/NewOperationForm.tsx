@@ -6,6 +6,7 @@ import { NewOperation } from "./NewOperation";
 import { scrapService } from '@/services/api';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
+import type { Operation } from '@/types/operations';
 
 const newOperationSchema = z.object({
 	date: z.string().min(1, "Data obrigatória"),
@@ -13,9 +14,13 @@ const newOperationSchema = z.object({
 	name: z.string().min(1, "Nome da operação obrigatório"),
 });
 
+type NewOperationFormProps = {
+  onOperationCreated: (op: Operation) => void;
+};
+
 type NewOperationData = z.infer<typeof newOperationSchema>;
 
-export function NewOperationForm() {
+export function NewOperationForm( { onOperationCreated }: NewOperationFormProps) {
 	const form = useForm<NewOperationData>({
 		
 		resolver: zodResolver(newOperationSchema),
@@ -28,22 +33,23 @@ export function NewOperationForm() {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	async function onSubmit(data: NewOperationData) {
-		try {
 		setIsSubmitting(true);
+		try {
+			const payload = {
+				name: data.name,
+				user_tag: 'admin',
+				scheduled_date: data.date,
+				scheduled_time: data.time,
+				type: 'LinkedIn'
+			};
 
-		const payload = {
-			name: data.name,
-			user_tag: 'admin',
-			scheduled_date: data.date,
-			scheduled_time: data.time,
-			type: 'LinkedIn'
-		};
+			const response = await scrapService.create(payload);
+			toast.success('Operação agendada com sucesso!');
 
-		const response = await scrapService.create(payload);
-		toast.success('Operação agendada com sucesso!');
+			onOperationCreated(response);
 
-		console.log('Criado:', response);
-		form.reset();
+			console.log('Criado:', response);
+			form.reset();
 		} catch (err: any) {
 			console.error('Erro ao criar operação:', err);
 			toast.error('Falha ao agendar operação:');
