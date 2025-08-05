@@ -1,29 +1,16 @@
 // src/pages/layout/DefaultLayout.tsx
-import { SideBar } from "./sideBar";
-import { SideBarFloating } from "./SideBarFloating";
+import { SideBar } from "@/pages/layout/sideBar";
+import { SideBarFloating } from "@/pages/layout/SideBarFloating";
 import { Outlet } from "react-router-dom";
 
 export function DefaultLayout() {
-  const { isCollapsed } = useSidebar();
-
-  // valores em px que batem com suas classes:
-  const collapsedWidth = 80;   // w-20 -> 5rem -> 80px
-  const expandedWidth = 235;   // max-w-[235px]
-
-  return (
-    <div className="min-h-screen relative">
-      <SideBar /> {/* mantém a versão no fluxo se precisar */}
-      <SideBarFloating />
-
-      {/* main agora tem margin-left dinâmica para "respeitar" o fixed */}
-      <main
-        className="transition-all duration-300"
-        style={{
-          marginLeft: `${isCollapsed ? collapsedWidth : expandedWidth}px`,
-        }}
-      >
-        <Outlet />
-      </main>
-    </div>
-  );
+	return (
+		<div className="flex min-h-screen relative">
+			<SideBar />
+			<main className="flex-1 relative">
+				<SideBarFloating />
+				<Outlet />
+			</main>
+		</div>
+	);
 }
