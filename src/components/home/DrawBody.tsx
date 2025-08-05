@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
 	dataRows,
 	type ColumnKey,
-	type ColumnVisibility,
 	type Data,
 	type FilterType,
 } from "../../pages/home/types";
@@ -73,7 +72,7 @@ export function DrawBody() {
 
 	//Other variables
 	const background: string =
-		"flex flex-col flex-wrap bg-white w-full min-h-screen min-w-full p-4 gap-4";
+		"flex flex-col bg-white w-full min-h-screen min-w-full p-4 gap-4";
 	const [filteredRows, setFilteredRows] = useState(dataRows);
 
 	useEffect(() => {

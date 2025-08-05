@@ -69,41 +69,43 @@ export function DrawResults(props: DrawResultsProps) {
 	}
 
 	return (
-		<div className="flex flex-col border border-gray-200 rounded-md bg-white min-w-full w-full h-full">
-			<table className="table-auto border-collapse">
-				{/* Header */}
-				<thead className="bg-white border-b border-gray-200 text-zinc-400 font-bold">
-					<tr>
-						{visibleColums.map(([key, col]) => (
-							<th key={key} className="text-left px-4 py-2">
-								{col.label}
-							</th>
-						))}
-					</tr>
-				</thead>
-
-				{/* Body */}
-				<tbody className="text-black font-medium">
-					{props.visibleRows.map((row, i) => (
-						<tr key={i} className="border-b border-gray-200">
-							{visibleColums.map(([key]) => (
-								<td
-									key={key}
-									className="px-4 py-2 truncate max-w-[200px]"
-									title={String(row[key as keyof typeof row])}
-								>
-									{key === "rent"
-										? new Intl.NumberFormat("pt-BR", {
-												style: "currency",
-												currency: "BRL",
-											}).format(row[key as keyof typeof row] as number)
-										: String(row[key as keyof typeof row])}
-								</td>
+		<div className="flex flex-col border border-gray-200 rounded-md bg-white min-w-full h-full">
+			<div className="w-full overflow-x-auto">
+				<table className="min-w-[1200px] table-auto border-collapse">
+					{/* Header */}
+					<thead className="bg-white border-b border-gray-200 text-zinc-400 font-bold">
+						<tr>
+							{visibleColums.map(([key, col]) => (
+								<th key={key} className="text-left px-4 py-2">
+									{col.label}
+								</th>
 							))}
 						</tr>
-					))}
-				</tbody>
-			</table>
+					</thead>
+
+					{/* Body */}
+					<tbody className="text-black font-medium">
+						{props.visibleRows.map((row, i) => (
+							<tr key={i} className="border-b border-gray-200">
+								{visibleColums.map(([key]) => (
+									<td
+										key={key}
+										className="px-4 py-2 truncate max-w-[200px]"
+										title={String(row[key as keyof typeof row])}
+									>
+										{key === "rent"
+											? new Intl.NumberFormat("pt-BR", {
+													style: "currency",
+													currency: "BRL",
+												}).format(row[key as keyof typeof row] as number)
+											: String(row[key as keyof typeof row])}
+									</td>
+								))}
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
 			{/*	botao para atualizar o estado das paginas*/}
 			<div className="flex border-b border-gray-200">
 				<p className="p-4 text-slate-400">
