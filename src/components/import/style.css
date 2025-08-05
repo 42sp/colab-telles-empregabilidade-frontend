@@ -157,7 +157,7 @@
 		leading-[20px];
 }
 
-.table-cell-status {
+.table-cell-status-success {
 	@apply bg-[#DCFCE7]
 		rounded-[4px]
 
@@ -185,6 +185,45 @@
 		/* 2xl ( width >= 1536px ) */
 
 
+
+		/* text-sm */
+
+		/* text-base */
+
+		/* text-lg */
+
+		/* text-xl */
+
+		/* text-2xl */
+
+		/* */;
+}
+
+.table-cell-status-pending {
+	@apply bg-[#FFC107]
+		rounded-[4px]
+
+		px-[8px]
+		py-[2px]
+
+		text-[#856404]
+		text-sm
+		font-normal
+		leading-[16px]
+		/* max-sm ( width < 640px ) */
+		/* sm ( width >= 640px ) */
+
+		/* max-md ( width < 768px ) */
+		/* md ( width >= 768px ) */
+
+		/* max-lg ( width < 1024px ) */
+		/* lg ( width >= 1024px ) */
+
+		/* max-xl ( width < 1280px ) */
+		/* xl ( width >= 1280px ) */
+
+		/* max-2xl ( width < 1536px ) */
+		/* 2xl ( width >= 1536px ) */
 
 		/* text-sm */
 

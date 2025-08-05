@@ -1,16 +1,28 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import IconsSvg from "@/utils/IconsSvg";
+import type { fileProps } from "@/types/requests/interfaces/fileProps";
+import { v4 as uuidv4 } from "uuid";
 
 interface DropzoneProps {
 	className?: string;
 	textClassName?: string;
 	onClick?: () => void;
+	setFiles: React.Dispatch<React.SetStateAction<fileProps[]>>;
 }
 
 const Dropzone = (props: DropzoneProps) => {
-	const onDrop = useCallback((acceptedFiles: File[]) => {
-		console.log(acceptedFiles);
+	const onDrop = useCallback(async (acceptedFiles: File[]) => {
+		acceptedFiles.forEach(file => {
+			const fileWithStatus: fileProps = {
+				...file,
+				status: "Pendente",
+				lastModified: file.lastModified,
+				name: file.name,
+				id: uuidv4(),
+			};
+			props.setFiles(prevFiles => [...prevFiles, fileWithStatus]);
+		});
 	}, []);
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({

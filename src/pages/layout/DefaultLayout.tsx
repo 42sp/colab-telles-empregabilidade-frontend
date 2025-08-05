@@ -2,7 +2,6 @@
 import { SideBar } from "./sideBar";
 import { SideBarFloating } from "./SideBarFloating";
 import { Outlet } from "react-router-dom";
-import { useSidebar } from "@/contexts/SidebarContext";
 
 export function DefaultLayout() {
   const { isCollapsed } = useSidebar();
