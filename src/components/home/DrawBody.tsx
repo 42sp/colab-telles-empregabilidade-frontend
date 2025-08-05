@@ -8,24 +8,28 @@ import {
 } from "../../pages/home/types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
+import { client } from "@/lib/feathers";
+import { type ColumnsMap } from "../../pages/home/types";
+import { ColumnsPath } from "../../pages/home/types";
 
 export function DrawBody() {
 	//States
 	const [activeLabel, setActiveLabel] = useState("Todos");
 	const [page, setPage] = useState(0);
-	const [colums, setColums] = useState<ColumnVisibility>({
-		name: { label: "Nome Social", isVisible: true },
-		email: { label: "Email", isVisible: true },
-		celNumber: { label: "Celular", isVisible: true },
-		gender: { label: "Gênero", isVisible: true },
-		sector: { label: "Setor", isVisible: true },
-		orientation: { label: "Orientação", isVisible: true },
-		race: { label: "Cor/Raça", isVisible: true },
-		pcd: { label: "PCD", isVisible: true },
-		linkedinLink: { label: "Linkedin", isVisible: true },
-		isWorkin: { label: "Trabalhando", isVisible: true },
-		rent: { label: "Salário", isVisible: true },
-	});
+	// const [colums, setColums] = useState<ColumnVisibility>({
+	// 	name: { label: "Nome Social", isVisible: true },
+	// 	email: { label: "Email", isVisible: true },
+	// 	celNumber: { label: "Celular", isVisible: true },
+	// 	gender: { label: "Gênero", isVisible: true },
+	// 	sector: { label: "Setor", isVisible: true },
+	// 	orientation: { label: "Orientação", isVisible: true },
+	// 	race: { label: "Cor/Raça", isVisible: true },
+	// 	pcd: { label: "PCD", isVisible: true },
+	// 	linkedinLink: { label: "Linkedin", isVisible: true },
+	// 	isWorkin: { label: "Trabalhando", isVisible: true },
+	// 	rent: { label: "Salário", isVisible: true },
+	// });
+
 	// const [filter, setFilter] = useState<FilterType>(() => {
 	// 	const initialFilter = Object.fromEntries(
 	// 		(Object.keys(colums) as ColumnKey[]).map(key => [key as ColumnKey, ""])
@@ -33,7 +37,16 @@ export function DrawBody() {
 
 	// 	return initialFilter as FilterType;
 	// });
+	const [colums, setColums] = useState<ColumnsMap>({});
 
+	useEffect(() => {
+		client
+			.service(ColumnsPath)
+			.find()
+			.then(data => {
+				setColums(data as ColumnsMap);
+			});
+	}, []);
 	const [activeFilter, setActiveFilter] = useState<ColumnKey>("name");
 
 	const [filter, setFilter] = useState<FilterType>(() => {
@@ -91,6 +104,7 @@ export function DrawBody() {
 		setFilteredRows(newFiltered);
 	}, [filter, activeLabel]);
 
+	console.log(colums);
 	return (
 		<div className={background}>
 			<DrawStatus

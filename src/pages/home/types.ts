@@ -51,6 +51,15 @@ export type FilterType = {
 	[k in keyof Data]?: string;
 };
 
+export const ColumnsPath = "columns" as const;
+
+export type ColumnsMap = {
+	[key: string]: {
+		label: string;
+		isVisible: boolean;
+	};
+};
+
 export type PropsType = {
 	filter: FilterType;
 	setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
@@ -58,8 +67,8 @@ export type PropsType = {
 	setPage: React.Dispatch<React.SetStateAction<number>>;
 	activeFilter: ColumnKey;
 	setActiveFilter: React.Dispatch<React.SetStateAction<ColumnKey>>;
-	colums: ColumnVisibility;
-	setColums: React.Dispatch<React.SetStateAction<ColumnVisibility>>;
+	colums: ColumnsMap;
+	setColums: React.Dispatch<React.SetStateAction<ColumnsMap>>;
 	filteredRows: Data[];
 	setFilteredRows: React.Dispatch<React.SetStateAction<Data[]>>;
 };

@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { type ColumnVisibility, type Data } from "../../../pages/home/types";
+import { type ColumnsMap, type Data } from "../../../pages/home/types";
 
 interface DrawResultsProps {
-	colums: ColumnVisibility;
+	colums: ColumnsMap;
 	visibleRows: Data[];
 	page: number;
 	setPage: (page: number) => void;
