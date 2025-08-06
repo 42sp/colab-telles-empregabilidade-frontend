@@ -15,62 +15,6 @@ export type Data = {
 	};
 };
 
-export function useStudentsRows(limit: number = 10) {
-	const [dataRows, setDataRows] = useState<Data[]>([]);
-	const [page, setPage] = useState(0);
-	const [columnKeys, setColumnKeys] = useState<string[]>([]);
-
-	useEffect(() => {
-		const fetchColumns = async () => {
-			try {
-				const result = await client.service(ColumnsPath).find();
-				const keys = result.data.map(col => col.key);
-
-				setColumnKeys(keys);
-			} catch (error) {
-				console.log("Erro ao buscar colunas: ", error);
-			}
-		};
-		fetchColumns();
-	}, []);
-
-	useEffect(() => {
-		if (columnKeys.length === 0) return;
-
-		const fetchStudents = async () => {
-			try {
-				const result = await client.service(studentsPath).find({
-					query: {
-						$limit: limit,
-						$skip: page * limit,
-						$sort: { id: 1 },
-					},
-				});
-				const rows: Data[] = result.data.map(student => {
-					const row: Data = {};
-
-					columnKeys.forEach(key => {
-						const value = student[key];
-						row[key] = {
-							content: value as DataContent,
-						};
-					});
-					return row;
-				});
-
-				setDataRows(prev => [...prev, ...rows]);
-			} catch (error) {
-				console.log("Erro ao buscar alunos: ", error);
-			}
-		};
-		fetchStudents();
-	}, [page, columnKeys]);
-
-	const loadMore = () => setPage(prev => prev + 1);
-
-	return { dataRows, loadMore };
-}
-
 export type StatusType = {
 	label: string;
 	value: number;

@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-	useStudentsRows,
-	type ColumnKey,
-	type Data,
-	type FilterType,
-} from "../../pages/home/types";
+import { type Data, type FilterType } from "../../pages/home/types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
 import { client } from "@/lib/feathers";
@@ -15,70 +10,54 @@ export function DrawBody() {
 	//States
 	const [activeLabel, setActiveLabel] = useState("Todos");
 	const [page, setPage] = useState(0);
-	// const [colums, setColums] = useState<ColumnVisibility>({
-	// 	name: { label: "Nome Social", isVisible: true },
-	// 	email: { label: "Email", isVisible: true },
-	// 	celNumber: { label: "Celular", isVisible: true },
-	// 	gender: { label: "Gênero", isVisible: true },
-	// 	sector: { label: "Setor", isVisible: true },
-	// 	orientation: { label: "Orientação", isVisible: true },
-	// 	race: { label: "Cor/Raça", isVisible: true },
-	// 	pcd: { label: "PCD", isVisible: true },
-	// 	linkedinLink: { label: "Linkedin", isVisible: true },
-	// 	isWorkin: { label: "Trabalhando", isVisible: true },
-	// 	rent: { label: "Salário", isVisible: true },
-	// });
-
-	// const [filter, setFilter] = useState<FilterType>(() => {
-	// 	const initialFilter = Object.fromEntries(
-	// 		(Object.keys(colums) as ColumnKey[]).map(key => [key as ColumnKey, ""])
-	// 	) as FilterType;
-
-	// 	return initialFilter as FilterType;
-	// });
-	const { dataRows, loadMore } = useStudentsRows();
 	const [colums, setColums] = useState<ColumnsMap>({});
+	const [dataRows, setDataRows] = useState<Data[]>([]);
+	const [activeFilter, setActiveFilter] = useState<string>("name");
+	const [filteredRows, setFilteredRows] = useState<Data[]>([]);
 
-	useEffect(() => {
-		client
-			.service(ColumnsPath)
-			.find()
-			.then(data => {
-				setColums(data as ColumnsMap);
-			});
-	}, []);
-	const [activeFilter, setActiveFilter] = useState<ColumnKey>("name");
-
-	const [filter, setFilter] = useState<FilterType>({});
-
-	useEffect(() => {
+	const [filter, setFilter] = useState<FilterType>(() => {
 		const saved = sessionStorage.getItem("userFilter");
 
 		if (saved) {
 			try {
-				const parsed = JSON.parse(saved) as FilterType;
-				setFilter(parsed);
-				return;
+				return JSON.parse(saved) as FilterType;
 			} catch (error) {
 				console.log(error);
 			}
 		}
+		return {};
+	});
+	//Colums
+	useEffect(() => {
+		client.rest
+			.get("/columns/columns")
+			.then(data => setColums(data))
+			.catch(console.error);
+	}, []);
+	//DataRows
+	useEffect(() => {
+		client.rest
+			.get("/columns/students")
+			.then(data => {
+				setDataRows(data);
+				console.log(dataRows);
+			})
+			.catch(console.error);
+	}, []);
+	//filter
+	useEffect(() => {
+		if (Object.keys(filter).length === 0 && Object.keys(colums).length > 0) {
+			const initialFilter = Object.fromEntries(
+				Object.keys(colums).map(key => [key, ""])
+			) as FilterType;
 
-		const initialFilter = Object.fromEntries(
-			(Object.keys(colums) as ColumnKey[]).map(key => [key, ""])
-		) as FilterType;
-
-		setFilter(initialFilter);
+			setFilter(initialFilter);
+		}
 	}, [colums]);
 	useEffect(() => {
 		sessionStorage.setItem("userFilter", JSON.stringify(filter));
 	}, [filter]);
-
-	//Other variables
-	const background: string =
-		"flex flex-col bg-white w-full min-h-screen min-w-full p-4 gap-4";
-	const [filteredRows, setFilteredRows] = useState(dataRows);
-
+	//filteredRows
 	useEffect(() => {
 		const newFiltered = dataRows.filter((row: (typeof dataRows)[number]) => {
 			// Filtro por campo
@@ -107,6 +86,8 @@ export function DrawBody() {
 		setFilteredRows(newFiltered);
 	}, [filter, activeLabel]);
 
+	const background: string =
+		"flex flex-col flex-wrap bg-white w-full min-h-screen min-w-full p-4 gap-4";
 	return (
 		<div className={background}>
 			<DrawStatus

@@ -1,6 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
 import {
-	useStudentsRows,
 	type ButtonType,
 	type Data,
 	type StatusType,
