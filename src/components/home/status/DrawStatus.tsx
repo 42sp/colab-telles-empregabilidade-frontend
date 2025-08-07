@@ -1,5 +1,4 @@
 import type { Dispatch, SetStateAction } from "react";
-import { dataRows } from "../../../pages/home/types";
 import type { ButtonType, Data, StatusType } from "../../../pages/home/types";
 import { DrawStatusButton } from "./DrawStatusButton";
 import { DrawTotals } from "./DrawTotals";
@@ -8,6 +7,7 @@ interface DrawStatusProps {
 	activeLabel: string;
 	setActiveLabel: Dispatch<SetStateAction<string>>;
 	filteredRows: Data[];
+	dataRows: Data[];
 }
 
 export function DrawStatus(props: DrawStatusProps) {
@@ -17,7 +17,7 @@ export function DrawStatus(props: DrawStatusProps) {
 		{ label: "Inativos" },
 	];
 
-	function getAverange(row: typeof dataRows): number {
+	function getAverange(row: typeof props.dataRows): number {
 		const myRent = row
 			.map(row => row.rent)
 			.filter(rent => typeof rent === "number");

@@ -9,6 +9,22 @@ export default class Service {
 	}
 
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
+	async students() {
+		const token = sessionStorage.getItem("accessToken");
+		if (!token) {
+			throw new Error("No access token found");
+		}
+		const response = await this.$axios.get<collection.StudentsResponse>(
+			"/students",
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+
+		return response.data;
+	}
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
 
 	// -------------------------------------------------------------------- POST --------------------------------------------------------------------

@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
-	dataRows,
 	type ColumnKey,
 	type ColumnVisibility,
 	type Data,
@@ -8,8 +7,29 @@ import {
 } from "../../pages/home/types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
+import { useServices } from "@/hooks/useServices";
+import type { StudentsParameters } from "@/types/requests";
 
 export function DrawBody() {
+	const $service = useServices();
+	const [dataRows, setDataRows] = useState<StudentsParameters[]>([]);
+
+	useEffect(() => {
+		(async () => {
+			try {
+				const response = await $service.students();
+				console.log("response: ", response);
+				console.log("response data: ", response.data);
+				setDataRows(response.data);
+			} catch (error) {
+				console.error("Failed to fetch students:", error);
+			}
+		})();
+	}, [$service]);
+
+	useEffect(() => {
+		console.log("Data Rows:", dataRows);
+	}, [dataRows]);
 	//States
 	const [activeLabel, setActiveLabel] = useState("Todos");
 	const [page, setPage] = useState(0);
@@ -97,6 +117,7 @@ export function DrawBody() {
 				activeLabel={activeLabel}
 				setActiveLabel={setActiveLabel}
 				filteredRows={filteredRows}
+				dataRows={dataRows}
 			/>
 			<SearchBar
 				filter={filter}
