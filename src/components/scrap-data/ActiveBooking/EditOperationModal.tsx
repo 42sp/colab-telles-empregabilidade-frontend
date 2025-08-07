@@ -52,7 +52,7 @@ export function EditOperationModal({
         repeat_time: data.repeat_time,
       };
 
-      const updated = await scrapService.update(operation.uuid, payload);
+      const updated = await scrapService.patch(operation.uuid, payload);
       toast.success("Operação atualizada com sucesso!");
       onOperationUpdated(updated);
       onClose();
@@ -66,9 +66,9 @@ export function EditOperationModal({
     <Dialog open onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">Editar operação</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">Editar Operação</DialogTitle>
           <p className="text-sm text-muted-foreground" id="edit-operation-description">
-          Atualize os campos para editar esta operação
+            Atualize os campos para editar esta operação
           </p>
         </DialogHeader>
 

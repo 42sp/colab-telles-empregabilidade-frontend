@@ -4,6 +4,12 @@ import { toast } from "react-hot-toast";
 import { scrapService } from "@/services/api";
 import { Button } from "@/components/ui/button";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Props = {
 	id?: number;
@@ -33,19 +39,28 @@ export function DeleteButton({ id, uuid, name, onDeleted }: Props) {
 
 	return (
 		<>
-			<Button
-				variant="destructive"
-				size="icon"
-				onClick={() => setOpen(true)}
-				disabled={loading}
-				aria-label={`Excluir agendamento ${name}`}
-			>
-				{loading ? (
-					<Loader2 className="h-4 w-4 animate-spin" />
-				) : (
-					<Trash2 className="h-4 w-4" />
-				)}
-			</Button>
+			<TooltipProvider delayDuration={300}>
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button
+							variant="destructive"
+							size="icon"
+							onClick={() => setOpen(true)}
+							disabled={loading}
+							aria-label={`Excluir agendamento ${name}`}
+						>
+							{loading ? (
+								<Loader2 className="h-4 w-4 animate-spin" />
+							) : (
+								<Trash2 className="h-4 w-4" />
+							)}
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent>
+						<p>{"Excluir Operação"}</p>
+					</TooltipContent>
+				</Tooltip>
+			</TooltipProvider>
 
 			<ConfirmDeleteModal
 				open={open}
