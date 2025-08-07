@@ -1,9 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
-import {
-	type ButtonType,
-	type Data,
-	type StatusType,
-} from "../../../pages/home/types";
+import { dataRows } from "../../../pages/home/types";
+import type { ButtonType, Data, StatusType } from "../../../pages/home/types";
 import { DrawStatusButton } from "./DrawStatusButton";
 import { DrawTotals } from "./DrawTotals";
 
@@ -19,8 +16,8 @@ export function DrawStatus(props: DrawStatusProps) {
 		{ label: "Ativos" },
 		{ label: "Inativos" },
 	];
-	// const { dataRows, loadMore } = useStudentsRows();
-	function getAverange(row: Data[]): number {
+
+	function getAverange(row: typeof dataRows): number {
 		const myRent = row
 			.map(row => row.rent)
 			.filter(rent => typeof rent === "number");
@@ -36,13 +33,11 @@ export function DrawStatus(props: DrawStatusProps) {
 		{ label: "Total de estudantes", value: props.filteredRows.length },
 		{
 			label: "Trabalhando",
-			value: props.filteredRows.filter(row => row["working"]?.content === true)
-				.length,
+			value: props.filteredRows.filter(row => row.isWorkin == "Sim").length,
 		},
 		{
 			label: "Não Trabalhando",
-			value: props.filteredRows.filter(row => row["working"]?.content === false)
-				.length,
+			value: props.filteredRows.filter(row => row.isWorkin == "Não").length,
 		},
 		{ label: "Salário Médio", value: getAverange(props.filteredRows) },
 	];
