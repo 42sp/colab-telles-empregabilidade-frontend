@@ -15,12 +15,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 import { DeleteButton } from "./DeleteButton";
 import { AnimatePresence, motion } from "framer-motion";
+import { EditOperationModal } from "./EditOperationModal";
+import { CheckCircle2, Loader2, Repeat, Settings2 } from "lucide-react";
 import type { Operation } from "@/types/operations";
 
 type ActiveBookingProps = {
-  operations?: Operation[]; // controlado pelo pai (opcional)
+  operations?: Operation[];
   onDeleted?: (uuid: string) => void;
   minRows?: number;
 };
@@ -31,14 +34,12 @@ function formatDate(dateStr: string) {
   return `${day}/${month}/${year}`;
 }
 
-// Retorna true SE a data for estritamente futura (day > today)
 function isStrictlyFuture(dateStr: string) {
   if (!dateStr) return false;
   const today = new Date();
-  const todayOnly = new Date(today.toDateString()); // meia-noite de hoje
+  const todayOnly = new Date(today.toDateString());
   const [y, m, d] = dateStr.split("-").map(Number);
-  const date = new Date(Date.UTC(y, m - 1, d)); // evita timezone surprises
-  // comparar em UTC: construir todayOnlyUTC também
+  const date = new Date(Date.UTC(y, m - 1, d));
   const todayOnlyUTC = new Date(Date.UTC(todayOnly.getFullYear(), todayOnly.getMonth(), todayOnly.getDate()));
   return date.getTime() > todayOnlyUTC.getTime();
 }
@@ -49,12 +50,12 @@ export function ActiveBooking({
   minRows = 6,
 }: ActiveBookingProps) {
   const [localOperations, setLocalOperations] = useState<Operation[]>([]);
+  const [editingOperation, setEditingOperation] = useState<Operation | null>(null);
+  const [recurrenceMap, setRecurrenceMap] = useState<Record<string, boolean>>({});
+
   const isControlled = Array.isArray(operationsFromProps);
+  const sourceOperations = isControlled ? operationsFromProps : localOperations;
 
-  // Fonte de dados: props (controlado) ou local (autônomo)
-  const sourceOperations = isControlled ? (operationsFromProps as Operation[]) : localOperations;
-
-  // Fetch automático se não controlado
   useEffect(() => {
     if (isControlled) return;
     let mounted = true;
@@ -64,7 +65,6 @@ export function ActiveBooking({
           query: { $sort: { scheduled_date: 1 } },
         });
         const raw = response.data || [];
-        // Filtra estritamente futuras aqui já para evitar set de itens não desejados
         const futureOps = raw.filter((op: Operation) => isStrictlyFuture(op.scheduled_date));
         if (mounted) setLocalOperations(futureOps);
       } catch (err) {
@@ -77,38 +77,50 @@ export function ActiveBooking({
     };
   }, [isControlled]);
 
-  // Filtra as operações de origem para manter apenas as futuras (caso o pai tenha enviado também)
   const futureOperations = useMemo(
     () => sourceOperations.filter((op) => isStrictlyFuture(op.scheduled_date)),
     [sourceOperations]
   );
 
   function handleDeleted(uuid: string) {
-    // Notifica o pai se existir
     if (onDeletedFromProps) onDeletedFromProps(uuid);
-    // Atualiza local se necessário
     if (!isControlled) {
       setLocalOperations((prev) => prev.filter((op) => op.uuid !== uuid));
     }
   }
 
-  // Garante pelo menos minRows linhas (preencher com vazias)
+  function toggleRecurrence(op: Operation) {
+    setRecurrenceMap((prev) => {
+      const newValue = !prev[op.uuid];
+      if (newValue) {
+        const next = new Date();
+        next.setDate(next.getDate() + 7);
+        console.log(`🟢 Recorrência ativada para ${op.name}. Próxima: ${next.toLocaleDateString()}`);
+      } else {
+        console.log(`🔴 Recorrência desativada para ${op.name}`);
+      }
+      return { ...prev, [op.uuid]: newValue };
+    });
+  }
+
+  function handleUpdate(updated: Operation) {
+    if (!isControlled) {
+      setLocalOperations((prev) =>
+        prev.map((op) => (op.uuid === updated.uuid ? updated : op))
+      );
+    }
+  }
+
   const emptyRowsCount = Math.max(0, minRows - futureOperations.length);
   const emptyRows = Array.from({ length: emptyRowsCount });
-
   const enableScroll = futureOperations.length > minRows;
-  const maxHeightClass = "max-h-[360px]"; // ajuste conforme sua UI
 
   return (
-    <Card className="border border-gray-200" role="region" aria-labelledby="active-bookings-title">
+    <Card className="border border-gray-200">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle id="active-bookings-title" className="text-zinc-900 text-2xl font-bold">
-            Agendamentos Ativos
-          </CardTitle>
-          <p className="text-sm text-zinc-500 font-normal" id="active-bookings-description">
-            Lista de operações agendadas (futuras)
-          </p>
+          <CardTitle className="text-zinc-900 text-2xl font-bold">Agendamentos Ativos</CardTitle>
+          <p className="text-sm text-zinc-500 font-normal">Lista de operações agendadas (futuras)</p>
         </div>
         <span className="bg-zinc-100 text-zinc-900 px-2 py-1 rounded-md text-sm font-bold">
           {futureOperations.length}
@@ -117,17 +129,18 @@ export function ActiveBooking({
 
       <CardContent>
         <div
-          className={`border border-gray-200 rounded-lg overflow-x-auto ${enableScroll ? `overflow-y-auto ${maxHeightClass}` : "overflow-y-hidden"
-            }`}
+          className={`border border-gray-200 rounded-lg overflow-x-auto ${
+            enableScroll ? "overflow-y-auto max-h-[360px]" : "overflow-y-hidden"
+          }`}
         >
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-100">
-                <TableHead className="text-zinc-500 font-medium">Nome</TableHead>
-                <TableHead className="text-zinc-500 font-medium">Data</TableHead>
-                <TableHead className="text-zinc-500 font-medium">Hora</TableHead>
-                <TableHead className="text-zinc-500 font-medium">Usuário</TableHead>
-                <TableHead className="text-zinc-500 font-medium">Ações</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead>Hora</TableHead>
+                <TableHead>Usuário</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -138,19 +151,67 @@ export function ActiveBooking({
                     key={op.uuid}
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8, height: 0, margin: 0, padding: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
                     transition={{ duration: 0.22 }}
                     className="hover:bg-gray-50"
                   >
-                    <TableCell className="text-zinc-900">{op.name}</TableCell>
-                    <TableCell className="text-zinc-900">{formatDate(op.scheduled_date)}</TableCell>
-                    <TableCell className="text-zinc-900">{op.scheduled_time}</TableCell>
-                    <TableCell className="text-zinc-900">{op.user_tag}</TableCell>
-                    <TableCell>
+                    <TableCell>{op.name}</TableCell>
+                    <TableCell>{formatDate(op.scheduled_date)}</TableCell>
+                    <TableCell>{op.scheduled_time}</TableCell>
+                    <TableCell>{op.user_tag}</TableCell>
+                    <TableCell className="flex gap-2 justify-end py-2">
+                      {/* Recorrência */}
+                      <TooltipProvider delayDuration={300}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant={recurrenceMap[op.uuid] ? "success" : "outline"}
+                              onClick={() => toggleRecurrence(op)}
+                              aria-label="Alternar recorrência"
+                            >
+                              {recurrenceMap[op.uuid] ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Repeat className="w-4 h-4" />
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Alternar recorrência</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      {/* Editar */}
+                      <TooltipProvider delayDuration={300}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              onClick={() => setEditingOperation(op)}
+                              aria-label="Editar operação"
+                            >
+                              <Settings2 className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Editar operação</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      {/* Excluir */}
                       <TooltipProvider delayDuration={500}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <DeleteButton id={op._id} uuid={op.uuid} name={op.name} onDeleted={() => handleDeleted(op.uuid)} />
+                            <DeleteButton
+                              id={op._id}
+                              uuid={op.uuid}
+                              name={op.name}
+                              onDeleted={() => handleDeleted(op.uuid)}
+                            />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Excluir</p>
@@ -160,22 +221,26 @@ export function ActiveBooking({
                     </TableCell>
                   </motion.tr>
                 ))}
-              </AnimatePresence>
 
-              {/* Linhas vazias */}
-              {emptyRows.map((_, i) => (
-                <TableRow key={`empty-${i}`}>
-                  <TableCell className="py-4">&nbsp;</TableCell>
-                  <TableCell className="py-4">&nbsp;</TableCell>
-                  <TableCell className="py-4">&nbsp;</TableCell>
-                  <TableCell className="py-4">&nbsp;</TableCell>
-                  <TableCell className="py-4">&nbsp;</TableCell>
-                </TableRow>
-              ))}
+                {emptyRows.map((_, i) => (
+                  <TableRow key={`empty-${i}`}>
+                    <TableCell colSpan={5} className="py-4" />
+                  </TableRow>
+                ))}
+              </AnimatePresence>
             </TableBody>
           </Table>
         </div>
       </CardContent>
+
+      {/* Modal de edição */}
+      {editingOperation && (
+        <EditOperationModal
+          operation={editingOperation}
+          onClose={() => setEditingOperation(null)}
+          onOperationUpdated={handleUpdate}
+        />
+      )}
     </Card>
   );
 }

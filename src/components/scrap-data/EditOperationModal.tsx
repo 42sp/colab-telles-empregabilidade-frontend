@@ -1,0 +1,85 @@
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { scrapService } from "@/services/api";
+import { toast } from "react-hot-toast";
+import {
+  OperationFormProvider,
+  operationFormSchema,
+  type OperationFormData,
+} from "@/contexts/useOperationFormContext";
+
+import { EditOperationForm } from "./EditOperationForm";
+import type { Operation } from "@/types/operations";
+
+type EditOperationModalProps = {
+  operation: Operation;
+  onClose: () => void;
+  onOperationUpdated: (op: Operation) => void;
+};
+
+export function EditOperationModal({
+  operation,
+  onClose,
+  onOperationUpdated,
+}: EditOperationModalProps) {
+  const form = useForm<OperationFormData>({
+    resolver: zodResolver(operationFormSchema),
+    defaultValues: {
+      name: operation.name,
+      initial_date: operation.scheduled_date || "",
+      initial_time: operation.scheduled_time || "",
+      isRecurring: Boolean(operation.repeat_time),
+      repeat_days: operation.repeat_days ?? "",
+      repeat_time: operation.repeat_time ?? "",
+    },
+  });
+
+  async function onSubmit(data: OperationFormData) {
+    try {
+      const payload = {
+        name: data.name,
+        scheduled_date: data.initial_date,
+        scheduled_time: data.initial_time,
+        user_tag: operation.user_tag,
+        repeat_days: data.repeat_days,
+        repeat_time: data.repeat_time,
+      };
+
+      const updated = await scrapService.update(operation.uuid, payload);
+      toast.success("Operação atualizada com sucesso!");
+      onOperationUpdated(updated);
+      onClose();
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao atualizar operação");
+    }
+  }
+
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold">Editar operação</DialogTitle>
+          <p className="text-sm text-muted-foreground" id="edit-operation-description">
+          Atualize os campos para editar esta operação
+          </p>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <OperationFormProvider value={form}>
+              <EditOperationForm isSubmitting={form.formState.isSubmitting} />
+            </OperationFormProvider>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}

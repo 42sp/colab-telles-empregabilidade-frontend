@@ -14,6 +14,8 @@ export type Operation = {
   scheduled_date: string; // "YYYY-MM-DD"
   scheduled_time: string; // "HH:mm"
   user_tag: string;
+  repeat_days: string;
+  repeat_time: string;
 
   // campos opcionais do schema
   status?: 'Agendado' | 'Em Execução' | 'Concluído' | 'Falha';
