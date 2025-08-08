@@ -29,6 +29,7 @@ export function DrawStatus(props: DrawStatusProps) {
 		return sum / myRent.length;
 	}
 
+	const timestamp = Date.now();
 	const status: StatusType[] = [
 		{ label: "Total de estudantes", value: props.filteredRows.length },
 		{

@@ -69,8 +69,8 @@ export function DrawResults(props: DrawResultsProps) {
 	}
 
 	return (
-		<div className="flex flex-col border border-gray-200 rounded-md bg-white min-w-full h-full">
-			<div className="w-full overflow-x-auto">
+		<div className="flex flex-col flex-1 border border-gray-200 rounded-md bg-white max-w-full">
+			<div className="max-w-full overflow-x-auto">
 				<table className="min-w-[1200px] table-auto border-collapse">
 					{/* Header */}
 					<thead className="bg-white border-b border-gray-200 text-zinc-400 font-bold">
