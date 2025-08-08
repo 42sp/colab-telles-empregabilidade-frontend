@@ -5,10 +5,10 @@ import { scrapService } from "@/services/api";
 import { Button } from "@/components/ui/button";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from "@/components/ui/tooltip";
 
 type Props = {
@@ -43,11 +43,12 @@ export function DeleteButton({ id, uuid, name, onDeleted }: Props) {
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<Button
-							variant="destructive"
+							variant="outline"
 							size="icon"
 							onClick={() => setOpen(true)}
 							disabled={loading}
 							aria-label={`Excluir agendamento ${name}`}
+							className="hover:bg-red-500 hover:text-white cursor-pointer"
 						>
 							{loading ? (
 								<Loader2 className="h-4 w-4 animate-spin" />
@@ -71,4 +72,3 @@ export function DeleteButton({ id, uuid, name, onDeleted }: Props) {
 		</>
 	);
 }
-
