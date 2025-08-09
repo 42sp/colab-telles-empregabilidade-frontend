@@ -14,10 +14,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
 import { SelectGroup, SelectValue } from "@radix-ui/react-select";
 import { Label } from "../ui/label";
 import { Dropzone } from "../dropzone";
-import { useState } from "react";
 import type { fileProps } from "@/types/requests/interfaces/fileProps";
 import { Trash2 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+
+interface ConfigurationUploadArquivoProps {
+	setFiles: React.Dispatch<React.SetStateAction<fileProps[]>>;
+	files: fileProps[];
+}
+
+interface ConfigurationFooterProps {
+	uploadFiles: () => Promise<void>;
+}
 
 const ConfigurationHeader = () => {
 	return (
@@ -30,9 +38,7 @@ const ConfigurationHeader = () => {
 	);
 };
 
-const ConfigurationUploadArquivo = () => {
-	const [files, setFiles] = useState<fileProps[]>([]);
-
+const ConfigurationUploadArquivo = (props: ConfigurationUploadArquivoProps) => {
 	return (
 		<div className="container-upload-arquivo">
 			<div className="flex-1">
@@ -45,7 +51,7 @@ const ConfigurationUploadArquivo = () => {
 				<Dropzone
 					className="drop-zone"
 					textClassName="text-center text-gray-500"
-					setFiles={setFiles}
+					setFiles={props.setFiles}
 				/>
 				<div className="container-selecionar-arquivo">
 					<Button
@@ -65,12 +71,17 @@ const ConfigurationUploadArquivo = () => {
 							const selectedFiles = e.target.files;
 							if (selectedFiles && selectedFiles.length > 0) {
 								const fileArray = Array.from(selectedFiles).map(file => {
-									const f = file as fileProps;
-									f.status = "Pendente";
-									f.id = uuidv4();
+									const f = {
+										file: file,
+										status: "Pendente",
+										lastModified: file.lastModified,
+										name: file.name,
+										id: uuidv4(),
+									} as fileProps;
+
 									return f;
 								});
-								setFiles(prev => [...prev, ...fileArray]);
+								props.setFiles(prev => [...prev, ...fileArray]);
 							}
 						}}
 						multiple
@@ -88,7 +99,7 @@ const ConfigurationUploadArquivo = () => {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{files.map(m => (
+						{props.files.map(m => (
 							<TableRow key={m.id}>
 								<TableCell>
 									<span className="table-cell-base">{m.name}</span>
@@ -107,7 +118,7 @@ const ConfigurationUploadArquivo = () => {
 								</TableCell>
 								<TableCell>
 									<span
-										className={`${m.status == "success" ? "table-cell-status-success" : "table-cell-status-pending"} font-Geist`}
+										className={`${m.status == "Sucesso" ? "table-cell-status-success" : "table-cell-status-pending"} font-Geist`}
 									>
 										{m.status}
 									</span>
@@ -115,7 +126,9 @@ const ConfigurationUploadArquivo = () => {
 								<TableCell>
 									<Button
 										onClick={() => {
-											setFiles(files.filter(file => file.id !== m.id));
+											props.setFiles(
+												props.files.filter(file => file.id !== m.id)
+											);
 										}}
 										variant="destructive"
 										className="p-2 bg-red-700 hover:bg-red-800 text-white"
@@ -204,13 +217,16 @@ const ConfigurationIntegracaoApi = () => {
 	);
 };
 
-const ConfigurationFooter = () => {
+const ConfigurationFooter = (params: ConfigurationFooterProps) => {
 	return (
 		<div className="container-footer">
 			<Button className="footer-btns" variant="outline">
 				Restaurar Configurações Padrão
 			</Button>
-			<Button className="footer-btns bg-[#16A34A] hover:bg-[#15803D]">
+			<Button
+				className="footer-btns bg-[#16A34A] hover:bg-[#15803D]"
+				onClick={params.uploadFiles}
+			>
 				Salvar Todas as Configurações
 			</Button>
 		</div>
