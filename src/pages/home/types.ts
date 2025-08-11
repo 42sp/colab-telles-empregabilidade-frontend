@@ -19,7 +19,6 @@ export type ButtonType = {
 };
 
 export type ColumnKey =
-	| "id"
 	| "name"
 	| "socialName"
 	| "preferredName"

@@ -9,7 +9,7 @@ export default class Service {
 	}
 
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
-	async students() {
+	async students(params = {}) {
 		const token = sessionStorage.getItem("accessToken");
 		if (!token) {
 			throw new Error("No access token found");
@@ -20,10 +20,11 @@ export default class Service {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
+				params,
 			}
 		);
 
-		return response.data;
+		return response;
 	}
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
 

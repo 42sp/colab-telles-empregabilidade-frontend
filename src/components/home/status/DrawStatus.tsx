@@ -29,16 +29,15 @@ export function DrawStatus(props: DrawStatusProps) {
 		return sum / myRent.length;
 	}
 
-	const timestamp = Date.now();
 	const status: StatusType[] = [
 		{ label: "Total de estudantes", value: props.filteredRows.length },
 		{
 			label: "Trabalhando",
-			value: props.filteredRows.filter(row => row.isWorkin == "Sim").length,
+			value: props.filteredRows.filter(row => row.working === true).length,
 		},
 		{
 			label: "Não Trabalhando",
-			value: props.filteredRows.filter(row => row.isWorkin == "Não").length,
+			value: props.filteredRows.filter(row => row.working === false).length,
 		},
 		{ label: "Salário Médio", value: getAverange(props.filteredRows) },
 	];

@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	type ColumnKey,
 	type ColumnVisibility,
@@ -13,13 +13,15 @@ import type { StudentsParameters } from "@/types/requests";
 export function DrawBody() {
 	const $service = useServices();
 	const [dataRows, setDataRows] = useState<StudentsParameters[]>([]);
+	const rowsToGet: number = 50;
 
 	useEffect(() => {
 		(async () => {
 			try {
-				const response = await $service.students();
+				const response = await $service.students({ $limit: rowsToGet });
+				console.log("Response: ", response.data);
 				if (JSON.stringify(response.data) !== JSON.stringify(dataRows))
-					setDataRows(response.data);
+					setDataRows(response.data.data);
 			} catch (error) {
 				console.error("Failed to fetch students:", error);
 			}
@@ -33,7 +35,6 @@ export function DrawBody() {
 	const [activeLabel, setActiveLabel] = useState("Todos");
 	const [page, setPage] = useState(0);
 	const [colums, setColums] = useState<ColumnVisibility>({
-		id: { label: "ID", isVisible: true },
 		name: { label: "Nome", isVisible: true },
 		socialName: { label: "Nome Social", isVisible: true },
 		preferredName: { label: "Nome Preferido", isVisible: true },
@@ -197,13 +198,6 @@ export function DrawBody() {
 			isVisible: true,
 		},
 	});
-	// const [filter, setFilter] = useState<FilterType>(() => {
-	// 	const initialFilter = Object.fromEntries(
-	// 		(Object.keys(colums) as ColumnKey[]).map(key => [key as ColumnKey, ""])
-	// 	) as FilterType;
-
-	// 	return initialFilter as FilterType;
-	// });
 
 	const [activeFilter, setActiveFilter] = useState<ColumnKey>("name");
 
@@ -232,32 +226,61 @@ export function DrawBody() {
 	const [filteredRows, setFilteredRows] = useState(dataRows);
 
 	useEffect(() => {
-		const newFiltered = dataRows.filter((row: (typeof dataRows)[number]) => {
-			// Filtro por campo
-			const matches = (Object.entries(filter) as [keyof Data, string][]).every(
-				([field, value]) => {
-					if (!value) return true;
+		(async () => {
+			try {
+				const query: any = {};
 
-					const rowValue = row[field];
-					if (rowValue === undefined || rowValue === null) return false;
-
-					return String(rowValue).toLowerCase().includes(value.toLowerCase());
+				for (const [key, value] of Object.entries(filter)) {
+					if (value.trim() !== "") {
+						query[key] = { $regex: value, $options: "i" };
+					}
 				}
-			);
 
-			// Filtro por status
-			const matchStatus =
-				activeLabel === "Todos"
-					? true
-					: activeLabel === "Ativos"
-						? row.isStudying === true
-						: row.isStudying === false;
+				if (activeLabel === "Ativos") query.working = true;
+				else if (activeLabel === "Inativos") query.working = false;
 
-			return matches && matchStatus;
-		});
+				const response = await $service.students({
+					query: {
+						$limit: rowsToGet,
+						$skip: page * rowsToGet,
+						...query,
+					},
+				});
 
-		setFilteredRows(newFiltered);
-	}, [filter, activeLabel, dataRows]);
+				setFilteredRows(response.data.data);
+				console.log("Filtered Rows:", filteredRows);
+			} catch (error) {
+				console.error("Failed to fetch filtered students:", error);
+			}
+		})();
+	}, [filter, activeLabel]);
+	// useEffect(() => {
+	// 	const newFiltered = dataRows.filter((row: (typeof dataRows)[number]) => {
+	// 		// Filtro por campo
+	// 		const matches = (Object.entries(filter) as [keyof Data, string][]).every(
+	// 			([field, value]) => {
+	// 				if (!value) return true;
+
+	// 				const rowValue = row[field];
+	// 				if (rowValue === undefined || rowValue === null) return false;
+
+	// 				return String(rowValue).toLowerCase().includes(value.toLowerCase());
+	// 			}
+	// 		);
+
+	// 		// Filtro por status
+	// 		const matchStatus =
+	// 			activeLabel === "Todos"
+	// 				? true
+	// 				: activeLabel === "Ativos"
+	// 					? row.working === true
+	// 					: row.working === false;
+
+	// 		return matches && matchStatus;
+	// 	});
+
+	// 	setFilteredRows(newFiltered);
+	// }, [filter, activeLabel, dataRows]);
 
 	const background: string =
 		"flex flex-col bg-white w-full min-h-screen max-w-full p-4 gap-4 overflow-hidden";
