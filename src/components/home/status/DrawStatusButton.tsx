@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import type { Data } from "@/pages/home/types";
 import type { Dispatch, SetStateAction } from "react";
 
 interface MyButtontype {
@@ -9,6 +10,7 @@ interface DrawStatusButtonType {
 	buttons: MyButtontype[];
 	activeLabel: string;
 	setActiveLabel: Dispatch<SetStateAction<string>>;
+	filteredRows: Data[];
 }
 
 export function DrawStatusButton(props: DrawStatusButtonType) {

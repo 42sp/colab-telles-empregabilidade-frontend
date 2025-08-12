@@ -48,6 +48,7 @@ export function DrawStatus(props: DrawStatusProps) {
 				buttons={buttons}
 				activeLabel={props.activeLabel}
 				setActiveLabel={props.setActiveLabel}
+				filteredRows={props.filteredRows}
 			/>
 			<DrawTotals status={status} />
 		</div>

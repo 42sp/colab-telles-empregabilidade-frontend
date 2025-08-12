@@ -93,12 +93,18 @@ export function DrawResults(props: DrawResultsProps) {
 										className="px-4 py-2 truncate max-w-[200px]"
 										title={String(row[key as keyof typeof row])}
 									>
-										{key === "rent"
+										{key === "compensation"
 											? new Intl.NumberFormat("pt-BR", {
 													style: "currency",
 													currency: "BRL",
 												}).format(row[key as keyof typeof row] as number)
-											: String(row[key as keyof typeof row])}
+											: row[key as keyof typeof row] != null
+												? typeof row[key as keyof typeof row] === "boolean"
+													? row[key as keyof typeof row] === true
+														? "Sim"
+														: "Não"
+													: String(row[key as keyof typeof row])
+												: "N/A"}
 									</td>
 								))}
 							</tr>

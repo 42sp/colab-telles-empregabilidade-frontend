@@ -273,8 +273,10 @@ export function DrawBody() {
 				activeLabel === "Todos"
 					? true
 					: activeLabel === "Ativos"
-						? row.working === true
-						: row.working === false;
+						? row.holderContractStatus === "Ativo" ||
+							row.holderContractStatus === "Ativa"
+						: row.holderContractStatus === "Inativo" ||
+							row.holderContractStatus === "Inativa";
 
 			return matches && matchStatus;
 		});
