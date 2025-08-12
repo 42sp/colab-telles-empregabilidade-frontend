@@ -225,62 +225,62 @@ export function DrawBody() {
 
 	const [filteredRows, setFilteredRows] = useState(dataRows);
 
-	useEffect(() => {
-		(async () => {
-			try {
-				const query: any = {};
-
-				for (const [key, value] of Object.entries(filter)) {
-					if (value.trim() !== "") {
-						query[key] = { $regex: value, $options: "i" };
-					}
-				}
-
-				if (activeLabel === "Ativos") query.working = true;
-				else if (activeLabel === "Inativos") query.working = false;
-
-				const response = await $service.students({
-					query: {
-						$limit: rowsToGet,
-						$skip: page * rowsToGet,
-						...query,
-					},
-				});
-
-				setFilteredRows(response.data.data);
-				console.log("Filtered Rows:", filteredRows);
-			} catch (error) {
-				console.error("Failed to fetch filtered students:", error);
-			}
-		})();
-	}, [filter, activeLabel]);
 	// useEffect(() => {
-	// 	const newFiltered = dataRows.filter((row: (typeof dataRows)[number]) => {
-	// 		// Filtro por campo
-	// 		const matches = (Object.entries(filter) as [keyof Data, string][]).every(
-	// 			([field, value]) => {
-	// 				if (!value) return true;
+	// 	(async () => {
+	// 		try {
+	// 			const query: any = {};
 
-	// 				const rowValue = row[field];
-	// 				if (rowValue === undefined || rowValue === null) return false;
-
-	// 				return String(rowValue).toLowerCase().includes(value.toLowerCase());
+	// 			for (const [key, value] of Object.entries(filter)) {
+	// 				if (value.trim() !== "") {
+	// 					query[key] = { $regex: value, $options: "i" };
+	// 				}
 	// 			}
-	// 		);
 
-	// 		// Filtro por status
-	// 		const matchStatus =
-	// 			activeLabel === "Todos"
-	// 				? true
-	// 				: activeLabel === "Ativos"
-	// 					? row.working === true
-	// 					: row.working === false;
+	// 			if (activeLabel === "Ativos") query.working = true;
+	// 			else if (activeLabel === "Inativos") query.working = false;
 
-	// 		return matches && matchStatus;
-	// 	});
+	// 			const response = await $service.students({
+	// 				query: {
+	// 					$limit: rowsToGet,
+	// 					$skip: page * rowsToGet,
+	// 					...query,
+	// 				},
+	// 			});
 
-	// 	setFilteredRows(newFiltered);
-	// }, [filter, activeLabel, dataRows]);
+	// 			setFilteredRows(response.data.data);
+	// 			console.log("Filtered Rows:", filteredRows);
+	// 		} catch (error) {
+	// 			console.error("Failed to fetch filtered students:", error);
+	// 		}
+	// 	})();
+	// }, [filter, activeLabel]);
+	useEffect(() => {
+		const newFiltered = dataRows.filter((row: (typeof dataRows)[number]) => {
+			// Filtro por campo
+			const matches = (Object.entries(filter) as [keyof Data, string][]).every(
+				([field, value]) => {
+					if (!value) return true;
+
+					const rowValue = row[field];
+					if (rowValue === undefined || rowValue === null) return false;
+
+					return String(rowValue).toLowerCase().includes(value.toLowerCase());
+				}
+			);
+
+			// Filtro por status
+			const matchStatus =
+				activeLabel === "Todos"
+					? true
+					: activeLabel === "Ativos"
+						? row.working === true
+						: row.working === false;
+
+			return matches && matchStatus;
+		});
+
+		setFilteredRows(newFiltered);
+	}, [filter, activeLabel, dataRows]);
 
 	const background: string =
 		"flex flex-col bg-white w-full min-h-screen max-w-full p-4 gap-4 overflow-hidden";

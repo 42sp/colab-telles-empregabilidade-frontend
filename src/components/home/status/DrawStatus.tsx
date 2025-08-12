@@ -19,8 +19,8 @@ export function DrawStatus(props: DrawStatusProps) {
 
 	function getAverange(row: typeof props.dataRows): number {
 		const myRent = row
-			.map(row => row.rent)
-			.filter(rent => typeof rent === "number");
+			.map(row => Number(row.compensation))
+			.filter(rent => !isNaN(rent));
 
 		if (myRent.length === 0) return 0;
 
