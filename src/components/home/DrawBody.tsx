@@ -221,9 +221,21 @@ export function DrawBody() {
 
 					allFilter.holderContractStatus = statusValue;
 				}
-				if (activeFilter === "name" && filter.name) {
-					allFilter.name = filter.name;
-				}
+				const translateFilter = (value: string) => {
+					const lower = value.toLowerCase();
+
+					if (lower === "n/a") return null;
+					if (lower === "sim") return true;
+					if (lower === "não") return false;
+
+					return value;
+				};
+				Object.keys(filter).forEach(key => {
+					if (filter[key] && filter[key].trim() !== "") {
+						const translated = translateFilter(filter[key]);
+						allFilter[key] = translated;
+					}
+				});
 				const response = await $service.students(allFilter);
 				console.log("Response: ", response.data);
 				if (JSON.stringify(response.data) !== JSON.stringify(dataRows))
