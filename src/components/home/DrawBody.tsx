@@ -13,24 +13,8 @@ import type { StudentsParameters } from "@/types/requests";
 export function DrawBody() {
 	const $service = useServices();
 	const [dataRows, setDataRows] = useState<StudentsParameters[]>([]);
-	const rowsToGet: number = 50;
+	const rowsToGet: number = 30;
 
-	useEffect(() => {
-		(async () => {
-			try {
-				const response = await $service.students({ $limit: rowsToGet });
-				console.log("Response: ", response.data);
-				if (JSON.stringify(response.data) !== JSON.stringify(dataRows))
-					setDataRows(response.data.data);
-			} catch (error) {
-				console.error("Failed to fetch students:", error);
-			}
-		})();
-	}, []);
-
-	useEffect(() => {
-		console.log("Data Rows:", dataRows);
-	}, [dataRows]);
 	//States
 	const [activeLabel, setActiveLabel] = useState("Todos");
 	const [page, setPage] = useState(0);
@@ -223,7 +207,42 @@ export function DrawBody() {
 		sessionStorage.setItem("userFilter", JSON.stringify(filter));
 	}, [filter]);
 
+	//Requisicao no back-end dos dados pre-filtrados
+	useEffect(() => {
+		(async () => {
+			try {
+				console.log("activeLabel:", activeLabel);
+				const allFilter = {
+					$limit: rowsToGet,
+				};
+
+				if (activeLabel !== "Todos") {
+					const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
+
+					allFilter.holderContractStatus = statusValue;
+				}
+				if (activeFilter === "name" && filter.name) {
+					allFilter.name = filter.name;
+				}
+				const response = await $service.students(allFilter);
+				console.log("Response: ", response.data);
+				if (JSON.stringify(response.data) !== JSON.stringify(dataRows))
+					setDataRows(response.data.data);
+			} catch (error) {
+				console.error("Failed to fetch students:", error);
+			}
+		})();
+	}, [filter, rowsToGet, activeLabel, activeFilter]);
+
+	useEffect(() => {
+		console.log("Data Rows:", dataRows);
+	}, [dataRows]);
+
 	const [filteredRows, setFilteredRows] = useState(dataRows);
+
+	useEffect(() => {
+		setFilteredRows(dataRows);
+	}, [dataRows]);
 
 	// useEffect(() => {
 	// 	(async () => {
@@ -254,35 +273,35 @@ export function DrawBody() {
 	// 		}
 	// 	})();
 	// }, [filter, activeLabel]);
-	useEffect(() => {
-		const newFiltered = dataRows.filter((row: (typeof dataRows)[number]) => {
-			// Filtro por campo
-			const matches = (Object.entries(filter) as [keyof Data, string][]).every(
-				([field, value]) => {
-					if (!value) return true;
+	// useEffect(() => {
+	// 	const newFiltered = dataRows.filter((row: (typeof dataRows)[number]) => {
+	// 		// Filtro por campo
+	// 		const matches = (Object.entries(filter) as [keyof Data, string][]).every(
+	// 			([field, value]) => {
+	// 				if (!value) return true;
 
-					const rowValue = row[field];
-					if (rowValue === undefined || rowValue === null) return false;
+	// 				const rowValue = row[field];
+	// 				if (rowValue === undefined || rowValue === null) return false;
 
-					return String(rowValue).toLowerCase().includes(value.toLowerCase());
-				}
-			);
+	// 				return String(rowValue).toLowerCase().includes(value.toLowerCase());
+	// 			}
+	// 		);
 
-			// Filtro por status
-			const matchStatus =
-				activeLabel === "Todos"
-					? true
-					: activeLabel === "Ativos"
-						? row.holderContractStatus === "Ativo" ||
-							row.holderContractStatus === "Ativa"
-						: row.holderContractStatus === "Inativo" ||
-							row.holderContractStatus === "Inativa";
+	// 		// Filtro por status
+	// 		const matchStatus =
+	// 			activeLabel === "Todos"
+	// 				? true
+	// 				: activeLabel === "Ativos"
+	// 					? row.holderContractStatus === "Ativo" ||
+	// 						row.holderContractStatus === "Ativa"
+	// 					: row.holderContractStatus === "Inativo" ||
+	// 						row.holderContractStatus === "Inativa";
 
-			return matches && matchStatus;
-		});
+	// 		return matches && matchStatus;
+	// 	});
 
-		setFilteredRows(newFiltered);
-	}, [filter, activeLabel, dataRows]);
+	// 	setFilteredRows(newFiltered);
+	// }, [filter, activeLabel, dataRows]);
 
 	const background: string =
 		"flex flex-col bg-white w-full min-h-screen max-w-full p-4 gap-4 overflow-hidden";
