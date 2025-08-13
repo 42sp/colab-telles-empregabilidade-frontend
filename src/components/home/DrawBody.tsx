@@ -11,6 +11,7 @@ import { useServices } from "@/hooks/useServices";
 import type { StudentsParameters } from "@/types/requests";
 
 export function DrawBody() {
+	//#region States
 	const $service = useServices();
 	const [dataRows, setDataRows] = useState<StudentsParameters[]>([]);
 	const rowsToGet: number = 30;
@@ -21,8 +22,8 @@ export function DrawBody() {
 	const [colums, setColums] = useState<ColumnVisibility>({
 		name: { label: "Nome", isVisible: true },
 		socialName: { label: "Nome Social", isVisible: true },
-		preferredName: { label: "Nome Preferido", isVisible: true },
-		ismartEmail: { label: "Email iSmart", isVisible: true },
+		preferredName: { label: "Nome Preferido", isVisible: false },
+		ismartEmail: { label: "Email iSmart", isVisible: true }, // Assumindo que é o email
 		phoneNumber: { label: "Número de Telefone", isVisible: true },
 		gender: { label: "Gênero", isVisible: true },
 		sexualOrientation: { label: "Orientação Sexual", isVisible: true },
@@ -31,155 +32,155 @@ export function DrawBody() {
 		linkedin: { label: "LinkedIn", isVisible: true },
 		transferredCourseOrUniversity: {
 			label: "Transferência de Curso/Universidade",
-			isVisible: true,
+			isVisible: false,
 		},
-		transferDate: { label: "Data de Transferência", isVisible: true },
-		currentCourseStart: { label: "Início do Curso Atual", isVisible: true },
+		transferDate: { label: "Data de Transferência", isVisible: false },
+		currentCourseStart: { label: "Início do Curso Atual", isVisible: false },
 		currentCourseStartYear: {
 			label: "Ano de Início do Curso Atual",
-			isVisible: true,
+			isVisible: false,
 		},
-		currentCourseEnd: { label: "Fim do Curso Atual", isVisible: true },
+		currentCourseEnd: { label: "Fim do Curso Atual", isVisible: false },
 		currentCourseEndYear: {
 			label: "Ano de Fim do Curso Atual",
-			isVisible: true,
+			isVisible: false,
 		},
 		supportedCourseFormula: {
 			label: "Fórmula do Curso Suportado",
-			isVisible: true,
+			isVisible: false,
 		},
 		currentArea: { label: "Área Atual", isVisible: true },
-		universityType: { label: "Tipo de Universidade", isVisible: true },
-		currentAggregatedCourse: { label: "Curso Agregado Atual", isVisible: true },
-		currentDetailedCourse: { label: "Curso Detalhado Atual", isVisible: true },
+		universityType: { label: "Tipo de Universidade", isVisible: false },
+		currentAggregatedCourse: { label: "Curso Agregado Atual", isVisible: false },
+		currentDetailedCourse: { label: "Curso Detalhado Atual", isVisible: false },
 		currentDetailedUniversity: {
 			label: "Universidade Detalhada Atual",
-			isVisible: true,
+			isVisible: false,
 		},
 		currentCity: { label: "Cidade Atual", isVisible: true },
 		currentState: { label: "Estado Atual", isVisible: true },
 		currentCountry: { label: "País Atual", isVisible: true },
 		currentAggregatedLocation: {
 			label: "Localização Agregada Atual",
-			isVisible: true,
+			isVisible: false,
 		},
-		currentShift: { label: "Turno Atual", isVisible: true },
+		currentShift: { label: "Turno Atual", isVisible: false },
 		holderContractStatus: { label: "Status do Contrato", isVisible: true },
 		realStatus: { label: "Status Real", isVisible: true },
-		realProfile: { label: "Perfil Real", isVisible: true },
-		hrProfile: { label: "Perfil RH", isVisible: true },
-		targetStatus: { label: "Status Alvo", isVisible: true },
-		entryProgram: { label: "Programa de Entrada", isVisible: true },
-		projectYears: { label: "Anos de Projeto", isVisible: true },
-		entryYearClass: { label: "Ano de Entrada", isVisible: true },
-		schoolNetwork: { label: "Rede Escolar", isVisible: true },
-		school: { label: "Escola", isVisible: true },
-		standardizedSchool: { label: "Escola Padronizada", isVisible: true },
-		groupedLocation: { label: "Localização Agrupada", isVisible: true },
-		specificLocation: { label: "Localização Específica", isVisible: true },
-		duplicatedTargetStatus: { label: "Status Alvo Duplicado", isVisible: true },
+		realProfile: { label: "Perfil Real", isVisible: false },
+		hrProfile: { label: "Perfil RH", isVisible: false },
+		targetStatus: { label: "Status Alvo", isVisible: false },
+		entryProgram: { label: "Programa de Entrada", isVisible: false },
+		projectYears: { label: "Anos de Projeto", isVisible: false },
+		entryYearClass: { label: "Ano de Entrada", isVisible: false },
+		schoolNetwork: { label: "Rede Escolar", isVisible: false },
+		school: { label: "Escola", isVisible: false },
+		standardizedSchool: { label: "Escola Padronizada", isVisible: false },
+		groupedLocation: { label: "Localização Agrupada", isVisible: false },
+		specificLocation: { label: "Localização Específica", isVisible: false },
+		duplicatedTargetStatus: { label: "Status Alvo Duplicado", isVisible: false },
 		duplicatedCurrentStatus: {
 			label: "Status Atual Duplicado",
-			isVisible: true,
+			isVisible: false,
 		},
-		targetAudience: { label: "Público Alvo", isVisible: true },
+		targetAudience: { label: "Público Alvo", isVisible: false },
 		working: { label: "Trabalhando", isVisible: true },
-		opportunityType: { label: "Tipo de Oportunidade", isVisible: true },
-		details: { label: "Detalhes", isVisible: true },
+		opportunityType: { label: "Tipo de Oportunidade", isVisible: false },
+		details: { label: "Detalhes", isVisible: false },
 		sector: { label: "Setor", isVisible: true },
-		careerTrack: { label: "Trilha de Carreira", isVisible: true },
+		careerTrack: { label: "Trilha de Carreira", isVisible: false },
 		organization: { label: "Organização", isVisible: true },
-		website: { label: "Website", isVisible: true },
-		startDate: { label: "Data de Início", isVisible: true },
-		endDate: { label: "Data de Fim", isVisible: true },
+		website: { label: "Website", isVisible: false },
+		startDate: { label: "Data de Início", isVisible: false },
+		endDate: { label: "Data de Fim", isVisible: false },
 		compensation: { label: "Compensação", isVisible: true },
 		partnerCompanies: { label: "Empresas Parceiras", isVisible: true },
 		topGlobalCompanies: {
 			label: "Principais Empresas Globais",
-			isVisible: true,
+			isVisible: false,
 		},
-		comments: { label: "Comentários", isVisible: true },
-		tag: { label: "Tag", isVisible: true },
-		jan: { label: "Janeiro", isVisible: true },
-		feb: { label: "Fevereiro", isVisible: true },
-		mar: { label: "Março", isVisible: true },
-		apr: { label: "Abril", isVisible: true },
-		may: { label: "Maio", isVisible: true },
-		jun: { label: "Junho", isVisible: true },
-		jul: { label: "Julho", isVisible: true },
-		aug: { label: "Agosto", isVisible: true },
-		sep: { label: "Setembro", isVisible: true },
-		oct: { label: "Outubro", isVisible: true },
-		nov: { label: "Novembro", isVisible: true },
-		dec: { label: "Dezembro", isVisible: true },
-		january: { label: "Janeiro", isVisible: true },
-		february: { label: "Fevereiro", isVisible: true },
-		march: { label: "Março", isVisible: true },
-		april: { label: "Abril", isVisible: true },
-		mayFull: { label: "Maio", isVisible: true },
-		june: { label: "Junho", isVisible: true },
-		july: { label: "Julho", isVisible: true },
-		august: { label: "Agosto", isVisible: true },
-		september: { label: "Setembro", isVisible: true },
-		october: { label: "Outubro", isVisible: true },
-		november: { label: "Novembro", isVisible: true },
-		december: { label: "Dezembro", isVisible: true },
-		january2: { label: "Janeiro 2", isVisible: true },
-		february2: { label: "Fevereiro 2", isVisible: true },
-		march2: { label: "Março 2", isVisible: true },
-		april2: { label: "Abril 2", isVisible: true },
-		may2: { label: "Maio 2", isVisible: true },
-		june2: { label: "Junho 2", isVisible: true },
-		july2: { label: "Julho 2", isVisible: true },
-		august2: { label: "Agosto 2", isVisible: true },
-		september2: { label: "Setembro 2", isVisible: true },
-		october2: { label: "Outubro 2", isVisible: true },
-		november2: { label: "Novembro 2", isVisible: true },
-		december2: { label: "Dezembro 2", isVisible: true },
+		comments: { label: "Comentários", isVisible: false },
+		tag: { label: "Tag", isVisible: false },
+		jan: { label: "Janeiro", isVisible: false },
+		feb: { label: "Fevereiro", isVisible: false },
+		mar: { label: "Março", isVisible: false },
+		apr: { label: "Abril", isVisible: false },
+		may: { label: "Maio", isVisible: false },
+		jun: { label: "Junho", isVisible: false },
+		jul: { label: "Julho", isVisible: false },
+		aug: { label: "Agosto", isVisible: false },
+		sep: { label: "Setembro", isVisible: false },
+		oct: { label: "Outubro", isVisible: false },
+		nov: { label: "Novembro", isVisible: false },
+		dec: { label: "Dezembro", isVisible: false },
+		january: { label: "Janeiro", isVisible: false },
+		february: { label: "Fevereiro", isVisible: false },
+		march: { label: "Março", isVisible: false },
+		april: { label: "Abril", isVisible: false },
+		mayFull: { label: "Maio", isVisible: false },
+		june: { label: "Junho", isVisible: false },
+		july: { label: "Julho", isVisible: false },
+		august: { label: "Agosto", isVisible: false },
+		september: { label: "Setembro", isVisible: false },
+		october: { label: "Outubro", isVisible: false },
+		november: { label: "Novembro", isVisible: false },
+		december: { label: "Dezembro", isVisible: false },
+		january2: { label: "Janeiro 2", isVisible: false },
+		february2: { label: "Fevereiro 2", isVisible: false },
+		march2: { label: "Março 2", isVisible: false },
+		april2: { label: "Abril 2", isVisible: false },
+		may2: { label: "Maio 2", isVisible: false },
+		june2: { label: "Junho 2", isVisible: false },
+		july2: { label: "Julho 2", isVisible: false },
+		august2: { label: "Agosto 2", isVisible: false },
+		september2: { label: "Setembro 2", isVisible: false },
+		october2: { label: "Outubro 2", isVisible: false },
+		november2: { label: "Novembro 2", isVisible: false },
+		december2: { label: "Dezembro 2", isVisible: false },
 		internshipUnavailabilityReason: {
 			label: "Motivo de Indisponibilidade de Estágio",
-			isVisible: true,
+			isVisible: false,
 		},
 		careerTrajectoryInterests: {
 			label: "Interesses de Trajetória de Carreira",
-			isVisible: true,
+			isVisible: false,
 		},
-		primaryInterest: { label: "Interesse Primário", isVisible: true },
-		secondaryInterest: { label: "Interesse Secundário", isVisible: true },
+		primaryInterest: { label: "Interesse Primário", isVisible: false },
+		secondaryInterest: { label: "Interesse Secundário", isVisible: false },
 		intendedWorkingAreas: {
 			label: "Áreas de Trabalho Pretendidas",
-			isVisible: true,
+			isVisible: false,
 		},
 		additionalAreaInterests: {
 			label: "Interesses Adicionais de Área",
-			isVisible: true,
+			isVisible: false,
 		},
 		seekingProfessionalOpportunity: {
 			label: "Buscando Oportunidade Profissional",
-			isVisible: true,
+			isVisible: false,
 		},
 		opportunitiesLookingFor: {
 			label: "Oportunidades Procuradas",
-			isVisible: true,
+			isVisible: false,
 		},
-		opportunityDetails: { label: "Detalhes da Oportunidade", isVisible: true },
+		opportunityDetails: { label: "Detalhes da Oportunidade", isVisible: false },
 		languages: { label: "Idiomas", isVisible: true },
-		technicalKnowledge: { label: "Conhecimento Técnico", isVisible: true },
+		technicalKnowledge: { label: "Conhecimento Técnico", isVisible: false },
 		officePackageKnowledge: {
 			label: "Conhecimento em Pacote Office",
-			isVisible: true,
+			isVisible: false,
 		},
 		wordProficiencyLevel: {
 			label: "Nível de Proficiência em Word",
-			isVisible: true,
+			isVisible: false,
 		},
 		excelProficiencyLevel: {
 			label: "Nível de Proficiência em Excel",
-			isVisible: true,
+			isVisible: false,
 		},
 		powerPointProficiencyLevel: {
 			label: "Nível de Proficiência em PowerPoint",
-			isVisible: true,
+			isVisible: false,
 		},
 	});
 
@@ -202,7 +203,9 @@ export function DrawBody() {
 
 		return initialFilter as FilterType;
 	});
+	//#endregion
 
+	//#region useEffects
 	useEffect(() => {
 		sessionStorage.setItem("userFilter", JSON.stringify(filter));
 	}, [filter]);
@@ -222,22 +225,26 @@ export function DrawBody() {
 					allFilter.holderContractStatus = statusValue;
 				}
 				const translateFilter = (value: string) => {
-					const lower = value.toLowerCase();
+					const lower: string = value.toLowerCase();
+					const translations = new Map<string, boolean>([
+						["sim", true],
+						["não", false],
+						["nao", false],
+					]);
 
-					if (lower === "n/a") return null;
-					if (lower === "sim") return true;
-					if (lower === "não") return false;
+					if (lower === "-") return null;
 
-					return value;
+					return translations.get(lower) ?? value;
 				};
 				Object.keys(filter).forEach(key => {
-					if (filter[key] && filter[key].trim() !== "") {
+					const trimKey = filter[key]?.trim();
+					if (filter[key] && trimKey !== "") {
 						const translated = translateFilter(filter[key]);
+
 						allFilter[key] = translated;
 					}
 				});
 				const response = await $service.students(allFilter);
-				console.log("Response: ", response.data);
 				if (JSON.stringify(response.data) !== JSON.stringify(dataRows))
 					setDataRows(response.data.data);
 			} catch (error) {
@@ -256,65 +263,7 @@ export function DrawBody() {
 		setFilteredRows(dataRows);
 	}, [dataRows]);
 
-	// useEffect(() => {
-	// 	(async () => {
-	// 		try {
-	// 			const query: any = {};
-
-	// 			for (const [key, value] of Object.entries(filter)) {
-	// 				if (value.trim() !== "") {
-	// 					query[key] = { $regex: value, $options: "i" };
-	// 				}
-	// 			}
-
-	// 			if (activeLabel === "Ativos") query.working = true;
-	// 			else if (activeLabel === "Inativos") query.working = false;
-
-	// 			const response = await $service.students({
-	// 				query: {
-	// 					$limit: rowsToGet,
-	// 					$skip: page * rowsToGet,
-	// 					...query,
-	// 				},
-	// 			});
-
-	// 			setFilteredRows(response.data.data);
-	// 			console.log("Filtered Rows:", filteredRows);
-	// 		} catch (error) {
-	// 			console.error("Failed to fetch filtered students:", error);
-	// 		}
-	// 	})();
-	// }, [filter, activeLabel]);
-	// useEffect(() => {
-	// 	const newFiltered = dataRows.filter((row: (typeof dataRows)[number]) => {
-	// 		// Filtro por campo
-	// 		const matches = (Object.entries(filter) as [keyof Data, string][]).every(
-	// 			([field, value]) => {
-	// 				if (!value) return true;
-
-	// 				const rowValue = row[field];
-	// 				if (rowValue === undefined || rowValue === null) return false;
-
-	// 				return String(rowValue).toLowerCase().includes(value.toLowerCase());
-	// 			}
-	// 		);
-
-	// 		// Filtro por status
-	// 		const matchStatus =
-	// 			activeLabel === "Todos"
-	// 				? true
-	// 				: activeLabel === "Ativos"
-	// 					? row.holderContractStatus === "Ativo" ||
-	// 						row.holderContractStatus === "Ativa"
-	// 					: row.holderContractStatus === "Inativo" ||
-	// 						row.holderContractStatus === "Inativa";
-
-	// 		return matches && matchStatus;
-	// 	});
-
-	// 	setFilteredRows(newFiltered);
-	// }, [filter, activeLabel, dataRows]);
-
+	//#endregion
 	const background: string =
 		"flex flex-col bg-white w-full min-h-screen max-w-full p-4 gap-4 overflow-hidden";
 	return (

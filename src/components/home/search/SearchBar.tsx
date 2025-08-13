@@ -31,8 +31,6 @@ export function SearchBar(props: PropsType) {
 		props.setPage(0);
 	}
 
-
-	
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex bg-white w-full gap-4 p-4 border border-b rounded-md">

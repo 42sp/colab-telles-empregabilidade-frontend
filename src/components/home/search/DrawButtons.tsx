@@ -36,22 +36,50 @@ export function DrawButtons(props: PropsType) {
 	const exportName = "relatório";
 
 	function downloadPdf(rows: Data[]) {
-		const doc = new jsPDF({ orientation: "landscape" });
 		const visibleKey = Object.keys(props.colums).filter(
 			key => props.colums[key as keyof typeof props.colums].isVisible
 		);
+		let format: string =
+			visibleKey.length <= 25
+				? "a4"
+				: visibleKey.length <= 50
+					? "a3"
+					: visibleKey.length <= 75
+						? "a2"
+						: "a1";
+		console.log("length: ", visibleKey.length, "format: ", format);
+		let formatSize: number;
+		let cellPadding: number;
+
+		const doc = new jsPDF({
+			orientation: "landscape",
+			unit: "mm",
+			format: format,
+		});
 		const headers = visibleKey.map(
 			key => props.colums[key as keyof typeof props.colums].label
 		);
 		const data = rows.map(row =>
 			visibleKey.map(key => {
 				const typedKey = key as keyof Data;
-				if (key === "rent")
-					return row.rent.toLocaleString("pt-br", {
-						style: "currency",
-						currency: "BRL",
-					});
-				return row[typedKey];
+
+				if (key === "compensation") {
+					return row[typedKey]
+						? new Intl.NumberFormat("pt-BR", {
+								style: "currency",
+								currency: "BRL",
+							}).format(Number(row[typedKey]))
+						: "-";
+				}
+
+				if (row[typedKey] !== null) {
+					if (typeof row[typedKey] === "boolean")
+						return row[typedKey] === true ? "Sim" : "Não";
+
+					return String(row[typedKey]);
+				}
+
+				return "-";
 			})
 		);
 
@@ -59,7 +87,24 @@ export function DrawButtons(props: PropsType) {
 			head: [headers],
 			body: data,
 			startY: 10,
-			margin: { left: 10, right: 10 },
+			margin: { left: 8, right: 8 },
+			styles: {
+				fontSize: 5,
+				cellPadding: 0.5,
+				overflow: "linebreak",
+				halign: "left",
+			},
+			headStyles: {
+				fontSize: 6,
+				fontStyle: "bold",
+				fillColor: [200, 200, 200],
+				halign: "center",
+			},
+			tableWidth: "auto",
+			theme: "grid",
+			showHead: "everyPage",
+			pageBreak: "auto",
+			rowPageBreak: "avoid",
 		});
 
 		doc.save(exportName + ".pdf");
@@ -154,13 +199,16 @@ export function DrawButtons(props: PropsType) {
 												[key]: { ...prev[typedKey], isVisible: !!checked },
 											}))
 										}
-									/>
-									<div
-										className={`w-5 h-5 flex justify-center items-center border border-gray-400
-												${col.isVisible ? "bg-blue-600 border-blue-300" : "bg-white"}`}
 									>
-										{col.isVisible && <Check className="w-4 h-4 text-white" />}
-									</div>
+										<div
+											className={`w-5 h-5 flex justify-center items-center cursor-pointer border border-gray-400
+												${col.isVisible ? "bg-blue-600 border-blue-300" : "bg-white"}`}
+										>
+											{col.isVisible && (
+												<Check className="w-4 h-4 text-white" />
+											)}
+										</div>
+									</Checkbox>
 									<label
 										htmlFor={`checkbox-${key}`}
 										className="flex justify-start items-start cursor-pointer select-none gap-2"
