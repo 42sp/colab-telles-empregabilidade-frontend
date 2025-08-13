@@ -9,6 +9,7 @@ export default class Service {
 	}
 
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
+
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
 
 	// -------------------------------------------------------------------- POST --------------------------------------------------------------------
@@ -21,6 +22,30 @@ export default class Service {
 			sessionStorage.setItem("accessToken", response.data.accessToken);
 		}
 		return response;
+	}
+
+	async postImportFiles(params: collection.ImportFilesParameters) {
+		const files = params.files.filter(file => file.file instanceof File);
+		if (files.length !== params.files.length) {
+			throw new Error("Todos os itens devem ser arquivos do tipo File.");
+		}
+
+		const responses = await Promise.all(
+			files.map(file => {
+				const formData = new FormData();
+				formData.append("file", file.file);
+				return this.$axios.post<collection.ImportFilesResponse>(
+					"/import-files",
+					formData,
+					{
+						headers: {
+							"Content-Type": "multipart/form-data",
+						},
+					}
+				);
+			})
+		);
+		return responses;
 	}
 	// -------------------------------------------------------------------- POST --------------------------------------------------------------------
 

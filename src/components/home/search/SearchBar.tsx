@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import { DrawResults } from "./DrawResults";
 import { DrawButtons } from "./DrawButtons";
-import type { PropsType } from "../types";
+import type { PropsType } from "../../../pages/home/types";
 
 export function SearchBar(props: PropsType) {
 	const inputValue = props.filter[props.activeFilter] || "";
@@ -12,7 +12,7 @@ export function SearchBar(props: PropsType) {
 		props.setPage(0);
 	}
 	//Page config
-	const rowsPerPage = 5;
+	const rowsPerPage = 10;
 	const startPage = props.page * rowsPerPage;
 	const visibleRows = props.filteredRows.slice(
 		startPage,
@@ -73,6 +73,7 @@ export function SearchBar(props: PropsType) {
 				visibleRows={visibleRows}
 				startPage={startPage}
 				endPage={endPage}
+				rowsPerPage={rowsPerPage}
 			/>
 		</div>
 	);
