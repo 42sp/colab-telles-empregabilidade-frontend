@@ -51,7 +51,10 @@ export function DrawBody() {
 		},
 		currentArea: { label: "Área Atual", isVisible: true },
 		universityType: { label: "Tipo de Universidade", isVisible: false },
-		currentAggregatedCourse: { label: "Curso Agregado Atual", isVisible: false },
+		currentAggregatedCourse: {
+			label: "Curso Agregado Atual",
+			isVisible: false,
+		},
 		currentDetailedCourse: { label: "Curso Detalhado Atual", isVisible: false },
 		currentDetailedUniversity: {
 			label: "Universidade Detalhada Atual",
@@ -78,7 +81,10 @@ export function DrawBody() {
 		standardizedSchool: { label: "Escola Padronizada", isVisible: false },
 		groupedLocation: { label: "Localização Agrupada", isVisible: false },
 		specificLocation: { label: "Localização Específica", isVisible: false },
-		duplicatedTargetStatus: { label: "Status Alvo Duplicado", isVisible: false },
+		duplicatedTargetStatus: {
+			label: "Status Alvo Duplicado",
+			isVisible: false,
+		},
 		duplicatedCurrentStatus: {
 			label: "Status Atual Duplicado",
 			isVisible: false,
@@ -232,8 +238,6 @@ export function DrawBody() {
 						["nao", false],
 					]);
 
-					if (lower === "-") return null;
-
 					return translations.get(lower) ?? value;
 				};
 				Object.keys(filter).forEach(key => {
@@ -241,7 +245,8 @@ export function DrawBody() {
 					if (filter[key] && trimKey !== "") {
 						const translated = translateFilter(filter[key]);
 
-						allFilter[key] = translated;
+						allFilter[key] =
+							typeof translated === "string" ? translated.trim() : translated;
 					}
 				});
 				const response = await $service.students(allFilter);

@@ -3,9 +3,10 @@ import { X } from "lucide-react";
 import { DrawResults } from "./DrawResults";
 import { DrawButtons } from "./DrawButtons";
 import type { PropsType } from "../../../pages/home/types";
+import { useEffect, useState } from "react";
 
 export function SearchBar(props: PropsType) {
-	const inputValue = props.filter[props.activeFilter] || "";
+	const [input, setInput] = useState<string>(props.filter[props.activeFilter] || "");
 
 	function updateFilter(value: string) {
 		props.setFilter(prev => ({ ...prev, [props.activeFilter]: value }));
@@ -31,24 +32,35 @@ export function SearchBar(props: PropsType) {
 		props.setPage(0);
 	}
 
+	useEffect(() => {
+		setInput(props.filter[props.activeFilter] || "");
+	}, [props.filter, props.activeFilter]);
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			const myInput = input.trim();
+			if (myInput !== "-") {
+				updateFilter(myInput);
+			}
+		}, 500);
+
+		return () => clearTimeout(timer);
+	}, [input, props.setFilter, props.activeFilter]);
+
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex bg-white w-full gap-4 p-4 border border-b rounded-md">
 				<Input
 					className="w-64"
-					value={inputValue}
+					value={input}
 					placeholder="Buscar estudante..."
 					onChange={e => {
-						props.setFilter(prev => ({
-							...prev,
-							[props.activeFilter]: e.target.value,
-						}));
-					}}
-					onKeyDown={k => {
-						if (k.key === "Enter") {
-							const input = k.target as HTMLInputElement;
-							updateFilter(input.value);
-						}
+						setInput(e.target.value);
+						// if (e.target.value !== "-" && e.target.value.trim() !== "") {
+						// 	props.setFilter(prev => ({
+						// 		...prev,
+						// 		[props.activeFilter]: e.target.value,
+						// 	}));
+						// }
 					}}
 				/>
 				<DrawButtons {...props} />

@@ -101,7 +101,7 @@ export function DrawResults(props: DrawResultsProps) {
 													style: "currency",
 													currency: "BRL",
 												}).format(row[key as keyof typeof row] as number)
-											: row[key as keyof typeof row] != null
+											: row[key as keyof typeof row] != null && row[key as keyof typeof row] !== ""
 												? typeof row[key as keyof typeof row] === "boolean"
 													? row[key as keyof typeof row] === true
 														? "Sim"
