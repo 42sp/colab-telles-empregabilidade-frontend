@@ -35,6 +35,7 @@ export function SearchBar(props: PropsType) {
 	useEffect(() => {
 		setInput(props.filter[props.activeFilter] || "");
 	}, [props.filter, props.activeFilter]);
+
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			const myInput = input.trim();
@@ -55,12 +56,6 @@ export function SearchBar(props: PropsType) {
 					placeholder="Buscar estudante..."
 					onChange={e => {
 						setInput(e.target.value);
-						// if (e.target.value !== "-" && e.target.value.trim() !== "") {
-						// 	props.setFilter(prev => ({
-						// 		...prev,
-						// 		[props.activeFilter]: e.target.value,
-						// 	}));
-						// }
 					}}
 				/>
 				<DrawButtons {...props} />

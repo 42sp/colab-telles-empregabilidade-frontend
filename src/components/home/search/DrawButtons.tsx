@@ -39,7 +39,7 @@ export function DrawButtons(props: PropsType) {
 		const visibleKey = Object.keys(props.colums).filter(
 			key => props.colums[key as keyof typeof props.colums].isVisible
 		);
-		let format: string =
+		const format: string =
 			visibleKey.length <= 25
 				? "a4"
 				: visibleKey.length <= 50
@@ -47,9 +47,6 @@ export function DrawButtons(props: PropsType) {
 					: visibleKey.length <= 75
 						? "a2"
 						: "a1";
-		console.log("length: ", visibleKey.length, "format: ", format);
-		let formatSize: number;
-		let cellPadding: number;
 
 		const doc = new jsPDF({
 			orientation: "landscape",
@@ -64,19 +61,30 @@ export function DrawButtons(props: PropsType) {
 				const typedKey = key as keyof Data;
 
 				if (key === "compensation") {
-					return row[typedKey]
-						? new Intl.NumberFormat("pt-BR", {
-								style: "currency",
-								currency: "BRL",
-							}).format(Number(row[typedKey]))
-						: "-";
+					const value = row[typedKey];
+					const num: number = Number(value);
+					const zeroValue: string = new Intl.NumberFormat("pt-BR", {
+						style: "currency",
+						currency: "BRL",
+					}).format(0);
+					const formattedValue = new Intl.NumberFormat("pt-BR", {
+						style: "currency",
+						currency: "BRL",
+					}).format(num);
+
+					if (value === null || value === undefined || isNaN(num))
+						return zeroValue;
+
+					return formattedValue;
 				}
 
 				if (row[typedKey] !== null) {
-					if (typeof row[typedKey] === "boolean")
-						return row[typedKey] === true ? "Sim" : "Não";
+					const input = row[typedKey];
+					let value: string = String(input).trim();
 
-					return String(row[typedKey]);
+					if (typeof input === "boolean") value = input ? "Sim" : "Não";
+
+					return value === "" ? "-" : value;
 				}
 
 				return "-";
@@ -87,12 +95,12 @@ export function DrawButtons(props: PropsType) {
 			head: [headers],
 			body: data,
 			startY: 10,
-			margin: { left: 8, right: 8 },
+			margin: { left: 5, right: 5 },
 			styles: {
 				fontSize: 5,
 				cellPadding: 0.5,
 				overflow: "linebreak",
-				halign: "left",
+				halign: "center",
 			},
 			headStyles: {
 				fontSize: 6,
@@ -116,23 +124,32 @@ export function DrawButtons(props: PropsType) {
 		);
 		const header = visibleKey
 			.map(key => props.colums[key as keyof typeof props.colums].label || key)
-			.join(", ");
+			.join(",");
 		const body = rows
 			.map(row =>
 				visibleKey
 					.map(key => {
 						const typedKey = key as keyof Data;
-						if (key === "rent") {
-							const value = row.rent.toLocaleString("pt-br", {
-								style: "currency",
-								currency: "BRL",
-							});
-							return `"${value}"`;
-						}
 						const value = row[typedKey];
-						if (typeof value === "string" && value.includes(","))
-							return `"${value}"`;
-						return value;
+						const str: string = String(row[typedKey]).trim();
+
+						if (key === "compensation") {
+							const num: number = Number(value);
+							return num.toFixed(2);
+						}
+						if (
+							value === null ||
+							value === undefined ||
+							str === null ||
+							str === undefined ||
+							str === ""
+						)
+							return `""`;
+
+						if (str.includes(",") || str.includes("'") || str.includes('"'))
+							return `"${str}"`;
+
+						return str;
 					})
 					.join(",")
 			)

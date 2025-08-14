@@ -68,6 +68,44 @@ export function DrawResults(props: DrawResultsProps) {
 		);
 	}
 
+	function showContent(key: string, row: string, type: string): string {
+		if (key === "compensation") {
+			const num = Number(row);
+			return new Intl.NumberFormat("pt-BR", {
+				style: "currency",
+				currency: "BRL",
+			}).format(isNaN(num) ? 0 : num);
+		}
+		if (
+			row === null ||
+			row === undefined ||
+			row === "" ||
+			row === "null" ||
+			row === "undefined"
+		)
+			return "-";
+		if (type === "boolean") return row === "true" ? "Sim" : "Não";
+
+		return row === "0" ? "-" : row;
+	}
+
+	function renderCellContent(key: string, row: string, type: string) {
+		const value: string = showContent(key, row, type);
+
+		// key === "working" && value === "Sim" - only working students
+		if (value === "Sim")
+			return (
+				<div className="inline-flex bg-black text-white w-10 h-6 rounded-xl justify-center items-center">
+					{value}
+				</div>
+			);
+		else if (value === "Não")
+			return (
+				<div className="inline-flex bg-white w-10 h-6 rounded-xl justify-center items-center">{value}</div>
+			);
+		return value;
+	}
+
 	return (
 		<div className="flex flex-col flex-1 border border-gray-200 rounded-md bg-white max-w-full">
 			<div className="max-w-full overflow-x-auto">
@@ -87,7 +125,7 @@ export function DrawResults(props: DrawResultsProps) {
 					</thead>
 
 					{/* Body */}
-					<tbody className="text-black font-medium">
+					<tbody className="text-black font-medium text-sm">
 						{props.visibleRows.map((row, i) => (
 							<tr key={i} className="border-b border-gray-200">
 								{visibleColums.map(([key]) => (
@@ -96,18 +134,7 @@ export function DrawResults(props: DrawResultsProps) {
 										className="px-4 py-2 truncate max-w-[200px]"
 										title={String(row[key as keyof typeof row])}
 									>
-										{key === "compensation"
-											? new Intl.NumberFormat("pt-BR", {
-													style: "currency",
-													currency: "BRL",
-												}).format(row[key as keyof typeof row] as number)
-											: row[key as keyof typeof row] != null && row[key as keyof typeof row] !== ""
-												? typeof row[key as keyof typeof row] === "boolean"
-													? row[key as keyof typeof row] === true
-														? "Sim"
-														: "Não"
-													: String(row[key as keyof typeof row])
-												: "-"}
+										{renderCellContent(key, String(row[key]), typeof row[key])}
 									</td>
 								))}
 							</tr>
