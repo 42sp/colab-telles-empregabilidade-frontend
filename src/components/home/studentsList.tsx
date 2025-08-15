@@ -4,7 +4,7 @@ import { DrawTitle } from "./DrawTitle";
 
 export function StudentsList() {
 	return (
-		<div className="flex flex-col w-full max-w-full space-y-6-1 overflow-hidden">
+		<div className="flex flex-col w-full overflow-hidden">
 			<DrawTitle
 				title={"Lista de estudantes"}
 				description={"Gerencie e visualize os alunos registrados."}

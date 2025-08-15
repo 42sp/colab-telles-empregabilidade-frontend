@@ -113,3 +113,15 @@ export interface StudentsParameters {
 export interface StudentsResponse {
 	data: StudentsParameters[];
 }
+
+export interface StudentsType {
+	$limit?: number;
+	$skip?: number;
+	[key: string]:
+		| boolean
+		| string
+		| number
+		| undefined
+		| null
+		| { $regex: RegExp; $options?: string };
+}
