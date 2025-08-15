@@ -1,7 +1,7 @@
 import type { fileProps } from "./fileProps";
 
 export interface ImportFilesParameters {
-	files: fileProps[];
+	file: fileProps;
 }
 
 export interface ImportFilesResponse {
