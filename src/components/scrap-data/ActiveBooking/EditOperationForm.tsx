@@ -15,8 +15,6 @@ export function EditOperationForm({ isSubmitting }: EditOperationFormProps) {
 	const isRecurring = form.watch("isRecurring");
 
 	// Função para desabilitar inputs (pode usar prop disabled, ou setar readOnly para inputs controlados)
-	// Como FormInput provavelmente aceita disabled, usamos disabled
-	// Wrapper com opacity reduzida e pointer-events none para bloquear interação visual e funcional
 	const recurrenceClass = isRecurring
 		? "opacity-100 pointer-events-auto"
 		: "opacity-50 pointer-events-none select-none";

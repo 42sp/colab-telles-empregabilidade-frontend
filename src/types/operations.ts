@@ -24,6 +24,9 @@ export type Operation = {
 	result?: Record<string, any>;
 	error_message?: string | null;
 
+	last_occurrence?: string | null; // "YYYY-MM-DD" ou null
+	last_occurrence_price?: number | string | null; // número ou string formatada
+
 	// Caso seu adapter retorne _id em vez de id, você pode mapear depois
 	_id?: number;
 };
