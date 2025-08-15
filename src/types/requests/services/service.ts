@@ -39,6 +39,23 @@ export default class Service {
 		}
 		return response;
 	}
+
+	async postImportFiles(params: collection.ImportFilesParameters) {
+		const formData = new FormData();
+
+		formData.append("file", params.file.file);
+		const response = await this.$axios.post<collection.ImportFilesResponse>(
+			"/import-files",
+			formData,
+			{
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			}
+		);
+
+		return response;
+	}
 	// -------------------------------------------------------------------- POST --------------------------------------------------------------------
 
 	// -------------------------------------------------------------------- PUT --------------------------------------------------------------------

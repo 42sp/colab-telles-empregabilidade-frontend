@@ -4,9 +4,30 @@ import { ActiveBooking } from "@/components/scrap-data/ActiveBooking";
 import { OperationHistory } from "@/components/scrap-data/OperationHistory";
 import { FadeInOnScroll } from "@/components/utils/FadeInOnScroll";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { useEffect, useState } from "react";
+import { scrapService } from "@/services/api";
+import type { Operation } from '@/types/operations';
 
 function ScrapData() {
 	const { animationsEnabled } = useSidebar();
+	const [operations, setOperations] = useState<Operation[]>([]);
+
+	useEffect(() => {
+		async function fetch() {
+			const response = await scrapService.find( { query: { $sort: { scheduled_date: 1 } } });
+			const raw = response.data || [];
+			setOperations(raw);
+		}
+		fetch();
+	}, [])
+
+	function addOperation(newOp: Operation) {
+		setOperations(prev => [newOp, ...prev])
+	}
+
+	function removeOperation(uuid: string) {
+		setOperations(prev => prev.filter(op => op.uuid !== uuid));
+	}
 
 	return (
 		<div className="container mx-auto p-6 space-y-8">
@@ -22,11 +43,11 @@ function ScrapData() {
 			</FadeInOnScroll>
 
 			<FadeInOnScroll delay={0.1} enabled={animationsEnabled}>
-				<NewOperationForm />
+				<NewOperationForm onOperationCreated={addOperation} />
 			</FadeInOnScroll>
 
 			<FadeInOnScroll delay={0.2} enabled={animationsEnabled}>
-				<ActiveBooking />
+				<ActiveBooking operations={operations} onDeleted={removeOperation} />
 			</FadeInOnScroll>
 
 			<FadeInOnScroll delay={0.2} enabled={animationsEnabled}>
