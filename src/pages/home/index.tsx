@@ -1,6 +1,8 @@
-import { StudentsList } from "./studentsList";
+import { StudentsList } from "../../components/home/studentsList";
 
 function Home() {
+	const background: string = "flex flex-wrap flex-1 w-full";
+
 	return (
 		<div className="contain-layout container mx-auto flex justify-center items-center overflow-x-hidden">
 			<div className={background}>

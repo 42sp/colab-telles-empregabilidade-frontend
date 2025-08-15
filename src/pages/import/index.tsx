@@ -59,7 +59,7 @@ const Configuration = () => {
 	};
 
 	return (
-		<div>
+		<div className="contain-layout container mx-auto">
 			<ConfigurationHeader />
 			<FadeInOnScroll>
 				<ConfigurationUploadArquivo setFiles={setFiles} files={files} />
