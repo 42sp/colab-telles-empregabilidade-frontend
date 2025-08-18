@@ -228,10 +228,7 @@ export function DrawBody() {
 				if (activeLabel !== "Todos") {
 					const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
 
-					allFilter.holderContractStatus = {
-						$regex: statusValue,
-						$options: "i",
-					};
+					allFilter.holderContractStatus = statusValue;
 				}
 				const translateFilter = (value: string) => {
 					const lower: string = value.toLowerCase();
@@ -247,13 +244,7 @@ export function DrawBody() {
 					const trimKey = filter[key]?.trim();
 					if (filter[key] && trimKey !== "") {
 						const translated = translateFilter(filter[key]);
-
-						if (typeof translated === "string")
-							allFilter[key] = {
-								$regex: translated,
-								$options: "i",
-							};
-						else allFilter[key] = translated;
+						allFilter[key] = translated;
 					}
 				});
 				const response = await $service.students(allFilter);
