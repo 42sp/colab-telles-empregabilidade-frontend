@@ -1,4 +1,3 @@
-// src/pages/layout/SideBarFloating.tsx
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
@@ -6,8 +5,11 @@ import { useState, useEffect, useRef } from "react";
 import { NavigationButtons } from "@/components/sidebar/NavigationButtons";
 import { SettingsMenu } from "@/components/sidebar/SettingsMenu";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
-import { UserProfile } from "@/components/sidebar/UserProfile";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { LogoutButton } from "@/components/sidebar/LogoutButton";
+import { UserProfile } from "@/components/sidebar/UserProfile";
+
 
 export function SideBarFloating() {
 	const { isCollapsed, toggleSidebar, collapseSidebar, expandSidebar } = useSidebar();
@@ -16,6 +18,7 @@ export function SideBarFloating() {
 	const [settingsOpen, setSettingsOpen] = useState(false);
 	const sidebarRef = useRef<HTMLDivElement>(null);
 	const location = useLocation();
+	const { user } = useAuth();
 
 	const toggleSettings = () => setSettingsOpen(!settingsOpen);
 
@@ -79,10 +82,11 @@ export function SideBarFloating() {
 						settingsOpen={settingsOpen}
 						toggleSettings={toggleSettings}
 					/>
+					<LogoutButton isCollapsed={isCollapsed} />
 					<hr className="border-gray-300 border-t-2 w-full" />
 					<UserProfile
-						name="Admin"
-						email="admin@edumanager.com"
+						name={user?.name || "Usuário"}
+						email={user?.email || "user@emai.com"}
 						isCollapsed={isCollapsed}
 					/>
 				</div>

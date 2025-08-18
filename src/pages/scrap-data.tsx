@@ -1,6 +1,6 @@
 import { LinkedInAuthForm } from "@/components/scrap-data/LinkedInAuthForm";
-import { NewOperationForm } from "@/components/scrap-data/NewOperationForm";
-import { ActiveBooking } from "@/components/scrap-data/ActiveBooking";
+import { NewOperationForm } from "@/components/scrap-data/NewOperation/NewOperationForm";
+import { ActiveBooking } from "@/components/scrap-data/ActiveBooking/ActiveBooking";
 import { OperationHistory } from "@/components/scrap-data/OperationHistory";
 import { FadeInOnScroll } from "@/components/utils/FadeInOnScroll";
 import { useSidebar } from "@/contexts/SidebarContext";
