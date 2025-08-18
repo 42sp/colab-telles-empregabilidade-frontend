@@ -8,21 +8,6 @@ export default class Service {
 		this.$axios = $axios;
 	}
 
-	// private serializeParams(params: collection.StudentsType = {}) {
-	// 	const serialized: collection.StudentsType = {};
-
-	// 	for (const [key, value] of Object.entries(params)) {
-	// 		if (value && typeof value === "object" && "$regex" in value) {
-	// 			serialized[key] = value.$regex;
-	// 			if (value.$options) {
-	// 				serialized[`${key}[$options]`] = value.$options;
-	// 			}else
-	// 				serialized[key] = value;
-	// 		}
-	// 	}
-
-	// 	return serialized;
-	// }
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
 	async students(params: collection.StudentsType = {}) {
 		const token = sessionStorage.getItem("accessToken");
@@ -32,9 +17,18 @@ export default class Service {
 
 		const query = new URLSearchParams();
 		for (const [key, value] of Object.entries(params)) {
-			if (value && typeof value === "object" && "$regex" in value) {
-				query.append(`${key}[$regex]`, value.$regex.source);
-				if (value.$options) query.append(`${key}[$options]`, value.$options);
+			if (value && typeof value === "object") {
+				if ("$in" in value && Array.isArray(value.$in)) {
+					value.$in.forEach((item, index) => {
+						query.append(`${key}[$in][${index}]`, String(item));
+					});
+				}
+				else if ("$regex" in value) {
+					query.append(`${key}[$regex]`, value.$regex.source);
+					if (value.$options) {
+						query.append(`${key}[$options]`, value.$options);
+					}
+				}
 			} else if (value !== undefined && value !== null) {
 				query.append(key, String(value));
 			}

@@ -252,7 +252,13 @@ export function DrawBody() {
 				if (activeLabel !== "Todos") {
 					const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
 
-					allFilter.holderContractStatus = statusValue;
+					allFilter.holderContractStatus = {
+						$in: [
+							statusValue,
+							statusValue.toUpperCase(),
+							statusValue.charAt(0).toUpperCase() + statusValue.slice(1),
+						],
+					};
 				}
 				const translateFilter = (value: string) => {
 					const lower: string = value.toLowerCase();
