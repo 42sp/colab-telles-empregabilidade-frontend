@@ -22,12 +22,9 @@ export default class Service {
 					value.$in.forEach((item, index) => {
 						query.append(`${key}[$in][${index}]`, String(item));
 					});
-				}
-				else if ("$regex" in value) {
-					query.append(`${key}[$regex]`, value.$regex.source);
-					if (value.$options) {
-						query.append(`${key}[$options]`, value.$options);
-					}
+				} else if ("$ilike" in value) {
+					const like = String(value.$ilike ?? "").trim();
+					if (like !== "") query.append(`${key}[$ilike]`, like);
 				}
 			} else if (value !== undefined && value !== null) {
 				query.append(key, String(value));
