@@ -244,7 +244,15 @@ export function DrawBody() {
 	useEffect(() => {
 		(async () => {
 			try {
-				console.log("activeLabel:", activeLabel);
+				const ilike = (
+					value: string,
+					mode: "exact" | "contains" | "startsWith" = "contains"
+				) => {
+					const v = value.trim();
+					if (mode === "startsWith") return `${v}%`;
+					if (mode === "exact") return v;
+					return `%${v}%`;
+				};
 				const allFilter = {
 					$limit: rowsToGet,
 				};
@@ -252,15 +260,17 @@ export function DrawBody() {
 				if (activeLabel !== "Todos") {
 					const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
 
-					// allFilter.holderContractStatus = {
-					// 	$in: [
-					// 		statusValue,
-					// 		statusValue.toUpperCase(),
-					// 		statusValue.charAt(0).toUpperCase() + statusValue.slice(1),
-					// 	],
-					// };
+					allFilter.holderContractStatus = {
+						$in: [
+							statusValue,
+							statusValue.toUpperCase(),
+							statusValue.charAt(0).toUpperCase() + statusValue.slice(1),
+						],
+					};
 
-					allFilter.holderContractStatus = { $ilike: `${statusValue}%` };
+					// allFilter.holderContractStatus = {
+					// 	$ilike: ilike(statusValue, "exact"),
+					// };
 				}
 				const translateFilter = (value: string) => {
 					const lower: string = value.toLowerCase();
@@ -276,7 +286,10 @@ export function DrawBody() {
 					const trimKey = filter[key]?.trim();
 					if (filter[key] && trimKey !== "") {
 						const translated = translateFilter(filter[key]);
-						allFilter[key] = translated;
+						
+						if (typeof translated === "string")
+							allFilter[key] = { $ilike: `${translated}%` };
+						else allFilter[key] = translated;
 					}
 				});
 				const response = await $service.students(allFilter);
