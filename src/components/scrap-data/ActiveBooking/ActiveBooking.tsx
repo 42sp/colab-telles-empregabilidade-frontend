@@ -10,7 +10,7 @@ import type { Operation } from "@/types/operations";
 import { useOperationsState, useOperationsActions } from "@/contexts/ScrapOperationsContext";
 
 type ActiveBookingProps = {
-  onDeleted?: (id: string) => void; // opcional para compatibilidade
+  onDeleted?: (id: string) => void;
   minRows?: number;
 };
 
@@ -33,19 +33,18 @@ export function ActiveBooking({ onDeleted: onDeletedFromProps, minRows = 6 }: Ac
   });
 
   // ------------------------------
-  // 🔹 Filtrar operações ativas (comportamento: usar dados do Context)
+  // 🔹 Filtrar operações ativas 
   // ------------------------------
   const today = new Date().toISOString().split("T")[0];
 
   const activeOperations = useMemo(() => {
     if (!operations) return [];
     return operations.filter(op => {
-      // Considera soft-delete e datas
       const notDeleted = !op.deleted;
-      // Se scheduled_date faltar, considera como não ativo
       const hasDate = Boolean(op.scheduled_date);
       const futureOrToday = !op.scheduled_date || op.scheduled_date >= today;
-      return notDeleted && hasDate && futureOrToday;
+      const notConcluded = op.status !== "Concluído";
+      return notDeleted && hasDate && futureOrToday && notConcluded;
     });
   }, [operations, today]);
 
@@ -54,17 +53,12 @@ export function ActiveBooking({ onDeleted: onDeletedFromProps, minRows = 6 }: Ac
   // ------------------------------
   async function handleDeleted(id: string) {
     const success = await deleteOperation(id);
-    if (success) {
-      onDeletedFromProps?.(id);
-    }
+    if (success) onDeletedFromProps?.(id);
   }
 
   async function handleUpdate(updated: Operation) {
     const result = await updateOperation(updated.id, updated);
-    if (result) {
-      // provider já atualiza o estado global; podemos fechar modal
-      setEditingOperation(null);
-    }
+    if (result) setEditingOperation(null);
   }
 
   const emptyRowsCount = Math.max(0, minRows - activeOperations.length);
@@ -79,7 +73,7 @@ export function ActiveBooking({ onDeleted: onDeletedFromProps, minRows = 6 }: Ac
     Number(columnVisibility.createdBy) +
     Number(columnVisibility.createdAt);
 
-  const totalColumns = 5 + dynamicColumnsCount; // 4 fixas + ações + dinâmicas
+  const totalColumns = 5 + dynamicColumnsCount;
 
   // ------------------------------
   // 🔹 Render
@@ -96,19 +90,14 @@ export function ActiveBooking({ onDeleted: onDeletedFromProps, minRows = 6 }: Ac
           <ColumnFilter
             showLastOccurrence={columnVisibility.lastOccurrence}
             setShowLastOccurrence={value => setColumnVisibility(prev => ({ ...prev, lastOccurrence: value }))}
-
             showLastOccurrencePrice={columnVisibility.lastOccurrencePrice}
             setShowLastOccurrencePrice={value => setColumnVisibility(prev => ({ ...prev, lastOccurrencePrice: value }))}
-
             showRecurrenceInterval={columnVisibility.recurrenceInterval}
             setShowRecurrenceInterval={value => setColumnVisibility(prev => ({ ...prev, recurrenceInterval: value }))}
-
             showExecutionInfo={columnVisibility.executionInfo}
             setShowExecutionInfo={value => setColumnVisibility(prev => ({ ...prev, executionInfo: value }))}
-
             showCreatedBy={columnVisibility.createdBy}
             setShowCreatedBy={value => setColumnVisibility(prev => ({ ...prev, createdBy: value }))}
-
             showCreatedAt={columnVisibility.createdAt}
             setShowCreatedAt={value => setColumnVisibility(prev => ({ ...prev, createdAt: value }))}
           />
@@ -130,43 +119,49 @@ export function ActiveBooking({ onDeleted: onDeletedFromProps, minRows = 6 }: Ac
 
                 <AnimatePresence>
                   {columnVisibility.lastOccurrence && (
-                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }}
-                      className="px-2 text-left font-medium text-gray-700">Última ocorrência</motion.th>
+                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-gray-700">
+                      Última ocorrência
+                    </motion.th>
                   )}
                 </AnimatePresence>
 
                 <AnimatePresence>
                   {columnVisibility.lastOccurrencePrice && (
-                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }}
-                      className="px-2 text-left font-medium text-gray-700">Preço da última ocorrência</motion.th>
+                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-gray-700">
+                      Preço da última ocorrência
+                    </motion.th>
                   )}
                 </AnimatePresence>
 
                 <AnimatePresence>
                   {columnVisibility.recurrenceInterval && (
-                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }}
-                      className="px-2 text-left font-medium text-gray-700">Intervalo de recorrência</motion.th>
+                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-gray-700">
+                      Intervalo de recorrência
+                    </motion.th>
                   )}
                 </AnimatePresence>
 
                 <AnimatePresence>
                   {columnVisibility.executionInfo && (
-                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }}
-                      className="px-2 text-left font-medium text-gray-700">Informações de execução</motion.th>
+                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-gray-700">
+                      Status
+                    </motion.th>
                   )}
                 </AnimatePresence>
 
                 <AnimatePresence>
                   {columnVisibility.createdBy && (
-                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }}
-                      className="px-2 text-left font-medium text-gray-700">Criado por </motion.th>
+                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-gray-700">
+                      Criado por
+                    </motion.th>
                   )}
                 </AnimatePresence>
 
                 <AnimatePresence>
                   {columnVisibility.createdAt && (
-                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }}
-                      className="px-2 text-left font-medium text-gray-700">Data de criação </motion.th>
+                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-gray-700">
+                      Data de criação
+                    </motion.th>
                   )}
                 </AnimatePresence>
 

@@ -77,7 +77,7 @@ export function ColumnFilter({
               checked={showExecutionInfo}
               onCheckedChange={setShowExecutionInfo}
             >
-              Informações de Execução
+              Status
             </DropdownMenuCheckboxItem>
           </>
         )}
