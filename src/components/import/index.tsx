@@ -19,6 +19,7 @@ import { Trash2 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { useServices } from "@/hooks/useServices";
 import { useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ConfigurationUploadArquivoProps {
 	setFiles: React.Dispatch<React.SetStateAction<fileProps[]>>;
@@ -42,6 +43,7 @@ const ConfigurationHeader = () => {
 
 const ConfigurationUploadArquivo = (props: ConfigurationUploadArquivoProps) => {
 	const $service = useServices();
+	const { user } = useAuth();
 
 	useEffect(() => {
 		const funcImportedFiles = async () => {
@@ -107,6 +109,7 @@ const ConfigurationUploadArquivo = (props: ConfigurationUploadArquivoProps) => {
 										lastModified: file.lastModified,
 										name: file.name,
 										id: uuidv4(),
+										userName: user?.name || "",
 									} as fileProps;
 
 									return f;
