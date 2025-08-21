@@ -286,9 +286,12 @@ export function DrawBody() {
 					const trimKey = filter[key]?.trim();
 					if (filter[key] && trimKey !== "") {
 						const translated = translateFilter(filter[key]);
-						
+
 						if (typeof translated === "string")
-							allFilter[key] = { $ilike: `${translated}%` };
+							allFilter[key] = {
+								$like: `%${translated}%`,
+								$ilike: `%${translated}%`,
+							};
 						else allFilter[key] = translated;
 					}
 				});

@@ -25,16 +25,9 @@ export default class Service {
 				} else if ("$ilike" in value) {
 					const like = String(value.$ilike ?? "").trim();
 					if (like !== "") query.append(`${key}[$ilike]`, like);
-				} else if ("$regex" in value) {
-					// Fallback caso $ilike não funcione
-					const regex =
-						value.$regex instanceof RegExp
-							? value.$regex.source
-							: String(value.$regex);
-					query.append(`${key}[$regex]`, regex);
-					if (value.$options) {
-						query.append(`${key}[$options]`, value.$options);
-					}
+				} else if ("$like" in value) {
+					const like = String(value.$like ?? "").trim();
+					if (like !== "") query.append(`${key}[$like]`, like);
 				}
 			} else if (value !== undefined && value !== null) {
 				query.append(key, String(value));
