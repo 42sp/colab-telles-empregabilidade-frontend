@@ -17,6 +17,8 @@ import { Dropzone } from "../dropzone";
 import type { fileProps } from "@/types/requests/interfaces/fileProps";
 import { Trash2 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import { useServices } from "@/hooks/useServices";
+import { useEffect } from "react";
 
 interface ConfigurationUploadArquivoProps {
 	setFiles: React.Dispatch<React.SetStateAction<fileProps[]>>;
@@ -39,6 +41,33 @@ const ConfigurationHeader = () => {
 };
 
 const ConfigurationUploadArquivo = (props: ConfigurationUploadArquivoProps) => {
+	const $service = useServices();
+
+	useEffect(() => {
+		const funcImportedFiles = async () => {
+			try {
+				const importedFiles = await $service.getImportedFiles();
+
+				importedFiles.data.forEach(file => {
+					props.setFiles(prev => [
+						...prev,
+						{
+							status: "Sucesso",
+							lastModified: file.importationDate,
+							name: file.fileName || "Unknown",
+							file: undefined,
+							id: uuidv4(),
+						} as unknown as fileProps,
+					]);
+				});
+			} catch (error) {
+				console.error("Error fetching imported files:", error);
+			}
+		};
+
+		funcImportedFiles();
+	}, []);
+
 	return (
 		<div className="container-upload-arquivo">
 			<div className="flex-1">
@@ -123,19 +152,23 @@ const ConfigurationUploadArquivo = (props: ConfigurationUploadArquivoProps) => {
 										{m.status}
 									</span>
 								</TableCell>
-								<TableCell>
-									<Button
-										onClick={() => {
-											props.setFiles(
-												props.files.filter(file => file.id !== m.id)
-											);
-										}}
-										variant="destructive"
-										className="p-2 bg-red-700 hover:bg-red-800 text-white"
-									>
-										<Trash2 className="w-5 h-5" />
-									</Button>
-								</TableCell>
+								{m.status != "Sucesso" ? (
+									<TableCell>
+										<Button
+											onClick={() => {
+												props.setFiles(
+													props.files.filter(file => file.id !== m.id)
+												);
+											}}
+											variant="destructive"
+											className="p-2 bg-red-700 hover:bg-red-800 text-white"
+										>
+											<Trash2 className="w-5 h-5" />
+										</Button>
+									</TableCell>
+								) : (
+									<></>
+								)}
 							</TableRow>
 						))}
 					</TableBody>

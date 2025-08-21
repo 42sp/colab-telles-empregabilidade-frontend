@@ -1,6 +1,7 @@
 // --------------------- Interfaces ---------------------
 export * from "./interfaces/authentication";
 export * from "./interfaces/importFiles";
+export * from "./interfaces/importedFiles";
 // --------------------- Interfaces ---------------------
 
 // --------------------- Parameters ---------------------
