@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
 import { useServices } from "@/hooks/useServices";
 import { ToastContainer, toast } from "react-toastify";
+import { useAuth } from "@/contexts/AuthContext";
 
 const LoginHeader = () => {
 	return (
@@ -24,7 +25,8 @@ const LoginBody = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [rememberMe, setRememberMe] = useState(false);
-
+	
+	const { setUser } = useAuth();
 	const $service = useServices();
 	const navigate = useNavigate();
 
@@ -58,6 +60,18 @@ const LoginBody = () => {
 			);
 
 			if ([200, 201].includes(response.status)) {
+ 
+				const responseData = response.data as {
+					accessToken: string;
+					user: { email: string; name?: string };
+				};
+
+				const accessToken = responseData.accessToken;
+      			const user = responseData.user;
+
+				sessionStorage.setItem("accessToken", accessToken);
+      			setUser(user); // <- salva no contexto
+
 				if (rememberMe) {
 					localStorage.setItem(
 						"login",

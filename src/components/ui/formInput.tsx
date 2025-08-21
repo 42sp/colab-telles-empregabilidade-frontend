@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 
-// 🎯 Ajustes visuais centralizados
+// Ajustes visuais centralizados
 const LABEL_GAP = "gap-4";
 const INPUT_HEIGHT_CLASS = "h-[42px]";
 const INPUT_PADDING_CLASS = "pt-[9px] pb-[7px] pr-[11px]";
@@ -23,11 +23,11 @@ const ICON_RIGHT_CLASS = "right-[11px]";
 const INPUT_PADDING_LEFT = "pl-[42px]";
 const INPUT_PADDING_RIGHT = "pr-[42px]";
 
-interface FormInputProps {
+// FormInputProps herda todas as props de um <input>
+interface FormInputProps
+	extends React.InputHTMLAttributes<HTMLInputElement> {
 	name: string;
 	label?: string;
-	type?: string;
-	placeholder?: string;
 	iconPrepend?: ReactElement<SVGProps<SVGSVGElement>>;
 	iconAppend?: ReactElement<SVGProps<SVGSVGElement>>;
 	mask?: string;
@@ -47,6 +47,7 @@ export function FormInput({
 	wrapperClassName = "",
 	inputClassName = "",
 	autocomplete,
+	...rest // Aqui pegamos todas as outras props HTML como min, max, step etc.
 }: FormInputProps) {
 	const [showPassword, setShowPassword] = useState(false);
 	const isPasswordField = type === "password";
@@ -69,7 +70,6 @@ export function FormInput({
 	return (
 		<>
 			<style>{`
-				/* Área clicável do seletor nativo aumentada e centralizada */
 				input[type="date"]::-webkit-calendar-picker-indicator,
 				input[type="time"]::-webkit-calendar-picker-indicator {
 					position: absolute;
@@ -81,8 +81,6 @@ export function FormInput({
 					cursor: pointer;
 					z-index: 10;
 				}
-
-				/* Apenas para inputs date/time com a classe */
 				.date-time-picker-wrapper:hover::before {
 					content: "";
 					position: absolute;
@@ -109,11 +107,12 @@ export function FormInput({
 						{label && <FormLabel htmlFor={name}>{label}</FormLabel>}
 
 						<FormControl>
-							{/* Só coloca essa classe se for input date/time */}
 							<div
-								className={`relative ${isDateOrTime && iconPrepend ? "date-time-picker-wrapper" : ""}`}
+								className={`relative ${
+									isDateOrTime && iconPrepend ? "date-time-picker-wrapper" : ""
+								}`}
 							>
-								{/* Ícone à esquerda customizado */}
+								{/* Ícone à esquerda */}
 								{iconPrepend && (
 									<span
 										className={`absolute ${ICON_LEFT_CLASS} ${ICON_POSITION_TOP} text-muted-foreground pointer-events-none`}
@@ -126,7 +125,7 @@ export function FormInput({
 									</span>
 								)}
 
-								{/* Input ou Input com máscara */}
+								{/* Input com ou sem máscara */}
 								{mask ? (
 									<InputMask
 										mask={mask}
@@ -139,6 +138,7 @@ export function FormInput({
 										) => (
 											<Input
 												{...inputProps}
+												{...rest} // 🔹 repassa min, max, step etc.
 												id={name}
 												type={inputType}
 												placeholder={placeholder}
@@ -150,6 +150,7 @@ export function FormInput({
 								) : (
 									<Input
 										{...field}
+										{...rest} // repassa min, max, step etc.
 										id={name}
 										type={inputType}
 										placeholder={placeholder}
@@ -158,7 +159,7 @@ export function FormInput({
 									/>
 								)}
 
-								{/* Botão de mostrar senha */}
+								{/* Botão mostrar senha */}
 								{isPasswordField && (
 									<button
 										type="button"
@@ -174,7 +175,7 @@ export function FormInput({
 									</button>
 								)}
 
-								{/* Ícone à direita customizado */}
+								{/* Ícone à direita */}
 								{!isPasswordField && iconAppend && (
 									<span
 										className={`absolute ${ICON_RIGHT_CLASS} ${ICON_POSITION_TOP} text-muted-foreground`}
