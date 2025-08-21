@@ -19,28 +19,6 @@ function formatDate(dateStr?: string) {
 	return `${day}/${month}/${year}`;
 }
 
-type Operation = {
-	name: string;
-	scheduled_date: string;
-	scheduled_time: string;
-	user_tag: string;
-	status?: "success" | "error";
-};
-
-function formatDate(dateStr: string) {
-	if (!dateStr) return "";
-	const [year, month, day] = dateStr.split("-");
-	return `${day}/${month}/${year}`;
-}
-
-function isPastDate(dateStr: string) {
-	if (!dateStr) return false;
-	const today = new Date();
-	const date = new Date(dateStr);
-	// Considera passado se for antes de hoje
-	return date < new Date(today.toDateString());
-}
-
 export function OperationHistory() {
 	const { operations } = useOperationsState();
 
@@ -76,6 +54,7 @@ export function OperationHistory() {
 	// Determina altura máxima da tabela para scroll
 	// ------------------------------
 	const maxTableHeight = 6 * 48; // 6 linhas * 48px de altura (h-12)
+
 	return (
 		<Card className="border border-gray-200" role="region" aria-labelledby="history-title">
 			<CardHeader className="flex flex-row justify-between items-start">
