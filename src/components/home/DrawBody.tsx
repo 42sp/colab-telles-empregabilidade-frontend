@@ -244,15 +244,6 @@ export function DrawBody() {
 	useEffect(() => {
 		(async () => {
 			try {
-				const ilike = (
-					value: string,
-					mode: "exact" | "contains" | "startsWith" = "contains"
-				) => {
-					const v = value.trim();
-					if (mode === "startsWith") return `${v}%`;
-					if (mode === "exact") return v;
-					return `%${v}%`;
-				};
 				const allFilter = {
 					$limit: rowsToGet,
 				};
@@ -287,12 +278,14 @@ export function DrawBody() {
 					if (filter[key] && trimKey !== "") {
 						const translated = translateFilter(filter[key]);
 
-						if (typeof translated === "string")
-							allFilter[key] = {
+						if (typeof translated === "string") {
+							const myKey = field as keyof StudentsQuery;
+							allFilter[myKey] = {
 								$like: `%${translated}%`,
 								$ilike: `%${translated}%`,
 							};
-						else allFilter[key] = translated;
+						}
+						else allFilter[myKey] = translated;
 					}
 				});
 				const response = await $service.students(allFilter);
