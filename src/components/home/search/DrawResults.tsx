@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { dataRows, type ColumnVisibility, type Data } from "../types";
+import { type ColumnVisibility, type Data } from "../../../pages/home/types";
 
 interface DrawResultsProps {
 	colums: ColumnVisibility;
@@ -10,6 +10,7 @@ interface DrawResultsProps {
 	startPage: number;
 	endPage: number;
 	filteredRows: Data[];
+	rowsPerPage: number;
 }
 
 export function DrawResults(props: DrawResultsProps) {
@@ -25,6 +26,7 @@ export function DrawResults(props: DrawResultsProps) {
 		const nextPage = props.page + 1;
 		const prevPage = props.page - 1;
 		const pageNumbers = [prevPage, props.page, nextPage];
+		const totalPages = Math.ceil(props.filteredRows.length / props.rowsPerPage);
 
 		return (
 			<div className="flex justify-end items-end text-black">
@@ -37,7 +39,7 @@ export function DrawResults(props: DrawResultsProps) {
 					<ChevronLeft />
 				</Button>
 				{pageNumbers
-					.filter(p => p >= 0 && p < dataRows.length / 5)
+					.filter(p => p >= 0 && p < totalPages)
 					.map(p => {
 						const isActive = props.page === p;
 
@@ -57,7 +59,7 @@ export function DrawResults(props: DrawResultsProps) {
 				<Button
 					{...buttonProps}
 					onClick={() => {
-						if (nextPage < dataRows.length / 5) props.setPage(nextPage);
+						if (nextPage < totalPages) props.setPage(nextPage);
 					}}
 				>
 					<ChevronRight />
