@@ -3,6 +3,7 @@ import { useDropzone } from "react-dropzone";
 import IconsSvg from "@/utils/IconsSvg";
 import type { fileProps } from "@/types/requests/interfaces/fileProps";
 import { v4 as uuidv4 } from "uuid";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface DropzoneProps {
 	className?: string;
@@ -12,6 +13,8 @@ interface DropzoneProps {
 }
 
 const Dropzone = (props: DropzoneProps) => {
+	const { user } = useAuth();
+
 	const onDrop = useCallback(async (acceptedFiles: File[]) => {
 		acceptedFiles.forEach(file => {
 			const fileWithStatus: fileProps = {
@@ -20,6 +23,7 @@ const Dropzone = (props: DropzoneProps) => {
 				name: file.name,
 				id: uuidv4(),
 				file: file,
+				userName: user?.name || "",
 			};
 			props.setFiles(prevFiles => [fileWithStatus, ...prevFiles]);
 		});
