@@ -3,68 +3,77 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { NewOperation } from "./NewOperation";
 import { useState } from "react";
-import { scrapService } from "@/services/api";
-import { toast } from "react-hot-toast";
-import type { Operation } from "@/types/operations";
+import { toast } from "react-toastify"; // <- react-toastify
+import { useAuth } from "@/contexts/AuthContext";
+import { useOperationsActions } from "@/contexts/ScrapOperationsContext";
 import {
-	OperationFormProvider,
-	operationFormSchema,
-	type OperationFormData,
+  OperationFormProvider,
+  operationFormSchema,
+  type OperationFormData,
 } from "@/contexts/useOperationFormContext";
+import type { Operation } from "@/types/operations";
 
-type NewOperationFormProps = {
-	onOperationCreated: (op: Operation) => void;
-};
+export function NewOperationForm() {
+  const { user } = useAuth();
+  const form = useForm<OperationFormData>({
+    resolver: zodResolver(operationFormSchema),
+    defaultValues: {
+      name: "",
+      initial_date: "",
+      initial_time: "",
+      isRecurring: false,
+      repeat_days: "",
+      repeat_time: "",
+    },
+  });
 
-export function NewOperationForm({
-	onOperationCreated,
-}: NewOperationFormProps) {
-	const form = useForm<OperationFormData>({
-		resolver: zodResolver(operationFormSchema),
-		defaultValues: {
-			name: "",
-			initial_date: "",
-			initial_time: "",
-			isRecurring: false,
-			repeat_days: "",
-			repeat_time: "",
-		},
-	});
+  const { createOperation } = useOperationsActions();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const [isSubmitting, setIsSubmitting] = useState(false);
+  async function onSubmit(data: OperationFormData) {
+    if (!user) {
+      toast.error("Usuário não está logado");
+      return;
+    }
 
-	async function onSubmit(data: OperationFormData) {
-		setIsSubmitting(true);
-		try {
-			const payload = {
-				name: data.name,
-				scheduled_date: data.initial_date,
-				scheduled_time: data.initial_time,
-				user_tag: "admin",
-				type: "LinkedIn",
-				repeat_days: data.repeat_days,
-				repeat_time: data.repeat_time,
-			};
+    setIsSubmitting(true);
+    try {
+      const now = new Date().toISOString();
 
-			const response = await scrapService.create(payload);
-			toast.success("Operação agendada com sucesso!");
-			onOperationCreated(response);
-			form.reset();
-		} catch (err) {
-			console.error(err);
-			toast.error("Erro ao agendar operação");
-		} finally {
-			setIsSubmitting(false);
-		}
-	}
+      const payload: Partial<Operation> = {
+        name: data.name,
+        type: "LinkedIn",
+        status: "Agendado",
+        user_tag: user.email,
+        created_by: user.email,
+        created_at: now,
+        scheduled_date: data.initial_date || undefined,
+        scheduled_time: data.initial_time || undefined,
+        repeat_days: data.isRecurring && data.repeat_days ? data.repeat_days : undefined,
+        repeat_time: data.isRecurring && data.repeat_time ? data.repeat_time : undefined,
+        deleted: false,
+      };
 
-	return (
-		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-				<OperationFormProvider value={form}>
-					<NewOperation isSubmitting={isSubmitting} />
-				</OperationFormProvider>
-			</form>
-		</Form>
-	);
+      const created = await createOperation(payload); // Atualiza o contexto
+      if (created) {
+        toast.success("Operação agendada com sucesso!");
+        form.reset();
+      }
+    } catch (err) {
+      console.error("Erro ao criar operação:", err);
+      toast.error("Erro ao agendar operação");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <OperationFormProvider value={form}>
+          <NewOperation isSubmitting={isSubmitting} />
+        </OperationFormProvider>
+      </form>
+    </Form>
+  );
 }

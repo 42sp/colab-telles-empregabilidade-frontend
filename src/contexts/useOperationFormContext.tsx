@@ -10,10 +10,15 @@ export const operationFormSchema = z
     isRecurring: z.boolean(),
     repeat_days: z.string().optional(),
     repeat_time: z.string().optional(),
+
+    // Campos de auditoria opcionais
+    created_by: z.string().optional(),
+    created_at: z.string().optional(),
+    last_edited_by: z.string().optional(),
+    last_edited_at: z.string().optional(),
   })
   .superRefine((val, ctx) => {
     if (val.isRecurring) {
-      // Campos obrigatórios para recorrência
       if (!val.repeat_days || val.repeat_days.trim() === "") {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -30,7 +35,6 @@ export const operationFormSchema = z
         });
       }
     } else {
-      // Limpa automaticamente os valores se não for recorrente
       val.repeat_days = "";
       val.repeat_time = "";
     }
@@ -44,7 +48,9 @@ const OperationFormContext =
 export const useOperationFormContext = () => {
   const ctx = useContext(OperationFormContext);
   if (!ctx)
-    throw new Error("useOperationFormContext must be usado dentro de um Provider");
+    throw new Error(
+      "useOperationFormContext must ser usado dentro de um Provider"
+    );
   return ctx;
 };
 
