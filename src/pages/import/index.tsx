@@ -23,6 +23,7 @@ const Configuration = () => {
 
 		for (const file of files) {
 			try {
+				if (file.file === undefined) continue;
 				const response = await toast.promise(
 					$services.postImportFiles({ file }),
 					{
