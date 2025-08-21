@@ -1,8 +1,15 @@
-import { StudentsList } from "./studentsList";
+import { StudentsList } from "../../components/home/studentsList";
 
 function Home() {
-    return <StudentsList />
-
+	return (
+		<div className="contain-layout">
+			<div className="container mx-auto">
+				<div className="w-full">
+					<StudentsList />
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export default Home;
