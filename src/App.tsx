@@ -16,7 +16,6 @@ function App() {
 
 			<SidebarProvider>
 				<BrowserRouter>
-					<GridOverlay />
 					<Routes>
 						<Route path="/" element={<ScreenLogin />} />
 
