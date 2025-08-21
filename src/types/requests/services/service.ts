@@ -12,7 +12,7 @@ export default class Service {
 	async getImportedFiles() {
 		const response = await this.$axios.get<{
 			data: collection.GetImportedFilesResponse[];
-		}>("/imported-files");
+		}>("/imported-files", { params: { lastThree: true } });
 		return response.data;
 	}
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
