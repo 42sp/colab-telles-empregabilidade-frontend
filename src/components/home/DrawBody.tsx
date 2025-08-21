@@ -244,6 +244,7 @@ export function DrawBody() {
 	useEffect(() => {
 		(async () => {
 			try {
+				console.log("activeLabel:", activeLabel);
 				const allFilter = {
 					$limit: rowsToGet,
 				};
@@ -251,17 +252,7 @@ export function DrawBody() {
 				if (activeLabel !== "Todos") {
 					const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
 
-					allFilter.holderContractStatus = {
-						$in: [
-							statusValue,
-							statusValue.toUpperCase(),
-							statusValue.charAt(0).toUpperCase() + statusValue.slice(1),
-						],
-					};
-
-					// allFilter.holderContractStatus = {
-					// 	$ilike: ilike(statusValue, "exact"),
-					// };
+					allFilter.holderContractStatus = statusValue;
 				}
 				const translateFilter = (value: string) => {
 					const lower: string = value.toLowerCase();
@@ -277,15 +268,7 @@ export function DrawBody() {
 					const trimKey = filter[key]?.trim();
 					if (filter[key] && trimKey !== "") {
 						const translated = translateFilter(filter[key]);
-
-						if (typeof translated === "string") {
-							const myKey = field as keyof StudentsQuery;
-							allFilter[myKey] = {
-								$like: `%${translated}%`,
-								$ilike: `%${translated}%`,
-							};
-						}
-						else allFilter[myKey] = translated;
+						allFilter[key] = translated;
 					}
 				});
 				const response = await $service.students(allFilter);
