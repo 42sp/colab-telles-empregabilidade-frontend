@@ -15,11 +15,11 @@ const Dropzone = (props: DropzoneProps) => {
 	const onDrop = useCallback(async (acceptedFiles: File[]) => {
 		acceptedFiles.forEach(file => {
 			const fileWithStatus: fileProps = {
-				...file,
 				status: "Pendente",
 				lastModified: file.lastModified,
 				name: file.name,
 				id: uuidv4(),
+				file: file,
 			};
 			props.setFiles(prevFiles => [...prevFiles, fileWithStatus]);
 		});
