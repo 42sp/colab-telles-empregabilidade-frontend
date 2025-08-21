@@ -9,6 +9,7 @@ export default class Service {
 	}
 
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
+
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
 
 	// -------------------------------------------------------------------- POST --------------------------------------------------------------------
@@ -20,6 +21,23 @@ export default class Service {
 		if (response?.data?.accessToken) {
 			sessionStorage.setItem("accessToken", response.data.accessToken);
 		}
+		return response;
+	}
+
+	async postImportFiles(params: collection.ImportFilesParameters) {
+		const formData = new FormData();
+
+		formData.append("file", params.file.file);
+		const response = await this.$axios.post<collection.ImportFilesResponse>(
+			"/import-files",
+			formData,
+			{
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			}
+		);
+
 		return response;
 	}
 	// -------------------------------------------------------------------- POST --------------------------------------------------------------------
