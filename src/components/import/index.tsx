@@ -57,6 +57,7 @@ const ConfigurationUploadArquivo = (props: ConfigurationUploadArquivoProps) => {
 							name: file.fileName || "Unknown",
 							file: undefined,
 							id: uuidv4(),
+							userName: file.user.name || "",
 						} as unknown as fileProps,
 					]);
 				});
@@ -110,7 +111,7 @@ const ConfigurationUploadArquivo = (props: ConfigurationUploadArquivoProps) => {
 
 									return f;
 								});
-								props.setFiles(prev => [...prev, ...fileArray]);
+								props.setFiles(prev => [...fileArray, ...prev]);
 							}
 						}}
 						multiple
@@ -124,6 +125,7 @@ const ConfigurationUploadArquivo = (props: ConfigurationUploadArquivoProps) => {
 						<TableRow>
 							<TableHead>Nome do Arquivo</TableHead>
 							<TableHead>Data de Importação</TableHead>
+							<TableHead>Usuário</TableHead>
 							<TableHead>Status</TableHead>
 						</TableRow>
 					</TableHeader>
@@ -144,6 +146,9 @@ const ConfigurationUploadArquivo = (props: ConfigurationUploadArquivoProps) => {
 											hour12: false,
 										})}
 									</span>
+								</TableCell>
+								<TableCell>
+									<span className="table-cell-base">{m.userName}</span>
 								</TableCell>
 								<TableCell>
 									<span

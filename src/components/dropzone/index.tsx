@@ -21,7 +21,7 @@ const Dropzone = (props: DropzoneProps) => {
 				id: uuidv4(),
 				file: file,
 			};
-			props.setFiles(prevFiles => [...prevFiles, fileWithStatus]);
+			props.setFiles(prevFiles => [fileWithStatus, ...prevFiles]);
 		});
 	}, []);
 
