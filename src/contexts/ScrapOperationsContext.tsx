@@ -7,7 +7,7 @@ import React, {
 	useRef,
 	useMemo,
 } from "react";
-import { scrapService } from "@/services/api";
+import { scrapOperationsService } from "@/services/scrapOperationsService";
 import type { Operation } from "@/types/operations";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -77,16 +77,6 @@ function reducer(state: State, action: Action): State {
 const OpsStateContext = createContext<State | undefined>(undefined);
 const OpsActionsContext = createContext<Actions | undefined>(undefined);
 
-/** Util: calcula status derivado */
-function computeStatus(op: Operation): Operation {
-	if (op.deleted) return { ...op, status: "Excluída" };
-	const today = new Date().toLocaleDateString("sv-SE");
-	if (op.scheduled_date && op.scheduled_date < today) {
-		return { ...op, status: "Vencida" };
-	}
-	return { ...op };
-}
-
 export function ScrapOperationsProvider({
 	children,
 }: {
@@ -99,113 +89,101 @@ export function ScrapOperationsProvider({
 	// ------------------------------
 	// Carregar operações iniciais
 	// ------------------------------
+	const loadOperations = useCallback(async () => {
+		dispatch({ type: "SET_LOADING", payload: true });
+		try {
+			const resp = await scrapOperationsService.find({
+				query: { $sort: { scheduled_date: 1, scheduled_time: 1 } },
+			});
+
+			const ops = Array.isArray(resp) ? resp : (resp.data ?? []);
+			if (mountedRef.current) dispatch({ type: "SET_ALL", payload: ops });
+		} catch {
+			if (mountedRef.current)
+				dispatch({ type: "SET_ERROR", payload: "Erro ao carregar operações" });
+		} finally {
+			if (mountedRef.current) dispatch({ type: "SET_LOADING", payload: false });
+		}
+	}, []);
+
 	useEffect(() => {
 		mountedRef.current = true;
-		const load = async () => {
-			dispatch({ type: "SET_LOADING", payload: true });
-			try {
-				const resp = await scrapService.find({
-					query: { $sort: { scheduled_date: 1, scheduled_time: 1 } },
-				});
-				const ops: Operation[] = (resp as any)?.data ?? (resp as any) ?? [];
-				if (mountedRef.current)
-					dispatch({ type: "SET_ALL", payload: ops.map(computeStatus) });
-			} catch {
-				if (mountedRef.current)
-					dispatch({
-						type: "SET_ERROR",
-						payload: "Erro ao carregar operações",
-					});
-			} finally {
-				if (mountedRef.current)
-					dispatch({ type: "SET_LOADING", payload: false });
-			}
-		};
-		load();
+		loadOperations();
 		return () => {
 			mountedRef.current = false;
 		};
-	}, []);
+	}, [loadOperations]);
 
 	// ------------------------------
 	// Escutar atualizações em tempo real via WebSocket
 	// ------------------------------
 	useEffect(() => {
-  if (!mountedRef.current) return;
+		if (!mountedRef.current) return;
 
-  const handleStarted = (op: Operation) => {
-    dispatch({ type: "UPSERT", payload: computeStatus(op) });
-    toast(`Executando operação: ${op.name}`, { icon: "⚙️" });
-  };
+		const handlePatched = (op: Operation & { _source?: string }) => {
+			dispatch({ type: "UPSERT", payload: op });
 
-  const handleFinished = (op: Operation) => {
-    dispatch({ type: "UPSERT", payload: computeStatus(op) });
-    toast.success(`Operação ${op.name} concluída`);
-  };
+			// 🔹 Decide a mensagem com base na origem
+			switch (op._source) {
+				case "cronjob":
+					if (op.status === "Concluído") {
+						toast.success(
+							`Operação "${op.name}" foi concluída automaticamente`
+						);
+					} else if (op.status === "Em Execução") {
+						toast(`Operação "${op.name}" está em execução...`, { icon: "⚙️" });
+					} else if (op.status === "Falha") {
+						toast.error(`Operação "${op.name}" falhou (cronjob)`);
+					}
+					break;
 
-  const handleFailed = (op: Operation) => {
-    dispatch({ type: "UPSERT", payload: computeStatus(op) });
-    toast.error(`Operação ${op.name} falhou`);
-  };
+				case "user":
+					toast(`Operação "${op.name}" foi atualizada manualmente`, {
+						icon: "✍️",
+					});
+					break;
 
-  scrapService.on("operation:started", handleStarted);
-  scrapService.on("operation:finished", handleFinished);
-  scrapService.on("operation:failed", handleFailed);
+				case "delete":
+					toast(`Operação "${op.name}" foi excluída pelo usuário`, {
+						icon: "🗑️",
+					});
+					break;
 
-  // Cleanup
-  return () => {
-    scrapService.off("operation:started", handleStarted);
-    scrapService.off("operation:finished", handleFinished);
-    scrapService.off("operation:failed", handleFailed);
-  };
-}, []);
+				default:
+					console.log("Evento patched sem origem conhecida:", op);
+			}
+		};
 
+		scrapOperationsService.on("patched", handlePatched);
+
+		return () => {
+			scrapOperationsService.off("patched", handlePatched);
+		};
+	}, []);
 
 	// ------------------------------
 	// CRUD Actions
 	// ------------------------------
 	const runOperation = useCallback(
-		async (id: string | number): Promise<void> => {
+		async (id: string | number) => {
 			const op = state.operations.find(op => String(op.id) === String(id));
-			if (!op) {
-				toast.error("Operação não encontrada");
-				return;
-			}
-
-			// Apenas efeitos colaterais, sem return
+			if (!op) return;
 			toast(`Executando operação: ${op.name ?? op.id}`, { icon: "⚙️" });
-			console.log(`🚀 Executando operação ${op.id} (${op.name})...`);
 		},
 		[state.operations]
 	);
 
 	const refresh = useCallback(async () => {
 		if (!mountedRef.current) return;
-		dispatch({ type: "SET_LOADING", payload: true });
-		try {
-			const resp = await scrapService.find({
-				query: { $sort: { scheduled_date: 1, scheduled_time: 1 } },
-			});
-			if (!mountedRef.current) return;
-			const ops: Operation[] = (resp as any)?.data ?? (resp as any) ?? [];
-			dispatch({ type: "SET_ALL", payload: ops.map(computeStatus) });
-			dispatch({ type: "SET_ERROR", payload: null });
-		} catch {
-			if (mountedRef.current)
-				dispatch({ type: "SET_ERROR", payload: "Erro ao atualizar" });
-		} finally {
-			if (mountedRef.current) dispatch({ type: "SET_LOADING", payload: false });
-		}
-	}, []);
+		await loadOperations();
+	}, [loadOperations]);
 
 	const createOperation = useCallback(async (payload: Partial<Operation>) => {
 		try {
-			const resp = await scrapService.create(payload);
-			const created: Operation = (resp as any)?.data ?? (resp as any);
-			if (!mountedRef.current) return null;
-			if (created)
-				dispatch({ type: "UPSERT", payload: computeStatus(created) });
-			return created ?? null;
+			const created = await scrapOperationsService.create(payload);
+			if (!mountedRef.current || !created) return null;
+			dispatch({ type: "UPSERT", payload: created });
+			return created;
 		} catch {
 			toast.error("Erro ao criar operação");
 			return null;
@@ -215,12 +193,14 @@ export function ScrapOperationsProvider({
 	const updateOperation = useCallback(
 		async (id: string | number, patch: Partial<Operation>) => {
 			try {
-				const resp = await scrapService.patch(id, patch);
-				const updated: Operation = (resp as any)?.data ?? (resp as any);
-				if (!mountedRef.current) return null;
-				if (updated)
-					dispatch({ type: "UPSERT", payload: computeStatus(updated) });
-				return updated ?? null;
+				const updated = await scrapOperationsService.patch(
+					id,
+					patch,
+					{ source: "user" } // 🔹 envia a origem diretamente
+				);
+				if (!mountedRef.current || !updated) return null;
+				dispatch({ type: "UPSERT", payload: updated });
+				return updated;
 			} catch {
 				toast.error("Erro ao atualizar operação");
 				return null;
@@ -235,21 +215,16 @@ export function ScrapOperationsProvider({
 			try {
 				const deletedBy =
 					(user as any)?.id || (user as any)?._id || user?.name || "unknown";
-				const resp = await scrapService.patch(id, {
-					deleted: true,
-					deleted_at: new Date().toISOString(),
-					deleted_by: deletedBy,
-				});
 
-				const serverOp: Operation | undefined =
-					(resp as any)?.data ?? (resp as any);
+				const serverOp = await scrapOperationsService.softDelete(
+					id,
+					deletedBy,
+					{ source: "delete" }
+				);
+
 				if (!mountedRef.current) return true;
-
-				if (serverOp) {
-					dispatch({ type: "UPSERT", payload: computeStatus(serverOp) });
-				} else {
-					dispatch({ type: "REMOVE", payload: id });
-				}
+				if (serverOp) dispatch({ type: "UPSERT", payload: serverOp });
+				else dispatch({ type: "REMOVE", payload: id });
 
 				toast.success("Operação excluída com sucesso");
 				return true;
@@ -266,22 +241,6 @@ export function ScrapOperationsProvider({
 			state.operations.find(op => String(op.id) === String(id)),
 		[state.operations]
 	);
-
-	// ------------------------------
-	// Atualiza status “Vencida/Excluída” a cada 10s
-	// ------------------------------
-	useEffect(() => {
-		if (!mountedRef.current) return;
-		const timer = setInterval(() => {
-			state.operations.forEach(op => {
-				const newOp = computeStatus(op);
-				if (newOp.status !== op.status) {
-					dispatch({ type: "UPSERT", payload: newOp });
-				}
-			});
-		}, 10_000);
-		return () => clearInterval(timer);
-	}, [state.operations]);
 
 	const actions = useMemo<Actions>(
 		() => ({

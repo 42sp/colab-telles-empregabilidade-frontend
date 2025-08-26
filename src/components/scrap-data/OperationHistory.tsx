@@ -1,17 +1,10 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useOperationsState } from "@/contexts/ScrapOperationsContext";
 
 function formatDate(dateStr?: string) {
-	if (!dateStr) return "-";
+	if (!dateStr) return "";
 	const d = new Date(dateStr);
 	const day = String(d.getUTCDate()).padStart(2, "0");
 	const month = String(d.getUTCMonth() + 1).padStart(2, "0");
@@ -22,21 +15,14 @@ function formatDate(dateStr?: string) {
 export function OperationHistory() {
 	const { operations } = useOperationsState();
 
-	// ------------------------------
-	// Filtra operações concluídas ou excluídas
-	// ------------------------------
+	// Filtra apenas operações concluídas
 	const filteredOperations = useMemo(() => {
-		return operations.filter(op => op.deleted || op.status === "Concluído");
+		return operations.filter(op => op.status === "Concluído");
 	}, [operations]);
 
-	// ------------------------------
-	// Preencher mínimo de 6 linhas visuais
-	// ------------------------------
 	const paddedOperations = useMemo(() => {
 		const minRows = 6;
 		const emptyRowsCount = Math.max(0, minRows - filteredOperations.length);
-
-		// Preenche com linhas vazias se necessário
 		const emptyRows = Array.from({ length: emptyRowsCount }, () => ({
 			id: "",
 			name: "",
@@ -46,14 +32,10 @@ export function OperationHistory() {
 			status: "",
 			deleted: false,
 		}));
-
 		return [...filteredOperations, ...emptyRows];
 	}, [filteredOperations]);
 
-	// ------------------------------
-	// Determina altura máxima da tabela para scroll
-	// ------------------------------
-	const maxTableHeight = 6 * 48; // 6 linhas * 48px de altura (h-12)
+	const maxTableHeight = 6 * 48;
 
 	return (
 		<Card className="border border-gray-200" role="region" aria-labelledby="history-title">
@@ -63,17 +45,14 @@ export function OperationHistory() {
 						Histórico de Operações
 					</CardTitle>
 					<p className="text-sm text-zinc-500" id="history-description">
-						Registro de operações realizadas
+						Registro de operações concluídas
 					</p>
 				</div>
 			</CardHeader>
 
 			<CardContent>
 				<div className="border border-gray-200 rounded-lg overflow-hidden">
-					<div
-						className="overflow-y-auto"
-						style={{ maxHeight: `${maxTableHeight}px` }}
-					>
+					<div className="overflow-y-auto" style={{ maxHeight: `${maxTableHeight}px` }}>
 						<Table aria-label="Histórico de operações">
 							<TableHeader>
 								<TableRow className="bg-gray-100">
@@ -93,16 +72,18 @@ export function OperationHistory() {
 										<TableCell className="text-zinc-900">{op.scheduled_time}</TableCell>
 										<TableCell className="text-zinc-900">{op.user_tag}</TableCell>
 										<TableCell>
-											{op.deleted ? (
-												<span className="px-3 py-1 rounded-full text-xs bg-red-500 text-white">
-													Excluída
-												</span>
-											) : op.status === "Concluído" || op.status === "success" ? (
-												<span className="px-3 py-1 rounded-full text-xs bg-green-600 text-white">
-													Concluído
-												</span>
+											{op.status ? (
+												op.status === "Concluído" ? (
+													<span className="px-3 py-1 rounded-full text-xs bg-green-600 text-white">
+														{op.status}
+													</span>
+												) : (
+													<span className="px-3 py-1 rounded-full text-xs bg-gray-300 text-zinc-700">
+														{op.status}
+													</span>
+												)
 											) : (
-												<span className="text-xs">&nbsp;</span>
+												"" // vazio se não houver status
 											)}
 										</TableCell>
 									</TableRow>
