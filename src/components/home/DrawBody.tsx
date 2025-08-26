@@ -3,6 +3,7 @@ import {
 	type ColumnKey,
 	type ColumnVisibility,
 	type FilterType,
+	type Stats,
 } from "../../pages/home/types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
@@ -13,7 +14,12 @@ export function DrawBody() {
 	//#region States
 	const $service = useServices();
 	const [dataRows, setDataRows] = useState<StudentsParameters[]>([]);
-	const rowsToGet: number = 30;
+	const [stats, setStats] = useState<Stats>({
+		total: 0,
+		working: 0,
+		notWorking: 0,
+		avgCompensation: 0,
+	});
 
 	//States
 	const [activeLabel, setActiveLabel] = useState("Todos");
@@ -241,44 +247,82 @@ export function DrawBody() {
 	}, [filter]);
 
 	//Requisicao no back-end dos dados pre-filtrados
-	useEffect(() => {
-		(async () => {
-			try {
-				console.log("activeLabel:", activeLabel);
-				const allFilter = {
-					$limit: rowsToGet,
-				};
+	const pagesPerRequest: number = 3;
+	const rowsPerPage: number = 10;
+	const groupSize: number = rowsPerPage * pagesPerRequest;
+	const groupIndex: number = Math.floor(page / pagesPerRequest);
 
-				if (activeLabel !== "Todos") {
-					const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
+	async function fetchData(skipIndex: number) {
+		try {
+			const skip: number = skipIndex * groupSize;
+			const allFilter = {
+				$limit: groupSize,
+				$skip: skip,
+			};
 
-					allFilter.holderContractStatus = statusValue;
-				}
-				const translateFilter = (value: string) => {
-					const lower: string = value.toLowerCase();
-					const translations = new Map<string, boolean>([
-						["sim", true],
-						["não", false],
-						["nao", false],
-					]);
+			if (activeLabel !== "Todos") {
+				const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
 
-					return translations.get(lower) ?? value;
-				};
-				Object.keys(filter).forEach(key => {
-					const trimKey = filter[key]?.trim();
-					if (filter[key] && trimKey !== "") {
-						const translated = translateFilter(filter[key]);
-						allFilter[key] = translated;
-					}
-				});
-				const response = await $service.students(allFilter);
-				if (JSON.stringify(response.data) !== JSON.stringify(dataRows))
-					setDataRows(response.data.data);
-			} catch (error) {
-				console.error("Failed to fetch students:", error);
+				allFilter.holderContractStatus = statusValue;
 			}
-		})();
-	}, [filter, rowsToGet, activeLabel, activeFilter]);
+
+			const translateFilter = (value: string) => {
+				const lower: string = value.toLowerCase();
+				const translations = new Map<string, boolean>([
+					["sim", true],
+					["não", false],
+					["nao", false],
+				]);
+
+				return translations.get(lower) ?? value;
+			};
+			Object.keys(filter).forEach(key => {
+				const trimKey = filter[key]?.trim();
+				if (filter[key] && trimKey !== "") {
+					const translated = translateFilter(filter[key]);
+					allFilter[key] = translated;
+				}
+			});
+
+			const response = await $service.students(allFilter);
+			const payload = (response as any).data ?? response;
+			const rows = payload.data;
+
+			setDataRows(rows);
+
+			function getAverange(row: typeof props.dataRows): number {
+				const myRent = row
+					.map(row => Number(row.compensation))
+					.filter(rent => !isNaN(rent));
+
+				if (myRent.length === 0) return 0;
+
+				const sum = myRent.reduce((total, now) => total + now, 0);
+
+				return sum / myRent.length;
+			}
+
+			const totalStudents: number = payload.total;
+			const working: number = payload.data.filter(
+				row => row.working === true
+			).length;
+			const salary: number = getAverange(payload.data);
+
+			setStats(prev => ({
+				...prev,
+				total: totalStudents,
+				working: working,
+				notWorking: totalStudents - working,
+				avgCompensation: salary,
+			}));
+		} catch (error) {
+			console.error("Failed to fetch students:", error);
+		}
+	}
+
+	useEffect(() => {
+		fetchData(groupIndex);
+	}, [groupIndex, filter, activeLabel, activeFilter]);
 
 	useEffect(() => {
 		console.log("Data Rows:", dataRows);
@@ -300,6 +344,7 @@ export function DrawBody() {
 				setActiveLabel={setActiveLabel}
 				filteredRows={filteredRows}
 				dataRows={dataRows}
+				stats={stats}
 			/>
 			<SearchBar
 				filter={filter}
@@ -312,6 +357,7 @@ export function DrawBody() {
 				setColums={setColums}
 				setFilteredRows={setFilteredRows}
 				filteredRows={filteredRows}
+				stats={stats}
 			/>
 		</div>
 	);

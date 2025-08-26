@@ -6,7 +6,9 @@ import type { PropsType } from "../../../pages/home/types";
 import { useEffect, useState } from "react";
 
 export function SearchBar(props: PropsType) {
-	const [input, setInput] = useState<string>(props.filter[props.activeFilter] || "");
+	const [input, setInput] = useState<string>(
+		props.filter[props.activeFilter] || ""
+	);
 
 	function updateFilter(value: string) {
 		props.setFilter(prev => ({ ...prev, [props.activeFilter]: value }));
@@ -15,14 +17,13 @@ export function SearchBar(props: PropsType) {
 	//Page config
 	const rowsPerPage = 10;
 	const startPage = props.page * rowsPerPage;
+	const pagesPerGroup = 3;
+	const intraGroupPage = props.page % pagesPerGroup;
 	const visibleRows = props.filteredRows.slice(
-		startPage,
-		startPage + rowsPerPage
+		intraGroupPage * rowsPerPage,
+		intraGroupPage * rowsPerPage + rowsPerPage
 	);
-	const endPage = Math.min(
-		(props.page + 1) * rowsPerPage,
-		props.filteredRows.length
-	);
+	const endPage = Math.min((props.page + 1) * rowsPerPage, props.stats.total);
 
 	function removeFilter(toRemove: string) {
 		props.setFilter(prev => ({

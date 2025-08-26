@@ -1,5 +1,10 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { ButtonType, Data, StatusType } from "../../../pages/home/types";
+import type {
+	ButtonType,
+	Data,
+	Stats,
+	StatusType,
+} from "../../../pages/home/types";
 import { DrawStatusButton } from "./DrawStatusButton";
 import { DrawTotals } from "./DrawTotals";
 
@@ -8,6 +13,7 @@ interface DrawStatusProps {
 	setActiveLabel: Dispatch<SetStateAction<string>>;
 	filteredRows: Data[];
 	dataRows: Data[];
+	stats: Stats;
 }
 
 export function DrawStatus(props: DrawStatusProps) {
@@ -17,29 +23,17 @@ export function DrawStatus(props: DrawStatusProps) {
 		{ label: "Inativos" },
 	];
 
-	function getAverange(row: typeof props.dataRows): number {
-		const myRent = row
-			.map(row => Number(row.compensation))
-			.filter(rent => !isNaN(rent));
-
-		if (myRent.length === 0) return 0;
-
-		const sum = myRent.reduce((total, now) => total + now, 0);
-
-		return sum / myRent.length;
-	}
-
 	const status: StatusType[] = [
-		{ label: "Total de estudantes", value: props.filteredRows.length },
+		{ label: "Total de estudantes", value: props.stats.total },
 		{
 			label: "Trabalhando",
-			value: props.filteredRows.filter(row => row.working === true).length,
+			value: props.stats.working,
 		},
 		{
 			label: "Não Trabalhando",
-			value: props.filteredRows.filter(row => row.working === false).length,
+			value: props.stats.notWorking,
 		},
-		{ label: "Salário Médio", value: getAverange(props.filteredRows) },
+		{ label: "Salário Médio", value: props.stats.avgCompensation },
 	];
 
 	return (

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { type ColumnsMap, type Data } from "../../../pages/home/types";
+import { type ColumnsMap, type Data, type Stats } from "../../../pages/home/types";
 
 interface DrawResultsProps {
 	colums: ColumnsMap;
@@ -11,6 +11,7 @@ interface DrawResultsProps {
 	endPage: number;
 	filteredRows: Data[];
 	rowsPerPage: number;
+	stats: Stats;
 }
 
 export function DrawResults(props: DrawResultsProps) {
@@ -26,7 +27,7 @@ export function DrawResults(props: DrawResultsProps) {
 		const nextPage = props.page + 1;
 		const prevPage = props.page - 1;
 		const pageNumbers = [prevPage, props.page, nextPage];
-		const totalPages = Math.ceil(props.filteredRows.length / props.rowsPerPage);
+		const totalPages = Math.ceil(props.stats.total / props.rowsPerPage);
 
 		return (
 			<div className="flex justify-end items-end text-black">
@@ -146,7 +147,7 @@ export function DrawResults(props: DrawResultsProps) {
 			<div className="flex border-b border-gray-200">
 				<p className="p-4 text-slate-400">
 					Mostrando {props.startPage + 1} a {props.endPage} de{" "}
-					{props.filteredRows.length} resultados
+					{props.stats.total} resultados
 				</p>
 				<div className="ml-auto p-4">{pagination()}</div>
 			</div>
