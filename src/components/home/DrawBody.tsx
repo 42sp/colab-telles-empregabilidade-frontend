@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
 	type ColumnKey,
 	type ColumnVisibility,
@@ -249,7 +249,8 @@ export function DrawBody() {
 	//Requisicao no back-end dos dados pre-filtrados
 	const pagesPerRequest: number = 3;
 	const rowsPerPage: number = 10;
-	const groupSize: number = rowsPerPage * pagesPerRequest;
+	const groupSize: number =
+		stats.total !== 0 ? stats.total : rowsPerPage * pagesPerRequest;
 	const groupIndex: number = Math.floor(page / pagesPerRequest);
 
 	async function fetchData(skipIndex: number) {
@@ -285,41 +286,74 @@ export function DrawBody() {
 			});
 
 			const response = await $service.students(allFilter);
-			const payload = (response as any).data ?? response;
-			const rows = payload.data;
-
-			setDataRows(rows);
-
-			function getAverange(row: typeof props.dataRows): number {
-				const myRent = row
-					.map(row => Number(row.compensation))
-					.filter(rent => !isNaN(rent));
-
-				if (myRent.length === 0) return 0;
-
-				const sum = myRent.reduce((total, now) => total + now, 0);
-
-				return sum / myRent.length;
-			}
-
-			const totalStudents: number = payload.total;
-			const working: number = payload.data.filter(
-				row => row.working === true
-			).length;
-			const salary: number = getAverange(payload.data);
-
-			setStats(prev => ({
-				...prev,
-				total: totalStudents,
-				working: working,
-				notWorking: totalStudents - working,
-				avgCompensation: salary,
-			}));
+			setDataRows(response.data.data);
 		} catch (error) {
 			console.error("Failed to fetch students:", error);
 		}
 	}
 
+	async function fetchStats() {
+		const allFilter = {
+			$limit: stats.total !== 0 ? stats.total : 100,
+		};
+
+		if (activeLabel !== "Todos") {
+			const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
+
+			allFilter.holderContractStatus = statusValue;
+		}
+
+		const translateFilter = (value: string) => {
+			const lower: string = value.toLowerCase();
+			const translations = new Map<string, boolean>([
+				["sim", true],
+				["não", false],
+				["nao", false],
+			]);
+
+			return translations.get(lower) ?? value;
+		};
+		Object.keys(filter).forEach(key => {
+			const trimKey = filter[key]?.trim();
+			if (filter[key] && trimKey !== "") {
+				const translated = translateFilter(filter[key]);
+				allFilter[key] = translated;
+			}
+		});
+		const response = await $service.students(allFilter);
+
+		console.log("Stats Response:", response);
+
+		// payload real do feathers
+		const feathersData = response.data; // já tem { data: [...], total, limit, skip }
+
+		function getAverange(rows: typeof props.dataRows): number {
+			const myRent = rows
+				.map(row => Number(row.compensation))
+				.filter(rent => !isNaN(rent));
+
+			if (myRent.length === 0) return 0;
+
+			const sum = myRent.reduce((total, now) => total + now, 0);
+			return sum / myRent.length;
+		}
+
+		const total: number = feathersData.total; // aqui sim
+		const working: number = feathersData.data.filter(
+			row => row.working === true
+		).length;
+
+		setStats({
+			total,
+			working,
+			notWorking: total - working,
+			avgCompensation: getAverange(feathersData.data),
+		});
+	}
+
+	useEffect(() => {
+		fetchStats();
+	}, [filter, activeLabel, activeFilter]);
 	useEffect(() => {
 		fetchData(groupIndex);
 	}, [groupIndex, filter, activeLabel, activeFilter]);
