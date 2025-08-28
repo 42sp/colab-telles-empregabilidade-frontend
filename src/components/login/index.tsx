@@ -72,9 +72,6 @@ const LoginBody = () => {
 				sessionStorage.setItem("accessToken", accessToken);
       			setUser(user); // <- salva no contexto
 
-				console.log("Login realizado com sucesso:", response.data);
-
-
 				if (rememberMe) {
 					localStorage.setItem(
 						"login",

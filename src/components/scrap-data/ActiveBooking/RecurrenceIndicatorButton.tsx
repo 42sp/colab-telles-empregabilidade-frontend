@@ -20,7 +20,7 @@ export function RecurrenceIndicatorButton({ isRecurring }: Props) {
             size="icon"
             variant="link"
             aria-label="Indicador de recorrência"
-            className={`${isRecurring ? "bg-green-700" : "bg-gray-100"} text-white`}
+            className={`${isRecurring ? "bg-green-700" : "bg-gray-100"} text-white h-8 w-8`}
           >
             <Repeat
               className={`w-4 h-4 ${isRecurring ? "text-white" : "text-gray-400"}`}
