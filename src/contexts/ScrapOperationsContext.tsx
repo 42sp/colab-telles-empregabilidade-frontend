@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { scrapOperationsService } from "@/services/scrapOperationsService";
 import type { Operation } from "@/types/operations";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 import { useAuth } from "@/contexts/AuthContext";
 
 type State = {
@@ -95,7 +95,6 @@ export function ScrapOperationsProvider({
 			const resp = await scrapOperationsService.find({
 				query: { $sort: { scheduled_date: 1, scheduled_time: 1 } },
 			});
-
 			const ops = Array.isArray(resp) ? resp : (resp.data ?? []);
 			if (mountedRef.current) dispatch({ type: "SET_ALL", payload: ops });
 		} catch {
@@ -114,50 +113,83 @@ export function ScrapOperationsProvider({
 		};
 	}, [loadOperations]);
 
-	// ------------------------------
-	// Escutar atualizações em tempo real via WebSocket
-	// ------------------------------
+	// WS: escuta eventos detalhados
 	useEffect(() => {
-		if (!mountedRef.current) return;
+		console.log("[WS] Iniciando escuta de eventos WebSocket...");
 
 		const handlePatched = (op: Operation & { _source?: string }) => {
+			if (!mountedRef.current) return;
+
+			const source = op._source || "unknown";
+
+			// Log detalhado
+			console.groupCollapsed(
+				`[WS] Evento 'patched' recebido (source: ${source})`
+			);
+			console.log("Operação completa:", op);
+			console.log("Origem do patch (_source):", source);
+			console.groupEnd();
+
+			// Atualiza estado
 			dispatch({ type: "UPSERT", payload: op });
 
-			// 🔹 Decide a mensagem com base na origem
-			switch (op._source) {
+			// Dispara toasts dependendo da origem
+			switch (source) {
 				case "cronjob":
-					if (op.status === "Concluído") {
-						toast.success(
-							`Operação "${op.name}" foi concluída automaticamente`
-						);
-					} else if (op.status === "Em Execução") {
-						toast(`Operação "${op.name}" está em execução...`, { icon: "⚙️" });
-					} else if (op.status === "Falha") {
+					if (op.status === "Concluído")
+						toast.success(`Operação "${op.name}" concluída automaticamente`);
+					else if (op.status === "Em Execução")
+						toast.info(`Operação "${op.name}" em execução... ⚙️`);
+					else if (op.status === "Falha")
 						toast.error(`Operação "${op.name}" falhou (cronjob)`);
-					}
 					break;
-
 				case "user":
-					toast(`Operação "${op.name}" foi atualizada manualmente`, {
-						icon: "✍️",
-					});
+					toast.info(`Operação "${op.name}" atualizada manualmente ✍️`);
 					break;
-
 				case "delete":
-					toast(`Operação "${op.name}" foi excluída pelo usuário`, {
-						icon: "🗑️",
-					});
+					toast.warn(`Operação "${op.name}" excluída pelo usuário 🗑️`);
 					break;
-
 				default:
-					console.log("Evento patched sem origem conhecida:", op);
+					console.warn("[WS] Evento patched sem origem conhecida:", op);
 			}
 		};
 
-		scrapOperationsService.on("patched", handlePatched);
+		const handleCreated = (op: Operation) => {
+			console.log("[WS] Evento 'created' recebido:", op);
+			dispatch({ type: "UPSERT", payload: op });
+			toast(`Nova operação criada: "${op.name}" 🆕`);
+		};
 
+		const handleRemoved = (op: Operation) => {
+			console.log("[WS] Evento 'removed' recebido:", op);
+			dispatch({ type: "REMOVE", payload: op.id });
+			toast(`Operação removida: "${op.name}" 🗑️`);
+		};
+
+		// Registra eventos
+		scrapOperationsService.on("patched", handlePatched);
+		scrapOperationsService.on("created", handleCreated);
+		scrapOperationsService.on("removed", handleRemoved);
+
+		// Logs de conexão WS
+		if ((scrapOperationsService as any).connection) {
+			const conn = (scrapOperationsService as any).connection;
+			conn.on("connect", () =>
+				console.log("[WS] Conectado ao servidor WebSocket")
+			);
+			conn.on("disconnect", () =>
+				console.log("[WS] Desconectado do servidor WebSocket")
+			);
+			conn.on("connect_error", (err: any) =>
+				console.error("[WS] Erro de conexão:", err)
+			);
+		}
+
+		// Cleanup
 		return () => {
 			scrapOperationsService.off("patched", handlePatched);
+			scrapOperationsService.off("created", handleCreated);
+			scrapOperationsService.off("removed", handleRemoved);
 		};
 	}, []);
 
@@ -168,7 +200,7 @@ export function ScrapOperationsProvider({
 		async (id: string | number) => {
 			const op = state.operations.find(op => String(op.id) === String(id));
 			if (!op) return;
-			toast(`Executando operação: ${op.name ?? op.id}`, { icon: "⚙️" });
+			toast(`Executando operação: ${op.name ?? op.id} ⚙️`);
 		},
 		[state.operations]
 	);
@@ -193,11 +225,9 @@ export function ScrapOperationsProvider({
 	const updateOperation = useCallback(
 		async (id: string | number, patch: Partial<Operation>) => {
 			try {
-				const updated = await scrapOperationsService.patch(
-					id,
-					patch,
-					{ source: "user" } // 🔹 envia a origem diretamente
-				);
+				const updated = await scrapOperationsService.patch(id, patch, {
+					source: "user",
+				});
 				if (!mountedRef.current || !updated) return null;
 				dispatch({ type: "UPSERT", payload: updated });
 				return updated;
@@ -215,17 +245,14 @@ export function ScrapOperationsProvider({
 			try {
 				const deletedBy =
 					(user as any)?.id || (user as any)?._id || user?.name || "unknown";
-
 				const serverOp = await scrapOperationsService.softDelete(
 					id,
 					deletedBy,
 					{ source: "delete" }
 				);
-
 				if (!mountedRef.current) return true;
 				if (serverOp) dispatch({ type: "UPSERT", payload: serverOp });
 				else dispatch({ type: "REMOVE", payload: id });
-
 				toast.success("Operação excluída com sucesso");
 				return true;
 			} catch {

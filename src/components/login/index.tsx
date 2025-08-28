@@ -103,6 +103,7 @@ const LoginBody = () => {
 						onChange={e => setEmail(e.target.value)}
 						value={email}
 						required
+						autoComplete="email"
 					/>
 
 					<Field
@@ -115,6 +116,8 @@ const LoginBody = () => {
 						onChange={e => setPassword(e.target.value)}
 						value={password}
 						required
+						autoComplete="current-password"
+						
 					/>
 
 					<div className="login-body-rememberMeContainer">

@@ -244,7 +244,7 @@ export function DrawBody() {
 	useEffect(() => {
 		(async () => {
 			try {
-				console.log("activeLabel:", activeLabel);
+				//console.log("activeLabel:", activeLabel);
 				const allFilter = {
 					$limit: rowsToGet,
 				};
@@ -281,7 +281,7 @@ export function DrawBody() {
 	}, [filter, rowsToGet, activeLabel, activeFilter]);
 
 	useEffect(() => {
-		console.log("Data Rows:", dataRows);
+		//console.log("Data Rows:", dataRows);
 	}, [dataRows]);
 
 	const [filteredRows, setFilteredRows] = useState(dataRows);
