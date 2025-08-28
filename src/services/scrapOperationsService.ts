@@ -1,6 +1,7 @@
-import { scrapService } from './socketClient';
-import type { Operation } from '@/types/operations';
-import type { ScrapParams } from '@/types/ScrapParams';
+// src/services/scrapOperationsService.ts
+import { scrapService } from "./socketClient";
+import type { Operation } from "@/types/operations";
+import type { ScrapParams } from "@/types/ScrapParams";
 
 export const scrapOperationsService = {
   async find(query?: any): Promise<Operation[] | { data: Operation[] }> {
@@ -35,7 +36,7 @@ export const scrapOperationsService = {
     return op;
   },
 
-  // Eventos WS
+  // Eventos WS (conecta ao API de events do Feathers client)
   on(event: string, callback: (op: Operation) => void) {
     console.log(`[STEP 8] Registrando listener WS para evento: ${event}`);
     scrapService.on(event, callback);
