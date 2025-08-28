@@ -249,8 +249,7 @@ export function DrawBody() {
 	//Requisicao no back-end dos dados pre-filtrados
 	const pagesPerRequest: number = 3;
 	const rowsPerPage: number = 10;
-	const groupSize: number =
-		stats.total !== 0 ? stats.total : rowsPerPage * pagesPerRequest;
+	const groupSize: number = rowsPerPage * pagesPerRequest;
 	const groupIndex: number = Math.floor(page / pagesPerRequest);
 
 	async function fetchData(skipIndex: number) {
