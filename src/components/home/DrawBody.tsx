@@ -292,62 +292,66 @@ export function DrawBody() {
 	}
 
 	async function fetchStats() {
-		const allFilter = {
-			$limit: stats.total !== 0 ? stats.total : 100,
-		};
-
-		if (activeLabel !== "Todos") {
-			const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
-
-			allFilter.holderContractStatus = statusValue;
-		}
-
-		const translateFilter = (value: string) => {
-			const lower: string = value.toLowerCase();
-			const translations = new Map<string, boolean>([
-				["sim", true],
-				["não", false],
-				["nao", false],
-			]);
-
-			return translations.get(lower) ?? value;
-		};
-		Object.keys(filter).forEach(key => {
-			const trimKey = filter[key]?.trim();
-			if (filter[key] && trimKey !== "") {
-				const translated = translateFilter(filter[key]);
-				allFilter[key] = translated;
-			}
+		const stats = await $service.studentsStats({
+			holderContractStatus: "Ativo",
+			working: true,
 		});
-		const response = await $service.students(allFilter);
 
-		console.log("Stats Response:", response);
+		console.log(stats);
+		// const allFilter = {
+		// 	$limit: stats.total !== 0 ? stats.total : 100,
+		// };
 
-		// payload real do feathers
-		const feathersData = response.data; // já tem { data: [...], total, limit, skip }
+		// if (activeLabel !== "Todos") {
+		// 	const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
 
-		function getAverange(rows: typeof props.dataRows): number {
-			const myRent = rows
-				.map(row => Number(row.compensation))
-				.filter(rent => !isNaN(rent));
+		// 	allFilter.holderContractStatus = statusValue;
+		// }
 
-			if (myRent.length === 0) return 0;
+		// const translateFilter = (value: string) => {
+		// 	const lower: string = value.toLowerCase();
+		// 	const translations = new Map<string, boolean>([
+		// 		["sim", true],
+		// 		["não", false],
+		// 		["nao", false],
+		// 	]);
 
-			const sum = myRent.reduce((total, now) => total + now, 0);
-			return sum / myRent.length;
-		}
+		// 	return translations.get(lower) ?? value;
+		// };
+		// Object.keys(filter).forEach(key => {
+		// 	const trimKey = filter[key]?.trim();
+		// 	if (filter[key] && trimKey !== "") {
+		// 		const translated = translateFilter(filter[key]);
+		// 		allFilter[key] = translated;
+		// 	}
+		// });
+		// const response = await $service.students(allFilter);
 
-		const total: number = feathersData.total; // aqui sim
-		const working: number = feathersData.data.filter(
-			row => row.working === true
-		).length;
+		// // payload real do feathers
+		// const feathersData = response.data; // já tem { data: [...], total, limit, skip }
 
-		setStats({
-			total,
-			working,
-			notWorking: total - working,
-			avgCompensation: getAverange(feathersData.data),
-		});
+		// function getAverange(rows: typeof props.dataRows): number {
+		// 	const myRent = rows
+		// 		.map(row => Number(row.compensation))
+		// 		.filter(rent => !isNaN(rent));
+
+		// 	if (myRent.length === 0) return 0;
+
+		// 	const sum = myRent.reduce((total, now) => total + now, 0);
+		// 	return sum / myRent.length;
+		// }
+
+		// const total: number = feathersData.total; // aqui sim
+		// const working: number = feathersData.data.filter(
+		// 	row => row.working === true
+		// ).length;
+
+		// setStats({
+		// 	total,
+		// 	working,
+		// 	notWorking: total - working,
+		// 	avgCompensation: getAverange(feathersData.data),
+		// });
 	}
 
 	useEffect(() => {

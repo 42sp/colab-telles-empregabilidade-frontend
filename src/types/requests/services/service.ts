@@ -51,6 +51,27 @@ export default class Service {
 
 		return response;
 	}
+	async studentsStats(params: collection.StudentsType = {}) {
+		const token = sessionStorage.getItem("accessToken");
+		if (!token) throw new Error("No access token found");
+
+		const query = new URLSearchParams();
+		// Garante que cada key do params vira query string
+		Object.entries(params).forEach(([key, value]) => {
+			if (value !== undefined && value !== null)
+				query.append(key, String(value));
+		});
+
+		const response = await this.$axios.get(
+			`/students/stats?${query.toString()}`,
+			{
+				headers: { Authorization: `Bearer ${token}` },
+			}
+		);
+
+		return response.data;
+	}
+
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
 
 	// -------------------------------------------------------------------- POST --------------------------------------------------------------------
