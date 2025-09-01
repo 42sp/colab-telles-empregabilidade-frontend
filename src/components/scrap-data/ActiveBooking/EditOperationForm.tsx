@@ -45,7 +45,7 @@ export function EditOperationForm({
 					last_edited_by: form.getValues("last_edited_by"),
 					last_edited_at: form.getValues("last_edited_at"),
 				},
-				{ source: "user" }
+				{ source: "edit" }
 			);
 
 			form.reset(data);
