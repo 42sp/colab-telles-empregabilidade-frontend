@@ -36,22 +36,58 @@ export function DrawButtons(props: PropsType) {
 	const exportName = "relatório";
 
 	function downloadPdf(rows: Data[]) {
-		const doc = new jsPDF({ orientation: "landscape" });
 		const visibleKey = Object.keys(props.colums).filter(
 			key => props.colums[key as keyof typeof props.colums].isVisible
 		);
+		const format: string =
+			visibleKey.length <= 25
+				? "a4"
+				: visibleKey.length <= 50
+					? "a3"
+					: visibleKey.length <= 75
+						? "a2"
+						: "a1";
+
+		const doc = new jsPDF({
+			orientation: "landscape",
+			unit: "mm",
+			format: format,
+		});
 		const headers = visibleKey.map(
 			key => props.colums[key as keyof typeof props.colums].label
 		);
 		const data = rows.map(row =>
 			visibleKey.map(key => {
 				const typedKey = key as keyof Data;
-				if (key === "rent")
-					return row.rent.toLocaleString("pt-br", {
+
+				if (key === "compensation") {
+					const value = row[typedKey];
+					const num: number = Number(value);
+					const zeroValue: string = new Intl.NumberFormat("pt-BR", {
 						style: "currency",
 						currency: "BRL",
-					});
-				return row[typedKey];
+					}).format(0);
+					const formattedValue = new Intl.NumberFormat("pt-BR", {
+						style: "currency",
+						currency: "BRL",
+					}).format(num);
+
+					if (value === null || value === undefined || isNaN(num))
+						return zeroValue;
+
+					return formattedValue;
+				}
+
+				if (row[typedKey] !== null) {
+					const input = row[typedKey];
+					let value: string = String(input).trim();
+
+					if (typeof input === "boolean") value = input ? "Sim" : "Não";
+
+					return value === "" ? "-" : value;
+				}
+
+				return "-";
 			})
 		);
 
@@ -59,7 +95,24 @@ export function DrawButtons(props: PropsType) {
 			head: [headers],
 			body: data,
 			startY: 10,
-			margin: { left: 10, right: 10 },
+			margin: { left: 5, right: 5 },
+			styles: {
+				fontSize: 5,
+				cellPadding: 0.5,
+				overflow: "linebreak",
+				halign: "center",
+			},
+			headStyles: {
+				fontSize: 6,
+				fontStyle: "bold",
+				fillColor: [200, 200, 200],
+				halign: "center",
+			},
+			tableWidth: "auto",
+			theme: "grid",
+			showHead: "everyPage",
+			pageBreak: "auto",
+			rowPageBreak: "avoid",
 		});
 
 		doc.save(exportName + ".pdf");
@@ -71,23 +124,32 @@ export function DrawButtons(props: PropsType) {
 		);
 		const header = visibleKey
 			.map(key => props.colums[key as keyof typeof props.colums].label || key)
-			.join(", ");
+			.join(",");
 		const body = rows
 			.map(row =>
 				visibleKey
 					.map(key => {
 						const typedKey = key as keyof Data;
-						if (key === "rent") {
-							const value = row.rent.toLocaleString("pt-br", {
-								style: "currency",
-								currency: "BRL",
-							});
-							return `"${value}"`;
-						}
 						const value = row[typedKey];
-						if (typeof value === "string" && value.includes(","))
-							return `"${value}"`;
-						return value;
+						const str: string = String(row[typedKey]).trim();
+
+						if (key === "compensation") {
+							const num: number = Number(value);
+							return num.toFixed(2);
+						}
+						if (
+							value === null ||
+							value === undefined ||
+							str === null ||
+							str === undefined ||
+							str === ""
+						)
+							return `""`;
+
+						if (str.includes(",") || str.includes("'") || str.includes('"'))
+							return `"${str}"`;
+
+						return str;
 					})
 					.join(",")
 			)
@@ -154,13 +216,16 @@ export function DrawButtons(props: PropsType) {
 												[key]: { ...prev[typedKey], isVisible: !!checked },
 											}))
 										}
-									/>
-									<div
-										className={`w-5 h-5 flex justify-center items-center border border-gray-400
-												${col.isVisible ? "bg-blue-600 border-blue-300" : "bg-white"}`}
 									>
-										{col.isVisible && <Check className="w-4 h-4 text-white" />}
-									</div>
+										<div
+											className={`w-5 h-5 flex justify-center items-center cursor-pointer border border-gray-400
+												${col.isVisible ? "bg-blue-600 border-blue-300" : "bg-white"}`}
+										>
+											{col.isVisible && (
+												<Check className="w-4 h-4 text-white" />
+											)}
+										</div>
+									</Checkbox>
 									<label
 										htmlFor={`checkbox-${key}`}
 										className="flex justify-start items-start cursor-pointer select-none gap-2"

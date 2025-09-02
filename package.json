@@ -5,9 +5,9 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build",
 		"lint": "eslint .",
 		"preview": "vite preview",
+		"build": "tsc && vite build",
 		"format": "prettier --write .",
 		"format:check": "prettier --check ."
 	},
