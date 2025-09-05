@@ -7,27 +7,17 @@ import authClient from "@feathersjs/authentication-client";
 
 /**
  * Configura cliente Feathers com Socket.IO + REST de forma segura:
- * - Não acessa localStorage/`window` sem checar environment (SSR-safe).
- * - Não inclui token no handshake de forma "hacky"; tenta re-autenticar via authClient.
- * - Conecta socket apenas após configurar (e opcionalmente autenticar).
+ * - Usa authClient (localStorage) para persistência de sessão
+ * - Permite autenticar manualmente após login com accessToken
+ * - Suporta reautenticação automática em reloads
  */
 
 // util: ambiente cliente?
 const isBrowser = typeof window !== "undefined" && typeof window.document !== "undefined";
 
-// util: leitura segura do token do localStorage
-const getStoredToken = (): string | undefined => {
-  if (!isBrowser) return undefined;
-  return (
-    localStorage.getItem("feathers-jwt") ??
-    localStorage.getItem("accessToken") ??
-    localStorage.getItem("token") ??
-    undefined
-  );
-};
-
 // util: controle de debug (use NODE_ENV)
-const isDev = typeof process !== "undefined" ? process.env.NODE_ENV !== "production" : true;
+const isDev =
+  typeof process !== "undefined" ? process.env.NODE_ENV !== "production" : true;
 const log = (...args: any[]) => {
   if (isDev) console.debug("[socketClient]", ...args);
 };
@@ -45,10 +35,14 @@ export const socket: Socket | null = isBrowser ? io(SOCKET_URL, socketOptions) :
 if (isBrowser && socket) {
   log("Socket instanciado (ainda não conectado).");
   socket.on("connect", () => log("Socket conectado", socket.id));
-  socket.on("disconnect", (reason: any) => log("Socket desconectado", reason));
-  socket.on("connect_error", (err: any) => console.error("[socketClient] connect_error:", err));
+  socket.on("disconnect", (reason: any) =>
+    log("Socket desconectado", reason)
+  );
+  socket.on("connect_error", (err: any) =>
+    console.error("[socketClient] connect_error:", err)
+  );
 
-  // DEBUG: só em dev
+  // DEBUG extra
   if (isDev) {
     socket.onAny((event, ...args) => {
       console.debug(`[socketClient DEBUG] Evento recebido: ${event}`, args);
@@ -72,8 +66,7 @@ client.configure(restClient.axios(axios));
 if (isBrowser) {
   try {
     client.configure(
-      // storage: window.localStorage garante persistência padrão do auth plugin
-      authClient({ storage: window.localStorage })
+      authClient({ storage: window.localStorage }) // 🔑 sempre localStorage
     );
   } catch (err) {
     console.warn("[socketClient] auth client plugin não carregado:", err);
@@ -82,47 +75,50 @@ if (isBrowser) {
   log("Não configurando auth client (SSR).");
 }
 
-// Função que tenta re-autenticar usando token existente (se houver)
-async function tryReauthenticateAndConnect() {
-  if (!isBrowser) return;
+/**
+ * Helpers de autenticação
+ */
 
-  const token = getStoredToken();
-
-  if (token) {
-    try {
-      log("Token encontrado. Tentando re-autenticar via client.authenticate...");
-      // Tentativa de re-autenticação com accessToken
-      // Se falhar, apenas continuamos — socket será conectado sem token.
-      // @ts-ignore - client.authenticate existe quando authClient foi configurado
-      await client.authenticate({ strategy: "jwt", accessToken: token });
-      log("Re-autenticação bem-sucedida.");
-    } catch (err: any) {
-      // re-auth pode falhar (ex.: token expirado) — isso é esperado às vezes
-      console.warn("[socketClient] Re-auth falhou:", err?.message ?? err);
-    }
-  } else {
-    log("Nenhum token encontrado para re-autenticar.");
+// Autenticar manualmente após login
+export async function authenticateWithToken(accessToken: string) {
+  try {
+    await client.authenticate({ strategy: "jwt", accessToken });
+    log("Autenticado com JWT");
+  } catch (err) {
+    console.error("[socketClient] Falha ao autenticar com JWT:", err);
+    throw err;
   }
+}
 
-  // Conecta o socket (com ou sem autenticação anterior)
-  if (socket && !socket.connected) {
-    try {
+// Reautenticar automaticamente (se token válido no storage)
+export async function reauthenticate() {
+  if (!isBrowser) return null;
+  try {
+    const result = await client.reAuthenticate();
+    log("Reautenticação bem-sucedida:", result);
+    if (socket && !socket.connected) {
       socket.connect();
-      log("Socket.connect() chamado.");
-    } catch (err) {
-      console.error("[socketClient] Falha ao conectar socket:", err);
     }
+    return result;
+  } catch (err) {
+    console.warn("[socketClient] Reautenticação falhou:", err);
+    return null;
   }
 }
 
-// Tenta re-auth + connect apenas se estivermos no browser
-if (isBrowser) {
-  // Chamamos async sem bloquear carregamento
-  void tryReauthenticateAndConnect();
+// Logout (encerra sessão no feathers e desconecta socket)
+export async function logout() {
+  try {
+    await client.logout();
+    log("Logout realizado");
+  } catch (err) {
+    console.error("[socketClient] Erro no logout:", err);
+  }
+  if (socket && socket.connected) {
+    socket.disconnect();
+  }
 }
 
-// Exportar serviço Feathers para uso (nome do serviço)
+// Exportar serviços
 export const scrapService = client.service("scrap-operations");
-
-// Export default client (caso precise)
 export default client;

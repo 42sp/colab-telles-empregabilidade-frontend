@@ -26,16 +26,14 @@ const LoginBody = () => {
 	const [password, setPassword] = useState("");
 	const [rememberMe, setRememberMe] = useState(false);
 	
-	const { setUser } = useAuth();
+	const { login } = useAuth();
 	const $service = useServices();
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		sessionStorage.removeItem("accessToken");
-		const login = localStorage.getItem("login");
-		if (login) {
-			const { email, password, rememberMe } = JSON.parse(login);
-
+		const loginStorage = localStorage.getItem("login");
+		if (loginStorage) {
+			const { email, password, rememberMe } = JSON.parse(loginStorage);
 			setEmail(email);
 			setPassword(password);
 			setRememberMe(rememberMe);
@@ -60,18 +58,18 @@ const LoginBody = () => {
 			);
 
 			if ([200, 201].includes(response.status)) {
- 
 				const responseData = response.data as {
 					accessToken: string;
-					user: { email: string; name?: string };
+					user: { id: number; email: string; name?: string };
 				};
 
 				const accessToken = responseData.accessToken;
-      			const user = responseData.user;
+				const user = responseData.user;
 
 				sessionStorage.setItem("accessToken", accessToken);
-      			setUser(user); // <- salva no contexto
+				await login(accessToken, user);
 
+				// Persistência do login caso o usuário marque "Remember me"
 				if (rememberMe) {
 					localStorage.setItem(
 						"login",
@@ -80,6 +78,7 @@ const LoginBody = () => {
 				} else {
 					localStorage.removeItem("login");
 				}
+
 				navigate("/home");
 			}
 		} catch (err) {
@@ -117,7 +116,6 @@ const LoginBody = () => {
 						value={password}
 						required
 						autoComplete="current-password"
-						
 					/>
 
 					<div className="login-body-rememberMeContainer">
