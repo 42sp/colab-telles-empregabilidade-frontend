@@ -25,7 +25,7 @@ const LoginBody = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [rememberMe, setRememberMe] = useState(false);
-	
+
 	const { setUser } = useAuth();
 	const $service = useServices();
 	const navigate = useNavigate();
@@ -60,19 +60,17 @@ const LoginBody = () => {
 			);
 
 			if ([200, 201].includes(response.status)) {
- 
 				const responseData = response.data as {
 					accessToken: string;
 					user: { email: string; name?: string };
 				};
 
 				const accessToken = responseData.accessToken;
-      			const user = responseData.user;
+				const user = responseData.user;
 
 				sessionStorage.setItem("accessToken", accessToken);
-      			setUser(user); // <- salva no contexto
+				setUser(user); // <- salva no contexto
 
-				console.log("Login realizado com sucesso:", response.data);
 				if (rememberMe) {
 					localStorage.setItem(
 						"login",
