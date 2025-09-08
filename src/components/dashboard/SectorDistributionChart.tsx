@@ -11,23 +11,25 @@ import {
 import { memo } from "react";
 import { LazyLoadWrapper } from "./LazyLoadWrapper";
 
-const data = [
-	{ name: "Tecnologia", value: 42 },
-	{ name: "Marketing", value: 18 },
-	{ name: "Finanças", value: 15 },
-	{ name: "Educação", value: 12 },
-	{ name: "Saúde", value: 8 },
-];
+export interface SectorDistributionProps {
+	name: string;
+	value: number;
+}
 
 const COLORS = ["#f97316", "#10b981", "#0ea5e9", "#f59e0b", "#8b5cf6"];
 
 const renderCustomizedLabel = (props: { name?: string; percent?: number }) => {
 	const { name, percent } = props;
+
 	if (percent === undefined || name === undefined) return null;
 	return `${name}: ${(percent * 100).toFixed(0)}%`;
 };
 
-const SectorDistributionChart = () => {
+const SectorDistributionChart = ({
+	data,
+}: {
+	data: SectorDistributionProps[];
+}) => {
 	return (
 		<Card className="bg-white">
 			<CardHeader className="pb-0">
@@ -51,23 +53,25 @@ const SectorDistributionChart = () => {
 					>
 						<ResponsiveContainer width="100%" height="100%">
 							<PieChart>
-								<Pie
-									data={data}
-									cx="50%"
-									cy="50%"
-									labelLine={true}
-									label={renderCustomizedLabel}
-									outerRadius={100}
-									fill="#8884d8"
-									dataKey="value"
-								>
-									{data.map((_, index) => (
-										<Cell
-											key={`cell-${index}`}
-											fill={COLORS[index % COLORS.length]}
-										/>
-									))}
-								</Pie>
+								{data.length > 0 && (
+									<Pie
+										data={data} // Add percent property
+										cx="50%"
+										cy="50%"
+										labelLine={true}
+										label={renderCustomizedLabel}
+										outerRadius={100}
+										fill="#8884d8"
+										dataKey="value"
+									>
+										{data.map((_, index) => (
+											<Cell
+												key={`cell-${index}`}
+												fill={COLORS[index % COLORS.length]}
+											/>
+										))}
+									</Pie>
+								)}
 								<Tooltip />
 								<Legend />
 							</PieChart>

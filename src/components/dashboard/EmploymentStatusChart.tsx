@@ -12,19 +12,9 @@ import {
 } from "recharts";
 import { memo } from "react";
 import { LazyLoadWrapper } from "./LazyLoadWrapper";
+import type { EmploymentByMonthProps } from "@/types/requests";
 
-const data = [
-	{ month: "Jan", Trabalhando: 650, "Sem Trabalho": 300 },
-	{ month: "Fev", Trabalhando: 680, "Sem Trabalho": 280 },
-	{ month: "Mar", Trabalhando: 700, "Sem Trabalho": 270 },
-	{ month: "Abr", Trabalhando: 720, "Sem Trabalho": 260 },
-	{ month: "Mai", Trabalhando: 750, "Sem Trabalho": 250 },
-	{ month: "Jun", Trabalhando: 780, "Sem Trabalho": 240 },
-	{ month: "Jul", Trabalhando: 800, "Sem Trabalho": 230 },
-	{ month: "Ago", Trabalhando: 820, "Sem Trabalho": 220 },
-];
-
-function EmploymentStatusChart() {
+function EmploymentStatusChart({ data }: { data: EmploymentByMonthProps[] }) {
 	return (
 		<Card className="bg-white">
 			<CardHeader className="pb-0">
@@ -57,8 +47,12 @@ function EmploymentStatusChart() {
 								<YAxis />
 								<Tooltip />
 								<Legend />
-								<Bar dataKey="Sem Trabalho" fill="#10b981" />
-								<Bar dataKey="Trabalhando" fill="#f97316" />
+								<Bar
+									dataKey="sem_trabalho"
+									fill="#10b981"
+									name="Sem Trabalho"
+								/>
+								<Bar dataKey="trabalhando" fill="#f97316" name="Trabalhando" />
 							</BarChart>
 						</ResponsiveContainer>
 					</LazyLoadWrapper>
