@@ -2,6 +2,7 @@
 export * from "./interfaces/authentication";
 export * from "./interfaces/importFiles";
 export * from "./interfaces/importedFiles";
+export * from "./interfaces/linkedin";
 // --------------------- Interfaces ---------------------
 
 // --------------------- Parameters ---------------------

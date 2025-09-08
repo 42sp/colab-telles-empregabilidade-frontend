@@ -2,7 +2,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { ArrowUp } from "lucide-react";
 import { memo } from "react";
 
-interface MetricCardProps {
+export interface MetricCardProps {
 	title: string;
 	value: string | number;
 	description: string;

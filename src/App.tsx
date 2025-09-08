@@ -8,15 +8,14 @@ import { DefaultLayout } from "./pages/layout/DefaultLayout";
 import { SidebarProvider } from "@/contexts/SidebarContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtecteRoute from "./components/protecteRoute";
-import { GridOverlay } from "./components/utils/GridOverlay";
+// import { GridOverlay } from "./components/utils/GridOverlay";
 
 function App() {
 	return (
 		<AuthProvider>
-
 			<SidebarProvider>
 				<BrowserRouter>
-					<GridOverlay />
+					{/* <GridOverlay /> */}
 					<Routes>
 						<Route path="/" element={<ScreenLogin />} />
 
