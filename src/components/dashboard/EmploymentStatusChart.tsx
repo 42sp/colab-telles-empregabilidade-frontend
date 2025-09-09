@@ -13,6 +13,7 @@ import {
 import { memo } from "react";
 import { LazyLoadWrapper } from "./LazyLoadWrapper";
 import type { EmploymentByMonthProps } from "@/types/requests";
+import { Skeleton } from "../ui/skeleton";
 
 function EmploymentStatusChart({ data }: { data: EmploymentByMonthProps[] }) {
 	return (
@@ -37,24 +38,32 @@ function EmploymentStatusChart({ data }: { data: EmploymentByMonthProps[] }) {
 							<div className="w-10 h-10 border-4 border-t-4 border-black border-t-white rounded-full animate-spin" />
 						}
 					>
-						<ResponsiveContainer width="100%" height="100%">
-							<BarChart
-								data={data}
-								margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-							>
-								<CartesianGrid strokeDasharray="3 3" />
-								<XAxis dataKey="month" />
-								<YAxis />
-								<Tooltip />
-								<Legend />
-								<Bar
-									dataKey="sem_trabalho"
-									fill="#10b981"
-									name="Sem Trabalho"
-								/>
-								<Bar dataKey="trabalhando" fill="#f97316" name="Trabalhando" />
-							</BarChart>
-						</ResponsiveContainer>
+						{data.length > 0 ? (
+							<ResponsiveContainer width="100%" height="100%">
+								<BarChart
+									data={data}
+									margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+								>
+									<CartesianGrid strokeDasharray="3 3" />
+									<XAxis dataKey="month" />
+									<YAxis />
+									<Tooltip />
+									<Legend />
+									<Bar
+										dataKey="sem_trabalho"
+										fill="#10b981"
+										name="Sem Trabalho"
+									/>
+									<Bar
+										dataKey="trabalhando"
+										fill="#f97316"
+										name="Trabalhando"
+									/>
+								</BarChart>
+							</ResponsiveContainer>
+						) : (
+							<Skeleton className="h-[250px] w-[800px] rounded-xl" />
+						)}
 					</LazyLoadWrapper>
 				</div>
 			</CardContent>

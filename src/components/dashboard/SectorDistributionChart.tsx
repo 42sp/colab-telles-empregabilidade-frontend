@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import { memo } from "react";
 import { LazyLoadWrapper } from "./LazyLoadWrapper";
+import { Skeleton } from "../ui/skeleton";
 
 export interface SectorDistributionProps {
 	name: string;
@@ -51,9 +52,9 @@ const SectorDistributionChart = ({
 							<div className="w-10 h-10 border-4 border-t-4 border-black border-t-white rounded-full animate-spin" />
 						}
 					>
-						<ResponsiveContainer width="100%" height="100%">
-							<PieChart>
-								{data.length > 0 && (
+						{data.length > 0 ? (
+							<ResponsiveContainer width="100%" height="100%">
+								<PieChart>
 									<Pie
 										data={data} // Add percent property
 										cx="50%"
@@ -71,11 +72,13 @@ const SectorDistributionChart = ({
 											/>
 										))}
 									</Pie>
-								)}
-								<Tooltip />
-								<Legend />
-							</PieChart>
-						</ResponsiveContainer>
+									<Tooltip />
+									<Legend />
+								</PieChart>
+							</ResponsiveContainer>
+						) : (
+							<Skeleton className="h-[250px] w-[250px] rounded-[100%]" />
+						)}
 					</LazyLoadWrapper>
 				</div>
 			</CardContent>
