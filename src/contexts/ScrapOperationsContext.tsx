@@ -79,7 +79,7 @@ const OpsStateContext = createContext<State | undefined>(undefined);
 const OpsActionsContext = createContext<Actions | undefined>(undefined);
 
 // Dev logger (apenas em dev)
-const isDev = import.meta.env.MODE === "development";
+const isDev = import.meta.env.MODE === "development" || import.meta.env.MODE === "production";
 const debugLog = (...args: any[]) => {
 	if (isDev) console.debug("[ScrapOpContxt]", ...args);
 };
