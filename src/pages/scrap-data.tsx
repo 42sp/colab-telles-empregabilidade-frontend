@@ -17,7 +17,7 @@ function ScrapData() {
       <ToastContainer position="top-center" hideProgressBar={true} />
 
       <div className="container mx-auto p-6 space-y-8">
-        <div className="space-y-2">
+        <div className="space-y-1">
           <h1 className="text-2xl font-bold">Scrap Data</h1>
           <p className="text-muted-foreground">
             Agendamento e monitoramento de operações de scraping do LinkedIn

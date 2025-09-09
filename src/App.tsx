@@ -4,6 +4,7 @@ import Home from "./pages/home";
 import Import from "./pages/import/index";
 import ScrapData from "./pages/scrap-data";
 import Dashboard from "./pages/dashboard";
+import Chat from "./pages/chat";
 import { DefaultLayout } from "./pages/layout/DefaultLayout";
 import { SidebarProvider } from "@/contexts/SidebarContext";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -12,7 +13,6 @@ import ProtecteRoute from "./components/protecteRoute";
 function App() {
 	return (
 		<AuthProvider>
-
 			<SidebarProvider>
 				<BrowserRouter>
 					<Routes>
@@ -48,6 +48,14 @@ function App() {
 								element={
 									<ProtecteRoute>
 										<Dashboard />
+									</ProtecteRoute>
+								}
+							/>
+							<Route
+								path="/chat"
+								element={
+									<ProtecteRoute>
+										<Chat />
 									</ProtecteRoute>
 								}
 							/>

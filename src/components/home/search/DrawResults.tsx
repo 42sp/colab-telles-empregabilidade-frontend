@@ -29,7 +29,7 @@ export function DrawResults(props: DrawResultsProps) {
 		const totalPages = Math.ceil(props.filteredRows.length / props.rowsPerPage);
 
 		return (
-			<div className="flex justify-end items-end text-black">
+			<div className="flex gap-1 justify-end items-end text-black">
 				<Button
 					{...buttonProps}
 					onClick={() => {
@@ -143,12 +143,12 @@ export function DrawResults(props: DrawResultsProps) {
 				</table>
 			</div>
 			{/*	botao para atualizar o estado das paginas*/}
-			<div className="flex border-b border-gray-200">
+			<div className="flex justify-between border-b border-gray-200">
 				<p className="p-4 text-slate-400">
 					Mostrando {props.startPage + 1} a {props.endPage} de{" "}
 					{props.filteredRows.length} resultados
 				</p>
-				<div className="ml-auto p-4">{pagination()}</div>
+				<div className="p-4">{pagination()}</div>
 			</div>
 		</div>
 	);
