@@ -1,0 +1,155 @@
+@reference "tailwindcss";
+
+.login-header-container {
+	@apply flex-1
+		flex
+		flex-col
+		w-[100%]
+		justify-center
+		items-center
+
+		/* */;
+}
+
+.login-header-title {
+	@apply text-black
+		font-bold
+
+		/* sm */
+		max-sm:text-xl
+
+		text-3xl
+
+		leading-[42px]
+		mt-3;
+}
+
+.login-body-Container {
+	@apply flex-1
+	flex-col
+
+		/* sm */
+		max-sm:w-[350px]
+		max-sm:h-[400px]
+
+		shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.10),0px_4px_6px_-1px_rgba(0,0,0,0.10)]
+		border
+		border-[#E5E7EB]
+		rounded-[8px]
+		p-4
+
+		/* */;
+}
+
+.login-body-Title {
+	@apply text-[#09090B]
+		font-semibold
+		tracking-[-0.6px]
+		leading-[36px]
+		text-center
+
+		/* sm */
+		max-sm:text-lg
+
+
+		text-[24px]
+		/* */;
+}
+
+.login-body-Content {
+	@apply mt-[40px]
+	flex
+	flex-col
+	items-center;
+}
+
+.login-body-rememberMeContainer {
+	@apply flex
+		items-center
+		justify-between
+		mt-[22px]
+
+		/* sm */
+		max-sm:w-[320px]
+
+		w-[400px]
+
+		/* */;
+}
+
+.login-body-rememberMeCheckboxContainer {
+	@apply flex
+		items-center
+		space-x-2;
+}
+
+.login-body-rememberMeLabel {
+	@apply text-sm;
+}
+
+.login-body-forgotPasswordLink {
+	@apply text-sm
+		text-indigo-600
+		hover:text-indigo-500;
+}
+
+.login-body-button {
+	@apply bg-indigo-500
+	hover:bg-indigo-600
+
+		/* sm */
+		max-sm:w-[320px]
+
+		mt-[22px]
+		w-[400px]
+
+		/* */;
+}
+
+.login-body-newConnectlyContainer {
+	@apply mt-[22px]
+		text-center
+		text-sm;
+}
+
+.login-body-newConnectlyTitle {
+	@apply text-gray-600;
+}
+
+.login-body-newConnectlyLink {
+	@apply text-indigo-600
+		hover:text-indigo-500;
+}
+
+.login-footer-container {
+	@apply text-center
+		text-xs
+		text-gray-500
+		flex
+		items-center
+		justify-center
+
+		absolute
+		bottom-[18px];
+}
+
+@media (max-height: 700px) {
+	.login-footer-container {
+		@apply static
+			my-4;
+	}
+}
+
+@media (max-width: 320px) {
+	.login-body-Container {
+		@apply w-[300px];
+	}
+
+	.login-body-rememberMeContainer {
+		@apply w-[270px];
+	}
+
+	.login-body-button {
+		@apply w-[270px];
+	}
+}
