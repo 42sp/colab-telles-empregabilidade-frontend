@@ -17,6 +17,7 @@ const isBrowser =
 	typeof window !== "undefined" && typeof window.document !== "undefined";
 
 // Dev mode para logs
+console.debug(`import.meta.env.MODE = ${import.meta.env.MODE}`)
 const isDev = import.meta.env.MODE === "development";
 const log = (...args: any[]) => {
   if (isDev) console.debug("[socketClient]", ...args);
