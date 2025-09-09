@@ -15,7 +15,13 @@ import {
 import { Checkbox } from "@radix-ui/react-checkbox";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { Data, PropsType, ColumnKey } from "../../../pages/home/types";
+import type {
+	Data,
+	PropsType,
+	ColumnKey,
+	StudentsQuery,
+} from "../../../pages/home/types";
+import { useServices } from "@/hooks/useServices";
 
 export function DrawButtons(props: PropsType) {
 	const buttons = [
@@ -23,6 +29,7 @@ export function DrawButtons(props: PropsType) {
 		{ label: "Colunas", icon: Columns2 },
 		{ label: "Exportar", icon: Download },
 	];
+	const $service = useServices();
 	const buttonProps = {
 		variant: "outline",
 		size: "default",
@@ -35,7 +42,28 @@ export function DrawButtons(props: PropsType) {
 	const ExportIcon = buttons[2].icon;
 	const exportName = "relatório";
 
-	function downloadPdf(rows: Data[]) {
+	async function downloadPdf() {
+		const rows: Data[] = [];
+		const limitPerRequest = 50; // limite que o backend permite por request
+		let skip = 0;
+		let total = 0;
+
+		do {
+			const partialQuery: StudentsQuery = {
+				...props.query,
+				$limit: limitPerRequest,
+				$skip: skip,
+			};
+
+			const response = await $service.students(partialQuery);
+			const data: Data[] = response.data.data;
+			total = response.data.total;
+
+			rows.push(...data); // concatena resultados
+			skip += limitPerRequest; // avança o skip
+		} while (rows.length < total);
+
+		// Agora 'rows' contém todos os registros, podemos gerar o PDF
 		const visibleKey = Object.keys(props.colums).filter(
 			key => props.colums[key as keyof typeof props.colums].isVisible
 		);
@@ -53,9 +81,11 @@ export function DrawButtons(props: PropsType) {
 			unit: "mm",
 			format: format,
 		});
+
 		const headers = visibleKey.map(
 			key => props.colums[key as keyof typeof props.colums].label
 		);
+
 		const data = rows.map(row =>
 			visibleKey.map(key => {
 				const typedKey = key as keyof Data;
@@ -63,7 +93,7 @@ export function DrawButtons(props: PropsType) {
 				if (key === "compensation") {
 					const value = row[typedKey];
 					const num: number = Number(value);
-					const zeroValue: string = new Intl.NumberFormat("pt-BR", {
+					const zeroValue = new Intl.NumberFormat("pt-BR", {
 						style: "currency",
 						currency: "BRL",
 					}).format(0);
@@ -74,16 +104,13 @@ export function DrawButtons(props: PropsType) {
 
 					if (value === null || value === undefined || isNaN(num))
 						return zeroValue;
-
 					return formattedValue;
 				}
 
 				if (row[typedKey] !== null) {
 					const input = row[typedKey];
 					let value: string = String(input).trim();
-
 					if (typeof input === "boolean") value = input ? "Sim" : "Não";
-
 					return value === "" ? "-" : value;
 				}
 
@@ -118,38 +145,54 @@ export function DrawButtons(props: PropsType) {
 		doc.save(exportName + ".pdf");
 	}
 
-	function downloadCsv(rows: Data[]) {
+	async function downloadCsv() {
+		const rows: Data[] = [];
+		const limitPerRequest = 50; // limite por request do backend
+		let skip = 0;
+		let total = 0;
+
+		do {
+			const partialQuery: StudentsQuery = {
+				...props.query,
+				$limit: limitPerRequest,
+				$skip: skip,
+			};
+
+			const response = await $service.students(partialQuery);
+			const data: Data[] = response.data.data;
+			total = response.data.total;
+
+			rows.push(...data); // concatena resultados
+			skip += limitPerRequest;
+		} while (rows.length < total);
+
+		// Monta CSV
 		const visibleKey = Object.keys(props.colums).filter(
 			key => props.colums[key as keyof typeof props.colums].isVisible
 		);
 		const header = visibleKey
 			.map(key => props.colums[key as keyof typeof props.colums].label || key)
 			.join(",");
+
 		const body = rows
 			.map(row =>
 				visibleKey
 					.map(key => {
 						const typedKey = key as keyof Data;
 						const value = row[typedKey];
-						const str: string = String(row[typedKey]).trim();
+						const str =
+							value !== null && value !== undefined ? String(value).trim() : "";
 
 						if (key === "compensation") {
 							const num: number = Number(value);
-							return num.toFixed(2);
+							return isNaN(num) ? "0.00" : num.toFixed(2);
 						}
-						if (
-							value === null ||
-							value === undefined ||
-							str === null ||
-							str === undefined ||
-							str === ""
-						)
-							return `""`;
 
-						if (str.includes(",") || str.includes("'") || str.includes('"'))
+						if (str.includes(",") || str.includes('"') || str.includes("'")) {
 							return `"${str}"`;
+						}
 
-						return str;
+						return str === "" ? `""` : str;
 					})
 					.join(",")
 			)
@@ -247,7 +290,7 @@ export function DrawButtons(props: PropsType) {
 					<PopoverContent className={popoverBox}>
 						<Button
 							{...buttonProps}
-							onClick={() => downloadPdf(props.filteredRows)}
+							onClick={() => downloadPdf()}
 							className={buttonHover}
 						>
 							<FileText />
@@ -255,7 +298,7 @@ export function DrawButtons(props: PropsType) {
 						</Button>
 						<Button
 							{...buttonProps}
-							onClick={() => downloadCsv(props.filteredRows)}
+							onClick={() => downloadCsv()}
 							className={buttonHover}
 						>
 							<File />

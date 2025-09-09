@@ -139,6 +139,15 @@ export type FilterType = {
 	[k in keyof Data]?: string;
 };
 
+export interface StudentsQuery {
+	$limit?: number;
+	$skip?: number;
+	$sort?: Record<string, 1 | -1>;
+	holderContractStatus?: string;
+	working?: boolean;
+	[key: string]: string | number | boolean | undefined | Record<string, any>;
+}
+
 export type PropsType = {
 	filter: FilterType;
 	setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
@@ -151,6 +160,7 @@ export type PropsType = {
 	filteredRows: Data[];
 	setFilteredRows: React.Dispatch<React.SetStateAction<Data[]>>;
 	stats: Stats;
+	query: StudentsQuery;
 };
 
 type ButtonProps = {

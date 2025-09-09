@@ -1,9 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
 	type ColumnKey,
 	type ColumnVisibility,
 	type FilterType,
 	type Stats,
+	type StudentsQuery,
 } from "../../pages/home/types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
@@ -252,10 +253,38 @@ export function DrawBody() {
 	const groupSize: number = rowsPerPage * pagesPerRequest;
 	const groupIndex: number = Math.floor(page / pagesPerRequest);
 
+	function buildQuery(): StudentsQuery {
+		const q: StudentsQuery = {
+			$limit: groupSize,
+			$skip: groupIndex * groupSize,
+		};
+
+		if (activeLabel !== "Todos") {
+			q.holderContractStatus = activeLabel === "Ativos" ? "Ativo" : "Inativo";
+		}
+
+		const translateFilter = (value: string) => {
+			const lower = value.toLowerCase();
+			return lower === "sim"
+				? true
+				: lower === "não" || lower === "nao"
+					? false
+					: value;
+		};
+
+		Object.keys(filter).forEach(key => {
+			const value = filter[key]?.trim();
+			if (value) q[key] = translateFilter(value);
+		});
+
+		return q;
+	}
+	let query: StudentsQuery = buildQuery();
+
 	async function fetchData(skipIndex: number) {
 		try {
 			const skip: number = skipIndex * groupSize;
-			const allFilter = {
+			query = {
 				$limit: groupSize,
 				$skip: skip,
 			};
@@ -263,7 +292,7 @@ export function DrawBody() {
 			if (activeLabel !== "Todos") {
 				const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
 
-				allFilter.holderContractStatus = statusValue;
+				query.holderContractStatus = statusValue;
 			}
 
 			const translateFilter = (value: string) => {
@@ -280,12 +309,13 @@ export function DrawBody() {
 				const trimKey = filter[key]?.trim();
 				if (filter[key] && trimKey !== "") {
 					const translated = translateFilter(filter[key]);
-					allFilter[key] = translated;
+					query[key] = translated;
 				}
 			});
 
-			const response = await $service.students(allFilter);
+			const response = await $service.students(query);
 			setDataRows(response.data.data);
+			setStats(prev => ({ ...prev, total: response.data.total }));
 		} catch (error) {
 			console.error("Failed to fetch students:", error);
 		}
@@ -395,6 +425,7 @@ export function DrawBody() {
 				setFilteredRows={setFilteredRows}
 				filteredRows={filteredRows}
 				stats={stats}
+				query={query}
 			/>
 		</div>
 	);
