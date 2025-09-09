@@ -120,9 +120,8 @@ export async function logout() {
   }
 }
 
-// // Exportar serviços
-// export const scrapService = client.service("scrap-operations");
-// export default client;
+export const scrapService = client.service("scrap-operations");
+export default client;
 
 
 // import { feathers } from "@feathersjs/feathers";
