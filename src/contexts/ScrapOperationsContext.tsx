@@ -79,10 +79,9 @@ const OpsStateContext = createContext<State | undefined>(undefined);
 const OpsActionsContext = createContext<Actions | undefined>(undefined);
 
 // Dev logger (apenas em dev)
-const isDev =
-	typeof process !== "undefined" ? process.env.NODE_ENV !== "production" : true;
+const isDev = import.meta.env.MODE === "development";
 const debugLog = (...args: any[]) => {
-	if (isDev) console.debug("[ScrapOpsCtx]", ...args);
+	if (isDev) console.debug("[ScrapOpContxt]", ...args);
 };
 
 export function ScrapOperationsProvider({

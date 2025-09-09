@@ -17,10 +17,9 @@ const isBrowser =
 	typeof window !== "undefined" && typeof window.document !== "undefined";
 
 // Dev mode para logs
-const isDev =
-	typeof process !== "undefined" ? process.env.NODE_ENV !== "production" : true;
+const isDev = import.meta.env.MODE === "development";
 const log = (...args: any[]) => {
-	if (isDev) console.debug("[socketClient]", ...args);
+  if (isDev) console.debug("[socketClient]", ...args);
 };
 
 // --- URLs de backend ---
