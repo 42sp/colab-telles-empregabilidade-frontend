@@ -9,6 +9,12 @@ export default class Service {
 	}
 
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
+	async getImportedFiles() {
+		const response = await this.$axios.get<{
+			data: collection.GetImportedFilesResponse[];
+		}>("/imported-files", { params: { lastThree: true } });
+		return response.data;
+	}
 	async students(params: collection.StudentsType = {}) {
 		const token = sessionStorage.getItem("accessToken");
 		if (!token) {
@@ -53,10 +59,11 @@ export default class Service {
 			"/authentication",
 			params
 		);
-		if (response?.data?.accessToken) {
-			sessionStorage.setItem("accessToken", response.data.accessToken);
-		}
-		return response;
+
+		// NÃO salva token aqui — responsabilidade do AuthContext
+		// sessionStorage.setItem("accessToken", response.data.accessToken);
+
+		return response; // retorna o objeto completo { accessToken, user }
 	}
 
 	async postImportFiles(params: collection.ImportFilesParameters) {

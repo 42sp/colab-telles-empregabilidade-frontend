@@ -2,6 +2,7 @@
 export * from "./interfaces/authentication";
 export * from "./interfaces/students";
 export * from "./interfaces/importFiles";
+export * from "./interfaces/importedFiles";
 // --------------------- Interfaces ---------------------
 
 // --------------------- Parameters ---------------------
