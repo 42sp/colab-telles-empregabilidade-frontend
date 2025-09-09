@@ -43,7 +43,11 @@ const icons = {
 };
 
 export function Dashboard() {
-	const [getMetrics, setGetMetrics] = useState<MetricCardProps[]>([]);
+	const [getMetrics, setGetMetrics] = useState<MetricCardProps[]>([
+		{} as MetricCardProps,
+		{} as MetricCardProps,
+		{} as MetricCardProps,
+	]);
 	const [getEmploymentByMonth, setGetEmploymentByMonth] = useState<
 		EmploymentByMonthProps[]
 	>([]);
@@ -185,9 +189,7 @@ export function Dashboard() {
 					</FadeInOnScroll>
 
 					<FadeInOnScroll delay={0.1} enabled={animationsEnabled}>
-						{getSectorDistribution.length > 0 && (
-							<SectorDistributionChart data={getSectorDistribution} />
-						)}
+						<SectorDistributionChart data={getSectorDistribution} />
 					</FadeInOnScroll>
 
 					<FadeInOnScroll
