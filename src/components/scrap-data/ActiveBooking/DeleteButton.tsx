@@ -1,7 +1,5 @@
-// components/scrap-data/ActiveBooking/DeleteButton.tsx
 import { useState } from "react";
 import { Loader2, Trash2 } from "lucide-react";
-import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
 import {
@@ -11,13 +9,12 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useOperationsActions } from "@/contexts/ScrapOperationsContext";
-import { useAuth } from "@/contexts/AuthContext";
 
 type Props = {
 	id: number | string;
 	name: string;
 	deleted_at?: string | null;
-	onDeleted?: () => void; // opcional para compatibilidade
+	onDeleted?: () => void;
 };
 
 export function DeleteButton({ id, name, deleted_at, onDeleted }: Props) {
@@ -31,16 +28,16 @@ export function DeleteButton({ id, name, deleted_at, onDeleted }: Props) {
 		setLoading(true);
 
 		try {
-			const success = await deleteOperation(id); // ✅ agora envia deleted_by
+			const success = await deleteOperation(id);
 			if (success) {
-				toast.success(`Operação "${name}" marcada como excluída.`);
+				//toast.success(`Operação "${name}" marcada como excluída.`);
 				onDeleted?.();
 			} else {
-				toast.error("Erro ao excluir operação.");
+				//toast.error("Erro ao excluir operação.");
 			}
 		} catch (err) {
 			console.error(err);
-			toast.error("Erro ao excluir operação.");
+			//toast.error("Erro ao excluir operação.");
 		} finally {
 			setLoading(false);
 			setOpen(false);

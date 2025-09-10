@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Home as HomeIcon, LayoutDashboard, Database, Import } from "lucide-react";
+import { Home as HomeIcon, LayoutDashboard, Database, Import, BotMessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -15,6 +15,7 @@ export const NavigationButtons = ({
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/scrap-data", label: "Scrap Data", icon: Database },
     { to: "/import", label: "Importação", icon: Import },
+    { to: "/chat", label: "Chat", icon: BotMessageSquare }
   ];
 
   return (
@@ -26,24 +27,25 @@ export const NavigationButtons = ({
           <Link key={to} to={to} className="w-full relative">
             <Button
               variant="ghost"
-              className={`w-full px-4 py-2.5 flex ${
-                isCollapsed ? "justify-center" : "justify-start gap-3"
-              } text-gray-500 hover:bg-slate-100 relative`}
+              className={`w-full px-4 py-2.5 flex items-center justify-start gap-3
+               text-gray-500 hover:bg-slate-100 relative`}
             >
-              <Icon className="w-5 h-5 min-w-[20px]" />
-              <span
-                className={`overflow-hidden whitespace-nowrap inline-block transform transition-[opacity,max-width] duration-150 ease-out ${
-                  isCollapsed ? "opacity-0 max-w-0" : "opacity-100 max-w-[160px]"
-                }`}
+              <Icon className="size-4.5 flex-none text-gray-500 " />
+
+              <motion.span
+                className="overflow-hidden whitespace-nowrap inline-block"
+                initial={{ opacity: isCollapsed ? 0 : 1, maxWidth: isCollapsed ? 0 : 160 }}
+                animate={{ opacity: isCollapsed ? 0 : 1, maxWidth: isCollapsed ? 0 : 160 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 {label}
-              </span>
+              </motion.span>
 
-              {/* Motion highlight com fade in/out suave */}
+              {/* Motion highlight da barra ativa */}
               <AnimatePresence>
                 {isActive && !isCollapsed && (
                   <motion.div
-                    key={to} // importante para animar corretamente a troca
+                    key={to}
                     className="absolute left-0 top-0 h-full w-1 bg-black rounded-tr-md rounded-br-md"
                     initial={{ opacity: 0, scaleY: 0 }}
                     animate={{ opacity: 1, scaleY: 1 }}

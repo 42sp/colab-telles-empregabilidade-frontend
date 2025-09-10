@@ -2,7 +2,9 @@ import { feathers } from '@feathersjs/feathers';
 import rest from '@feathersjs/rest-client';
 import axios from 'axios';
 
-const restClient = rest('http://localhost:3030');
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3030';
+
+const restClient = rest(API_URL);
 
 // Cria a instância principal
 const api = feathers();

@@ -1,5 +1,4 @@
 import type { Dispatch, SetStateAction } from "react";
-import { dataRows } from "../../../pages/home/types";
 import type { ButtonType, Data, StatusType } from "../../../pages/home/types";
 import { DrawStatusButton } from "./DrawStatusButton";
 import { DrawTotals } from "./DrawTotals";
@@ -8,6 +7,7 @@ interface DrawStatusProps {
 	activeLabel: string;
 	setActiveLabel: Dispatch<SetStateAction<string>>;
 	filteredRows: Data[];
+	dataRows: Data[];
 }
 
 export function DrawStatus(props: DrawStatusProps) {
@@ -17,10 +17,10 @@ export function DrawStatus(props: DrawStatusProps) {
 		{ label: "Inativos" },
 	];
 
-	function getAverange(row: typeof dataRows): number {
+	function getAverange(row: typeof props.dataRows): number {
 		const myRent = row
-			.map(row => row.rent)
-			.filter(rent => typeof rent === "number");
+			.map(row => Number(row.compensation))
+			.filter(rent => !isNaN(rent));
 
 		if (myRent.length === 0) return 0;
 
@@ -33,11 +33,11 @@ export function DrawStatus(props: DrawStatusProps) {
 		{ label: "Total de estudantes", value: props.filteredRows.length },
 		{
 			label: "Trabalhando",
-			value: props.filteredRows.filter(row => row.isWorkin == "Sim").length,
+			value: props.filteredRows.filter(row => row.working === true).length,
 		},
 		{
 			label: "Não Trabalhando",
-			value: props.filteredRows.filter(row => row.isWorkin == "Não").length,
+			value: props.filteredRows.filter(row => row.working === false).length,
 		},
 		{ label: "Salário Médio", value: getAverange(props.filteredRows) },
 	];
@@ -48,6 +48,7 @@ export function DrawStatus(props: DrawStatusProps) {
 				buttons={buttons}
 				activeLabel={props.activeLabel}
 				setActiveLabel={props.setActiveLabel}
+				filteredRows={props.filteredRows}
 			/>
 			<DrawTotals status={status} />
 		</div>

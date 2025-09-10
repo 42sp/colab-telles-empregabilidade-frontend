@@ -48,10 +48,18 @@ export function useAxios<T = unknown>(): UseAxiosResult<T> {
 		}
 	}
 
-	const baseURL =
+	let baseURL =
 		process.env.NODE_ENV === "development"
 			? "http://localhost:3030"
 			: "https://colab-telles-empregabilidade-backend.onrender.com";
+
+	if (
+		window.location.href.indexOf(
+			"colab-telles-empregabilidade-frontend.onrender.com"
+		) >= 0
+	) {
+		baseURL = "https://colab-telles-empregabilidade-backend.onrender.com";
+	}
 
 	const instance = axios.create({
 		baseURL,
