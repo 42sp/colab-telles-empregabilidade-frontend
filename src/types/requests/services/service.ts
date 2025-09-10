@@ -15,6 +15,16 @@ export default class Service {
 		}>("/imported-files", { params: { lastThree: true } });
 		return response.data;
 	}
+
+	async getLinkedinDashboard() {
+		const response =
+			await this.$axios.get<collection.GetLinkedinDashboardResponse>(
+				"/linkedin/dashboard"
+			);
+
+		return response.data;
+  }
+
 	async students(params: collection.StudentsType = {}) {
 		const token = sessionStorage.getItem("accessToken");
 		if (!token) {
