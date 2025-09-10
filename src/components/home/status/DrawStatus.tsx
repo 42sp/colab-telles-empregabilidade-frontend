@@ -21,6 +21,7 @@ export function DrawStatus(props: DrawStatusProps) {
 		{ label: "Todos" },
 		{ label: "Ativos" },
 		{ label: "Inativos" },
+		{ label: "Formados" },
 	];
 
 	const status: StatusType[] = [

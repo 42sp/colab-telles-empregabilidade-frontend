@@ -44,7 +44,7 @@ export function DrawButtons(props: PropsType) {
 
 	async function downloadPdf() {
 		const rows: Data[] = [];
-		const limitPerRequest = 50; // limite que o backend permite por request
+		const limitPerRequest = 50;
 		let skip = 0;
 		let total = 0;
 
@@ -59,11 +59,10 @@ export function DrawButtons(props: PropsType) {
 			const data: Data[] = response.data.data;
 			total = response.data.total;
 
-			rows.push(...data); // concatena resultados
-			skip += limitPerRequest; // avança o skip
+			rows.push(...data);
+			skip += limitPerRequest;
 		} while (rows.length < total);
 
-		// Agora 'rows' contém todos os registros, podemos gerar o PDF
 		const visibleKey = Object.keys(props.colums).filter(
 			key => props.colums[key as keyof typeof props.colums].isVisible
 		);
@@ -147,7 +146,7 @@ export function DrawButtons(props: PropsType) {
 
 	async function downloadCsv() {
 		const rows: Data[] = [];
-		const limitPerRequest = 50; // limite por request do backend
+		const limitPerRequest = 50;
 		let skip = 0;
 		let total = 0;
 
@@ -162,7 +161,7 @@ export function DrawButtons(props: PropsType) {
 			const data: Data[] = response.data.data;
 			total = response.data.total;
 
-			rows.push(...data); // concatena resultados
+			rows.push(...data);
 			skip += limitPerRequest;
 		} while (rows.length < total);
 

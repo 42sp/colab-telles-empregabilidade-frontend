@@ -253,13 +253,16 @@ export function DrawBody() {
 	const groupSize: number = rowsPerPage * pagesPerRequest;
 	const groupIndex: number = Math.floor(page / pagesPerRequest);
 
-	function buildQuery(): StudentsQuery {
+	function buildQuery(
+		skipIndex: number = groupIndex * groupSize
+	): StudentsQuery {
 		const q: StudentsQuery = {
 			$limit: groupSize,
-			$skip: groupIndex * groupSize,
+			$skip: skipIndex,
 		};
-
-		if (activeLabel !== "Todos") {
+		if (activeLabel === "Formados") {
+			q.realStatus = "Formado";
+		} else if (activeLabel !== "Todos") {
 			q.holderContractStatus = activeLabel === "Ativos" ? "Ativo" : "Inativo";
 		}
 
@@ -284,34 +287,7 @@ export function DrawBody() {
 	async function fetchData(skipIndex: number) {
 		try {
 			const skip: number = skipIndex * groupSize;
-			query = {
-				$limit: groupSize,
-				$skip: skip,
-			};
-
-			if (activeLabel !== "Todos") {
-				const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
-
-				query.holderContractStatus = statusValue;
-			}
-
-			const translateFilter = (value: string) => {
-				const lower: string = value.toLowerCase();
-				const translations = new Map<string, boolean>([
-					["sim", true],
-					["não", false],
-					["nao", false],
-				]);
-
-				return translations.get(lower) ?? value;
-			};
-			Object.keys(filter).forEach(key => {
-				const trimKey = filter[key]?.trim();
-				if (filter[key] && trimKey !== "") {
-					const translated = translateFilter(filter[key]);
-					query[key] = translated;
-				}
-			});
+			query = buildQuery(skip);
 
 			const response = await $service.students(query);
 			setDataRows(response.data.data);
@@ -322,68 +298,18 @@ export function DrawBody() {
 	}
 
 	async function fetchStats() {
-		const stats = await $service.studentsStats({
-			holderContractStatus: "Ativo",
-			working: true,
-		});
-
-		console.log(stats);
-		// const allFilter = {
-		// 	$limit: stats.total !== 0 ? stats.total : 100,
-		// };
-
-		// if (activeLabel !== "Todos") {
-		// 	const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
-
-		// 	allFilter.holderContractStatus = statusValue;
-		// }
-
-		// const translateFilter = (value: string) => {
-		// 	const lower: string = value.toLowerCase();
-		// 	const translations = new Map<string, boolean>([
-		// 		["sim", true],
-		// 		["não", false],
-		// 		["nao", false],
-		// 	]);
-
-		// 	return translations.get(lower) ?? value;
-		// };
-		// Object.keys(filter).forEach(key => {
-		// 	const trimKey = filter[key]?.trim();
-		// 	if (filter[key] && trimKey !== "") {
-		// 		const translated = translateFilter(filter[key]);
-		// 		allFilter[key] = translated;
-		// 	}
-		// });
-		// const response = await $service.students(allFilter);
-
-		// // payload real do feathers
-		// const feathersData = response.data; // já tem { data: [...], total, limit, skip }
-
-		// function getAverange(rows: typeof props.dataRows): number {
-		// 	const myRent = rows
-		// 		.map(row => Number(row.compensation))
-		// 		.filter(rent => !isNaN(rent));
-
-		// 	if (myRent.length === 0) return 0;
-
-		// 	const sum = myRent.reduce((total, now) => total + now, 0);
-		// 	return sum / myRent.length;
-		// }
-
-		// const total: number = feathersData.total; // aqui sim
-		// const working: number = feathersData.data.filter(
-		// 	row => row.working === true
-		// ).length;
-
-		// setStats({
-		// 	total,
-		// 	working,
-		// 	notWorking: total - working,
-		// 	avgCompensation: getAverange(feathersData.data),
-		// });
+		try {
+			const { $skip, $limit, ...filters } = buildQuery();
+			const stats = await $service.studentsStats(filters);
+			setStats(stats);
+		} catch (error) {
+			console.error("Failed to fetch stats:", error);
+		}
 	}
 
+	useEffect(() => {
+		setPage(0);
+	}, [activeLabel]);
 	useEffect(() => {
 		fetchStats();
 	}, [filter, activeLabel, activeFilter]);
