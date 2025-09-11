@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { NewOperation } from "./NewOperation";
 import { useState } from "react";
-import { toast } from "react-toastify"; // <- react-toastify
+import { toast } from "react-toastify";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOperationsActions } from "@/contexts/ScrapOperationsContext";
 import {
@@ -56,12 +56,10 @@ export function NewOperationForm() {
 
       const created = await createOperation(payload); // Atualiza o contexto
       if (created) {
-        toast.success("Operação agendada com sucesso!");
         form.reset();
       }
     } catch (err) {
       console.error("Erro ao criar operação:", err);
-      toast.error("Erro ao agendar operação");
     } finally {
       setIsSubmitting(false);
     }

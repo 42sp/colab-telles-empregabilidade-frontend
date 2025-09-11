@@ -318,7 +318,7 @@ export function DrawBody() {
 	}, [groupIndex, filter, activeLabel, activeFilter]);
 
 	useEffect(() => {
-		console.log("Data Rows:", dataRows);
+		//console.log("Data Rows:", dataRows);
 	}, [dataRows]);
 
 	const [filteredRows, setFilteredRows] = useState(dataRows);

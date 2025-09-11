@@ -7,10 +7,11 @@ import React, {
 	useRef,
 	useMemo,
 } from "react";
-import { scrapService } from "@/services/api";
-import type { Operation } from "@/types/operations";
-import { toast } from "react-hot-toast";
+import { scrapOperationsService } from "@/services/scrapOperationsService";
+import { socket } from "@/services/socketClient";
+import { toast } from "react-toastify";
 import { useAuth } from "@/contexts/AuthContext";
+import type { Operation } from "@/types/operations";
 
 type State = {
 	operations: Operation[];
@@ -77,15 +78,11 @@ function reducer(state: State, action: Action): State {
 const OpsStateContext = createContext<State | undefined>(undefined);
 const OpsActionsContext = createContext<Actions | undefined>(undefined);
 
-/** Util: calcula status derivado */
-function computeStatus(op: Operation): Operation {
-	if (op.deleted) return { ...op, status: "Excluída" };
-	const today = new Date().toLocaleDateString("sv-SE");
-	if (op.scheduled_date && op.scheduled_date < today) {
-		return { ...op, status: "Vencida" };
-	}
-	return { ...op };
-}
+// Dev logger (apenas em dev)
+const isDev = import.meta.env.MODE === "development" || import.meta.env.MODE === "production";
+const debugLog = (...args: any[]) => {
+	if (isDev) console.debug("[ScrapOpContxt]", ...args);
+};
 
 export function ScrapOperationsProvider({
 	children,
@@ -95,134 +92,256 @@ export function ScrapOperationsProvider({
 	const { user } = useAuth();
 	const [state, dispatch] = useReducer(reducer, initialState);
 	const mountedRef = useRef(false);
+	const processedRef = useRef<Set<string>>(new Set());
+
+	// Helper para normalizar a resposta do scrapOperationsService.find
+	const extractOpsFromFindResponse = (resp: any): Operation[] => {
+		if (!resp) return [];
+		if (Array.isArray(resp)) return resp;
+		if (resp.data && Array.isArray(resp.data)) return resp.data;
+		// caso o service já retorne { data, total }
+		if (resp.data && Array.isArray(resp.data)) return resp.data;
+		return [];
+	};
 
 	// ------------------------------
-	// Carregar operações iniciais
+	// Load operations
 	// ------------------------------
-	useEffect(() => {
-		mountedRef.current = true;
-		const load = async () => {
-			dispatch({ type: "SET_LOADING", payload: true });
-			try {
-				const resp = await scrapService.find({
-					query: { $sort: { scheduled_date: 1, scheduled_time: 1 } },
-				});
-				const ops: Operation[] = (resp as any)?.data ?? (resp as any) ?? [];
-				if (mountedRef.current)
-					dispatch({ type: "SET_ALL", payload: ops.map(computeStatus) });
-			} catch {
-				if (mountedRef.current)
-					dispatch({
-						type: "SET_ERROR",
-						payload: "Erro ao carregar operações",
-					});
-			} finally {
-				if (mountedRef.current)
-					dispatch({ type: "SET_LOADING", payload: false });
-			}
-		};
-		load();
-		return () => {
-			mountedRef.current = false;
-		};
-	}, []);
-
-	// ------------------------------
-	// Escutar atualizações em tempo real via WebSocket
-	// ------------------------------
-	useEffect(() => {
-  if (!mountedRef.current) return;
-
-  const handleStarted = (op: Operation) => {
-    dispatch({ type: "UPSERT", payload: computeStatus(op) });
-    toast(`Executando operação: ${op.name}`, { icon: "⚙️" });
-  };
-
-  const handleFinished = (op: Operation) => {
-    dispatch({ type: "UPSERT", payload: computeStatus(op) });
-    toast.success(`Operação ${op.name} concluída`);
-  };
-
-  const handleFailed = (op: Operation) => {
-    dispatch({ type: "UPSERT", payload: computeStatus(op) });
-    toast.error(`Operação ${op.name} falhou`);
-  };
-
-  scrapService.on("operation:started", handleStarted);
-  scrapService.on("operation:finished", handleFinished);
-  scrapService.on("operation:failed", handleFailed);
-
-  // Cleanup
-  return () => {
-    scrapService.off("operation:started", handleStarted);
-    scrapService.off("operation:finished", handleFinished);
-    scrapService.off("operation:failed", handleFailed);
-  };
-}, []);
-
-
-	// ------------------------------
-	// CRUD Actions
-	// ------------------------------
-	const runOperation = useCallback(
-		async (id: string | number): Promise<void> => {
-			const op = state.operations.find(op => String(op.id) === String(id));
-			if (!op) {
-				toast.error("Operação não encontrada");
-				return;
-			}
-
-			// Apenas efeitos colaterais, sem return
-			toast(`Executando operação: ${op.name ?? op.id}`, { icon: "⚙️" });
-			console.log(`🚀 Executando operação ${op.id} (${op.name})...`);
-		},
-		[state.operations]
-	);
-
-	const refresh = useCallback(async () => {
-		if (!mountedRef.current) return;
+	const loadOperations = useCallback(async () => {
 		dispatch({ type: "SET_LOADING", payload: true });
 		try {
-			const resp = await scrapService.find({
+			const resp = await scrapOperationsService.find({
 				query: { $sort: { scheduled_date: 1, scheduled_time: 1 } },
 			});
-			if (!mountedRef.current) return;
-			const ops: Operation[] = (resp as any)?.data ?? (resp as any) ?? [];
-			dispatch({ type: "SET_ALL", payload: ops.map(computeStatus) });
-			dispatch({ type: "SET_ERROR", payload: null });
-		} catch {
+			const ops = extractOpsFromFindResponse(resp);
+			debugLog("loadOperations -> ops count:", ops.length);
+			if (mountedRef.current) dispatch({ type: "SET_ALL", payload: ops });
+		} catch (err) {
+			console.error("[ScrapOpsCtx] Erro ao carregar operações:", err);
 			if (mountedRef.current)
-				dispatch({ type: "SET_ERROR", payload: "Erro ao atualizar" });
+				dispatch({ type: "SET_ERROR", payload: "Erro ao carregar operações" });
 		} finally {
 			if (mountedRef.current) dispatch({ type: "SET_LOADING", payload: false });
 		}
 	}, []);
 
-	const createOperation = useCallback(async (payload: Partial<Operation>) => {
-		try {
-			const resp = await scrapService.create(payload);
-			const created: Operation = (resp as any)?.data ?? (resp as any);
-			if (!mountedRef.current) return null;
-			if (created)
-				dispatch({ type: "UPSERT", payload: computeStatus(created) });
-			return created ?? null;
-		} catch {
-			toast.error("Erro ao criar operação");
-			return null;
+	useEffect(() => {
+		mountedRef.current = true;
+		void loadOperations();
+		return () => {
+			mountedRef.current = false;
+		};
+	}, [loadOperations]);
+
+	// dedupe key: só id + status (menos propenso a false negatives)
+	const makeKey = (op: Partial<Operation>) =>
+		`${String(op?.id ?? "no-id")}::${String(op?.status ?? "no-status")}`;
+
+	// ------------------------------
+	// WebSocket listeners
+	// ------------------------------
+	useEffect(() => {
+		const log = (label: string, data: any) => debugLog(`[WS] ${label}:`, data);
+
+		const handlePatched = (op: Operation & { _source?: string }) => {
+			// dedupe/short-circuit
+			const key = makeKey(op);
+			if (processedRef.current.has(key)) return;
+			processedRef.current.add(key);
+			// remove key after short interval
+			setTimeout(() => processedRef.current.delete(key), 5000);
+
+			if (!mountedRef.current) return;
+
+			dispatch({ type: "UPSERT", payload: op });
+			log("patched", { id: op.id, status: op.status, source: op._source });
+
+			if (op._source === "cronjob") {
+				const toastId = `ws-patched-${op.id}`;
+				if (!toast.isActive(toastId)) {
+					const message =
+						op.status === "Concluído"
+							? `Operação "${op.name}" concluída automaticamente`
+							: op.status === "Em Execução"
+								? `Operação "${op.name}" em execução... ⚙️`
+								: op.status === "Falha"
+									? `Operação "${op.name}" falhou (cronjob)`
+									: `Operação "${op.name}" atualizada pelo cronjob`;
+
+					const type =
+						op.status === "Falha"
+							? "error"
+							: op.status === "Em Execução"
+								? "info"
+								: "success";
+
+					// react-toastify - update/create a toast
+					toast(message as React.ReactNode, { toastId, type });
+				}
+			}
+		};
+
+		const handleCreated = (op: Operation) => {
+			const key = makeKey(op);
+			if (processedRef.current.has(key)) return;
+			processedRef.current.add(key);
+			setTimeout(() => processedRef.current.delete(key), 5000);
+			if (!mountedRef.current) return;
+			dispatch({ type: "UPSERT", payload: op });
+			log("created", { id: op.id, name: op.name });
+		};
+
+		const handleRemoved = (op: Operation) => {
+			const key = makeKey(op);
+			if (processedRef.current.has(key)) return;
+			processedRef.current.add(key);
+			setTimeout(() => processedRef.current.delete(key), 5000);
+			if (!mountedRef.current) return;
+			dispatch({ type: "REMOVE", payload: op.id });
+			log("removed", { id: op.id, name: op.name });
+
+			const toastId = `ws-removed-${op.id}`;
+			if (!toast.isActive(toastId))
+				toast(`Operação removida: "${op.name}" 🗑️`, { toastId });
+		};
+
+		// registra listeners do serviço Feathers (encapsulado no cliente)
+		scrapOperationsService.on("patched", handlePatched);
+		scrapOperationsService.on("created", handleCreated);
+		scrapOperationsService.on("removed", handleRemoved);
+
+		// registra onAny do socket (apenas se socket disponível) — cleanup também
+		let anyHandler: ((event: string, ...args: any[]) => void) | undefined;
+		if (socket?.onAny) {
+			anyHandler = (event: string, ...args: any[]) => {
+				try {
+					const payload = args?.[0] ?? args;
+					const opCandidate = Array.isArray(payload) ? payload[0] : payload;
+					if (!opCandidate?.id) return;
+					const ev = event.split(/[:\s]/).pop()?.toLowerCase();
+					if (ev === "patched") handlePatched(opCandidate);
+					else if (ev === "created") handleCreated(opCandidate);
+					else if (ev === "removed") handleRemoved(opCandidate);
+				} catch (err) {
+					console.warn("[ScrapOpsCtx] socket.onAny handler error:", err);
+				}
+			};
+			socket.onAny(anyHandler);
 		}
-	}, []);
+
+		// cleanup: sempre remove os listeners registrados acima
+		return () => {
+			try {
+				scrapOperationsService.off("patched", handlePatched);
+				scrapOperationsService.off("created", handleCreated);
+				scrapOperationsService.off("removed", handleRemoved);
+			} catch (err) {
+				// off pode falhar se o service não suportar; ignorar em cleanup
+				debugLog("Erro ao remover listeners do service:", err);
+			}
+			if (anyHandler) socket?.offAny?.(anyHandler);
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []); // intencional: registrar apenas uma vez durante o ciclo de vida do provider
+
+	// ------------------------------
+	// CRUD actions
+	// ------------------------------
+	const runOperation = useCallback(
+		async (id: string | number) => {
+			const op = state.operations.find(op => String(op.id) === String(id));
+			if (!op) return;
+			const tid = `run-${id}`;
+			if (!toast.isActive(tid))
+				toast(`${op.name} ➜ execução iniciada ⚙️`, {
+					toastId: tid,
+					autoClose: 3000,
+				});
+		},
+		[state.operations]
+	);
+
+	const refresh = useCallback(async () => {
+		if (mountedRef.current) await loadOperations();
+	}, [loadOperations]);
+
+	const createOperation = useCallback(
+		async (payload: Partial<Operation>): Promise<Operation | null> => {
+			const tid = `create-temp-${payload.name ?? "op"}-${Date.now()}`;
+			if (!toast.isActive(tid))
+				toast.loading("Criando operação...", { toastId: tid });
+
+			try {
+				const created = await scrapOperationsService.create(payload);
+				if (!mountedRef.current || !created) {
+					toast.update(tid, {
+						render: "Não foi possível criar a operação",
+						type: "error",
+						isLoading: false,
+						autoClose: 3000,
+					} as any);
+					return null;
+				}
+				dispatch({ type: "UPSERT", payload: created });
+				toast.update(tid, {
+					render: `Operação "${created.name}" criada com sucesso! 🆕`,
+					type: "success",
+					isLoading: false,
+					autoClose: 3000,
+				} as any);
+				return created;
+			} catch (err) {
+				console.error("[ScrapOpsCtx.createOperation] erro:", err);
+				toast.update(tid, {
+					render: "Erro ao criar operação ❌",
+					type: "error",
+					isLoading: false,
+					autoClose: 3000,
+				} as any);
+				return null;
+			}
+		},
+		[]
+	);
 
 	const updateOperation = useCallback(
-		async (id: string | number, patch: Partial<Operation>) => {
+		async (
+			id: string | number,
+			patch: Partial<Operation>
+		): Promise<Operation | null> => {
+			const tid = `update-${id}`;
+			if (!toast.isActive(tid))
+				toast.loading("Atualizando operação...", { toastId: tid });
+
 			try {
-				const resp = await scrapService.patch(id, patch);
-				const updated: Operation = (resp as any)?.data ?? (resp as any);
-				if (!mountedRef.current) return null;
-				if (updated)
-					dispatch({ type: "UPSERT", payload: computeStatus(updated) });
-				return updated ?? null;
-			} catch {
-				toast.error("Erro ao atualizar operação");
+				const updated = await scrapOperationsService.patch(id, patch, {
+					source: "edit",
+				});
+				if (!mountedRef.current || !updated) {
+					toast.update(tid, {
+						render: "Erro ao atualizar operação",
+						type: "error",
+						isLoading: false,
+						autoClose: 3000,
+					} as any);
+					return null;
+				}
+				dispatch({ type: "UPSERT", payload: updated });
+				toast.update(tid, {
+					render: `Operação "${updated.name}" editada com sucesso! ✍️`,
+					type: "success",
+					isLoading: false,
+					autoClose: 2000,
+				} as any);
+				return updated;
+			} catch (err) {
+				console.error("[ScrapOpsCtx.updateOperation] erro:", err);
+				toast.update(tid, {
+					render: "Erro ao atualizar operação ❌",
+					type: "error",
+					isLoading: false,
+					autoClose: 3000,
+				} as any);
 				return null;
 			}
 		},
@@ -230,31 +349,61 @@ export function ScrapOperationsProvider({
 	);
 
 	const deleteOperation = useCallback(
-		async (id: string | number) => {
+		async (id: string | number): Promise<boolean> => {
 			if (!id) return false;
+			const tid = `delete-${id}`;
+			if (!toast.isActive(tid))
+				toast.loading("Excluindo operação... 🗑️", { toastId: tid });
+
 			try {
 				const deletedBy =
 					(user as any)?.id || (user as any)?._id || user?.name || "unknown";
-				const resp = await scrapService.patch(id, {
-					deleted: true,
-					deleted_at: new Date().toISOString(),
-					deleted_by: deletedBy,
-				});
+				const serverOp = await scrapOperationsService.softDelete(
+					id,
+					deletedBy,
+					{
+						source: "delete",
+					}
+				);
 
-				const serverOp: Operation | undefined =
-					(resp as any)?.data ?? (resp as any);
-				if (!mountedRef.current) return true;
-
-				if (serverOp) {
-					dispatch({ type: "UPSERT", payload: computeStatus(serverOp) });
-				} else {
-					dispatch({ type: "REMOVE", payload: id });
+				if (!mountedRef.current) {
+					if (toast.isActive(tid))
+						toast.update(tid, {
+							render: "Operação excluída (interface desconectada).",
+							type: "success",
+							isLoading: false,
+							autoClose: 2500,
+						} as any);
+					return true;
 				}
 
-				toast.success("Operação excluída com sucesso");
+				if (serverOp) {
+					dispatch({ type: "UPSERT", payload: serverOp });
+					toast.update(tid, {
+						render: `Operação "${serverOp.name}" excluída com sucesso! 🗑️`,
+						type: "success",
+						isLoading: false,
+						autoClose: 2500,
+					} as any);
+				} else {
+					dispatch({ type: "REMOVE", payload: id });
+					toast.update(tid, {
+						render: `Operação removida.`,
+						type: "success",
+						isLoading: false,
+						autoClose: 2500,
+					} as any);
+				}
+
 				return true;
-			} catch {
-				toast.error("Erro ao excluir operação");
+			} catch (err) {
+				console.error("[ScrapOpsCtx.deleteOperation] erro:", err);
+				toast.update(tid, {
+					render: "Erro ao excluir operação ❌",
+					type: "error",
+					isLoading: false,
+					autoClose: 3000,
+				} as any);
 				return false;
 			}
 		},
@@ -267,23 +416,7 @@ export function ScrapOperationsProvider({
 		[state.operations]
 	);
 
-	// ------------------------------
-	// Atualiza status “Vencida/Excluída” a cada 10s
-	// ------------------------------
-	useEffect(() => {
-		if (!mountedRef.current) return;
-		const timer = setInterval(() => {
-			state.operations.forEach(op => {
-				const newOp = computeStatus(op);
-				if (newOp.status !== op.status) {
-					dispatch({ type: "UPSERT", payload: newOp });
-				}
-			});
-		}, 10_000);
-		return () => clearInterval(timer);
-	}, [state.operations]);
-
-	const actions = useMemo<Actions>(
+	const actions = useMemo(
 		() => ({
 			createOperation,
 			updateOperation,
