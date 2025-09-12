@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+	booleanFields,
 	type ColumnKey,
 	type ColumnVisibility,
 	type FilterType,
@@ -264,7 +265,7 @@ export function DrawBody() {
 			q.realStatus = { $ilike: `formad%` };
 		} else if (activeLabel !== "Todos") {
 			q.holderContractStatus = {
-				$ilike: activeLabel === "Ativos" ? "Ativo" : "Inativo",
+				$ilike: activeLabel === "Ativos" ? "Ativ%" : "Inativ%",
 			};
 		}
 
@@ -278,9 +279,12 @@ export function DrawBody() {
 		};
 
 		Object.keys(filter).forEach(key => {
-			const value = filter[key]?.trim();
+			const value: string = filter[key]?.trim() ?? "";
 			const translated: string | boolean = translateFilter(value);
-			if (value) q[key] = { $ilike: `${translated}%` };
+
+			if (booleanFields.has(key)) {
+				if (typeof translated === "boolean") q[key] = translated;
+			} else if (value) q[key] = { $ilike: `${translated}%` };
 		});
 
 		return q;

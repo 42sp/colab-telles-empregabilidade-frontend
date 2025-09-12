@@ -135,6 +135,12 @@ export type ColumnVisibility = {
 	};
 };
 
+export const booleanFields = new Set([
+	"hasDisability",
+	"transferredCourseOrUniversity",
+	"working",
+]);
+
 export type FilterType = {
 	[k in keyof Data]?: string;
 };
