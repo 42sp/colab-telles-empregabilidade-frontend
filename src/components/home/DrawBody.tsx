@@ -261,7 +261,7 @@ export function DrawBody() {
 			$skip: skipIndex,
 		};
 		if (activeLabel === "Formados") {
-			q.realStatus = { $ilike: "Formado" };
+			q.realStatus = { $ilike: `formad%` };
 		} else if (activeLabel !== "Todos") {
 			q.holderContractStatus = {
 				$ilike: activeLabel === "Ativos" ? "Ativo" : "Inativo",
@@ -279,7 +279,8 @@ export function DrawBody() {
 
 		Object.keys(filter).forEach(key => {
 			const value = filter[key]?.trim();
-			if (value) q[key] = { $ilike: translateFilter(value) };
+			const translated: string | boolean = translateFilter(value);
+			if (value) q[key] = { $ilike: `${translated}%` };
 		});
 
 		return q;
