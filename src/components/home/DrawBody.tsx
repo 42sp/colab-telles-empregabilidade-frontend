@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import {
+	booleanFields,
 	type ColumnKey,
 	type ColumnVisibility,
 	type FilterType,
+	type Stats,
+	type StudentsQuery,
 } from "../../pages/home/types";
 import { DrawStatus } from "./status/DrawStatus";
 import { SearchBar } from "./search/SearchBar";
@@ -13,7 +16,12 @@ export function DrawBody() {
 	//#region States
 	const $service = useServices();
 	const [dataRows, setDataRows] = useState<StudentsParameters[]>([]);
-	const rowsToGet: number = 30;
+	const [stats, setStats] = useState<Stats>({
+		total: 0,
+		working: 0,
+		notWorking: 0,
+		avgCompensation: 0,
+	});
 
 	//States
 	const [activeLabel, setActiveLabel] = useState("Todos");
@@ -241,48 +249,121 @@ export function DrawBody() {
 	}, [filter]);
 
 	//Requisicao no back-end dos dados pre-filtrados
-	useEffect(() => {
-		(async () => {
-			try {
-				//console.log("activeLabel:", activeLabel);
-				const allFilter = {
-					$limit: rowsToGet,
-				};
+	const pagesPerRequest: number = 3;
+	const rowsPerPage: number = 10;
+	const groupSize: number = rowsPerPage * pagesPerRequest;
+	const groupIndex: number = Math.floor(page / pagesPerRequest);
 
-				if (activeLabel !== "Todos") {
-					const statusValue = activeLabel === "Ativos" ? "Ativo" : "Inativo";
+	function buildQuery(
+		skipIndex: number = groupIndex * groupSize
+	): StudentsQuery {
+		const q: StudentsQuery = {
+			$limit: groupSize,
+			$skip: skipIndex,
+		};
+		if (activeLabel === "Formados") {
+			q.realStatus = { $ilike: `formad%` };
+		} else if (activeLabel !== "Todos") {
+			q.holderContractStatus = {
+				$ilike: activeLabel === "Ativos" ? "Ativ%" : "Inativ%",
+			};
+		}
 
-					allFilter.holderContractStatus = statusValue;
+		const translateFilter = (value: string) => {
+			const lower = value.toLowerCase();
+			return lower === "sim"
+				? true
+				: lower === "não" || lower === "nao"
+					? false
+					: value;
+		};
+
+		Object.keys(filter).forEach(key => {
+			const value: string = filter[key]?.trim() ?? "";
+			const translated: string | boolean = translateFilter(value);
+
+			if (booleanFields.has(key)) {
+				if (typeof translated === "boolean") q[key] = translated;
+			} else if (value) q[key] = { $ilike: `${translated}%` };
+		});
+
+		return q;
+	}
+	let query: StudentsQuery = buildQuery();
+
+	async function fetchData(skipIndex: number) {
+		try {
+			const skip: number = skipIndex * groupSize;
+			query = buildQuery(skip);
+
+			const response = await $service.students(query);
+			setDataRows(response.data.data);
+			setStats(prev => ({ ...prev, total: response.data.total }));
+		} catch (error) {
+			console.error("Failed to fetch students:", error);
+		}
+	}
+
+	async function fetchStats() {
+		try {
+			const limit: number = groupSize;
+			let skip: number = 0;
+
+			let total: number = 0;
+			let working: number = 0;
+			let notWorking: number = 0;
+			let compensationSum: number = 0;
+
+			while (true) {
+				const queryAll: StudentsQuery = buildQuery(skip);
+
+				queryAll.$skip = skip;
+				queryAll.$limit = limit;
+
+				const response = await $service.students(queryAll);
+
+				const students = response.data?.data ?? response.data ?? [];
+				if (!students.length) break;
+
+				for (const s of students) {
+					working += Number(s.working);
+
+					if (s.compensation) compensationSum += Number(s.compensation);
 				}
-				const translateFilter = (value: string) => {
-					const lower: string = value.toLowerCase();
-					const translations = new Map<string, boolean>([
-						["sim", true],
-						["não", false],
-						["nao", false],
-					]);
 
-					return translations.get(lower) ?? value;
-				};
-				Object.keys(filter).forEach(key => {
-					const trimKey = filter[key]?.trim();
-					if (filter[key] && trimKey !== "") {
-						const translated = translateFilter(filter[key]);
-						allFilter[key] = translated;
-					}
-				});
-				const response = await $service.students(allFilter);
-				if (JSON.stringify(response.data) !== JSON.stringify(dataRows))
-					setDataRows(response.data.data);
-			} catch (error) {
-				console.error("Failed to fetch students:", error);
+				if (!total) {
+					total = response.data.total ?? students.length;
+				}
+
+				skip += limit;
+
+				if (skip >= total) break;
 			}
-		})();
-	}, [filter, rowsToGet, activeLabel, activeFilter]);
+
+			const avgCompensation =
+				total > 0 ? Math.round(compensationSum / total) : 0;
+
+			notWorking = total - working;
+			setStats({
+				total,
+				working,
+				notWorking,
+				avgCompensation,
+			});
+		} catch (error) {
+			console.error("Failed to fetch stats:", error);
+		}
+	}
 
 	useEffect(() => {
-		//console.log("Data Rows:", dataRows);
-	}, [dataRows]);
+		setPage(0);
+	}, [activeLabel]);
+	useEffect(() => {
+		fetchStats();
+	}, [filter, activeLabel, activeFilter]);
+	useEffect(() => {
+		fetchData(groupIndex);
+	}, [groupIndex, filter, activeLabel, activeFilter]);
 
 	const [filteredRows, setFilteredRows] = useState(dataRows);
 
@@ -300,6 +381,7 @@ export function DrawBody() {
 				setActiveLabel={setActiveLabel}
 				filteredRows={filteredRows}
 				dataRows={dataRows}
+				stats={stats}
 			/>
 			<SearchBar
 				filter={filter}
@@ -312,6 +394,8 @@ export function DrawBody() {
 				setColums={setColums}
 				setFilteredRows={setFilteredRows}
 				filteredRows={filteredRows}
+				stats={stats}
+				query={query}
 			/>
 		</div>
 	);
