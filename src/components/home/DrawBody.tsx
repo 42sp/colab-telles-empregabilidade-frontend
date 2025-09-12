@@ -261,9 +261,11 @@ export function DrawBody() {
 			$skip: skipIndex,
 		};
 		if (activeLabel === "Formados") {
-			q.realStatus = "Formado";
+			q.realStatus = { $ilike: "Formado" };
 		} else if (activeLabel !== "Todos") {
-			q.holderContractStatus = activeLabel === "Ativos" ? "Ativo" : "Inativo";
+			q.holderContractStatus = {
+				$ilike: activeLabel === "Ativos" ? "Ativo" : "Inativo",
+			};
 		}
 
 		const translateFilter = (value: string) => {
@@ -277,7 +279,7 @@ export function DrawBody() {
 
 		Object.keys(filter).forEach(key => {
 			const value = filter[key]?.trim();
-			if (value) q[key] = translateFilter(value);
+			if (value) q[key] = { $ilike: translateFilter(value) };
 		});
 
 		return q;
@@ -299,9 +301,50 @@ export function DrawBody() {
 
 	async function fetchStats() {
 		try {
-			const { $skip, $limit, ...filters } = buildQuery();
-			const stats = await $service.studentsStats(filters);
-			setStats(stats);
+			const limit: number = groupSize;
+			let skip: number = 0;
+
+			let total: number = 0;
+			let working: number = 0;
+			let notWorking: number = 0;
+			let compensationSum: number = 0;
+
+			while (true) {
+				const queryAll: StudentsQuery = buildQuery(skip);
+
+				queryAll.$skip = skip;
+				queryAll.$limit = limit;
+
+				const response = await $service.students(queryAll);
+
+				const students = response.data?.data ?? response.data ?? [];
+				if (!students.length) break;
+
+				for (const s of students) {
+					working += Number(s.working);
+
+					if (s.compensation) compensationSum += Number(s.compensation);
+				}
+
+				if (!total) {
+					total = response.data.total ?? students.length;
+				}
+
+				skip += limit;
+
+				if (skip >= total) break;
+			}
+
+			const avgCompensation =
+				total > 0 ? Math.round(compensationSum / total) : 0;
+
+			notWorking = total - working;
+			setStats({
+				total,
+				working,
+				notWorking,
+				avgCompensation,
+			});
 		} catch (error) {
 			console.error("Failed to fetch stats:", error);
 		}
@@ -316,10 +359,6 @@ export function DrawBody() {
 	useEffect(() => {
 		fetchData(groupIndex);
 	}, [groupIndex, filter, activeLabel, activeFilter]);
-
-	useEffect(() => {
-		//console.log("Data Rows:", dataRows);
-	}, [dataRows]);
 
 	const [filteredRows, setFilteredRows] = useState(dataRows);
 
