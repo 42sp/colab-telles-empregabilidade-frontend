@@ -23,7 +23,8 @@ export const SidebarHeader = ({
 				size="icon"
 				variant="ghost"
 				onClick={toggleCollapse}
-				className={`transition-transform duration-300 ease-in-out ${
+				aria-label={isCollapsed ? "Expandir barra" : "Colapsar barra"}
+				className={`cursor-pointer transition-transform duration-300 ease-in-out z-30 ${
 					isCollapsed ? "opacity-0 pointer-events-none" : "opacity-100"
 				}`}
 			>
