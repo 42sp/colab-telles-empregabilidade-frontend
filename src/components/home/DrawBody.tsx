@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
 	booleanFields,
 	type ColumnKey,
@@ -248,112 +248,73 @@ export function DrawBody() {
 		sessionStorage.setItem("userFilter", JSON.stringify(filter));
 	}, [filter]);
 
-	//Requisicao no back-end dos dados pre-filtrados
-	const pagesPerRequest: number = 3;
 	const rowsPerPage: number = 10;
-	const groupSize: number = rowsPerPage * pagesPerRequest;
-	const groupIndex: number = Math.floor(page / pagesPerRequest);
-
-	function buildQuery(
-		skipIndex: number = groupIndex * groupSize
-	): StudentsQuery {
-		const q: StudentsQuery = {
-			$limit: groupSize,
-			$skip: skipIndex,
-		};
-		if (activeLabel === "Formados") {
-			q.realStatus = { $ilike: `formad%` };
-		} else if (activeLabel !== "Todos") {
-			q.holderContractStatus = {
-				$ilike: activeLabel === "Ativos" ? "Ativ%" : "Inativ%",
+	const buildQuery = useCallback(
+		(skipIndex: number): StudentsQuery => {
+			const q: StudentsQuery = {
+				$limit: rowsPerPage,
+				$skip: skipIndex,
 			};
-		}
+			if (activeLabel === "Formados") {
+				q.realStatus = { $ilike: `formad%` };
+			} else if (activeLabel !== "Todos") {
+				q.holderContractStatus = {
+					$ilike: activeLabel === "Ativos" ? "Ativ%" : "Inativ%",
+				};
+			}
 
-		const translateFilter = (value: string) => {
-			const lower = value.toLowerCase();
-			return lower === "sim"
-				? true
-				: lower === "não" || lower === "nao"
-					? false
-					: value;
-		};
+			const translate = (value: string) => {
+				const lower = value.trim().toLowerCase();
+				if (lower === "sim") return true;
+				else if (["não", "nao"].includes(lower)) return false;
+				return value;
+			};
+			for (const key of Object.keys(filter)) {
+				const value: string = filter[key]?.trim() ?? "";
+				if (!value) continue;
 
-		Object.keys(filter).forEach(key => {
-			const value: string = filter[key]?.trim() ?? "";
-			const translated: string | boolean = translateFilter(value);
+				const translated: string | boolean = translate(value);
+				if (booleanFields.has(key)) {
+					if (typeof translated === "boolean") q[key] = translated;
+				} else if (value) q[key] = { $ilike: `${translated}%` };
+			}
 
-			if (booleanFields.has(key)) {
-				if (typeof translated === "boolean") q[key] = translated;
-			} else if (value) q[key] = { $ilike: `${translated}%` };
-		});
+			return q;
+		},
+		[activeLabel, filter]
+	);
 
-		return q;
-	}
-	let query: StudentsQuery = buildQuery();
+	const fetchData = useCallback(
+		async (skipIndex: number) => {
+			try {
+				const query = buildQuery(skipIndex);
+				const response = await $service.students(query);
+				setDataRows(response.data.data);
+				return query;
+			} catch (error) {
+				console.error("Failed to fetch students:", error);
+			}
+		},
+		[$service, buildQuery]
+	);
 
-	async function fetchData(skipIndex: number) {
+	const fetchStats = useCallback(async () => {
 		try {
-			const skip: number = skipIndex * groupSize;
-			query = buildQuery(skip);
+			const query = buildQuery(0);
+			const response = await $service.studentsStats(query);
 
-			const response = await $service.students(query);
-			setDataRows(response.data.data);
-			setStats(prev => ({ ...prev, total: response.data.total }));
+			setStats({
+				total: response.data.total,
+				working: response.data.working,
+				notWorking: response.data.notWorking,
+				avgCompensation: Number(response.data.avgCompensation),
+			});
 		} catch (error) {
 			console.error("Failed to fetch students:", error);
 		}
-	}
+	}, [$service, buildQuery]);
 
-	async function fetchStats() {
-		try {
-			const limit: number = groupSize;
-			let skip: number = 0;
-
-			let total: number = 0;
-			let working: number = 0;
-			let notWorking: number = 0;
-			let compensationSum: number = 0;
-
-			while (true) {
-				const queryAll: StudentsQuery = buildQuery(skip);
-
-				queryAll.$skip = skip;
-				queryAll.$limit = limit;
-
-				const response = await $service.students(queryAll);
-
-				const students = response.data?.data ?? response.data ?? [];
-				if (!students.length) break;
-
-				for (const s of students) {
-					working += Number(s.working);
-
-					if (s.compensation) compensationSum += Number(s.compensation);
-				}
-
-				if (!total) {
-					total = response.data.total ?? students.length;
-				}
-
-				skip += limit;
-
-				if (skip >= total) break;
-			}
-
-			const avgCompensation =
-				total > 0 ? Math.round(compensationSum / total) : 0;
-
-			notWorking = total - working;
-			setStats({
-				total,
-				working,
-				notWorking,
-				avgCompensation,
-			});
-		} catch (error) {
-			console.error("Failed to fetch stats:", error);
-		}
-	}
+	let query: StudentsQuery;
 
 	useEffect(() => {
 		setPage(0);
@@ -362,8 +323,12 @@ export function DrawBody() {
 		fetchStats();
 	}, [filter, activeLabel, activeFilter]);
 	useEffect(() => {
-		fetchData(groupIndex);
-	}, [groupIndex, filter, activeLabel, activeFilter]);
+		const run = async () => {
+			const q: StudentsQuery = await fetchData(page * rowsPerPage);
+			query = q;
+		};
+		run();
+	}, [filter, activeLabel, activeFilter, page]);
 
 	const [filteredRows, setFilteredRows] = useState(dataRows);
 
@@ -380,7 +345,6 @@ export function DrawBody() {
 				activeLabel={activeLabel}
 				setActiveLabel={setActiveLabel}
 				filteredRows={filteredRows}
-				dataRows={dataRows}
 				stats={stats}
 			/>
 			<SearchBar

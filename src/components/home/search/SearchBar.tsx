@@ -17,7 +17,7 @@ export function SearchBar(props: PropsType) {
 	//Page config
 	const rowsPerPage = 10;
 	const startPage = props.page * rowsPerPage;
-	const pagesPerGroup = 3;
+	const pagesPerGroup = 1;
 	const intraGroupPage = props.page % pagesPerGroup;
 	const visibleRows = props.filteredRows.slice(
 		intraGroupPage * rowsPerPage,
