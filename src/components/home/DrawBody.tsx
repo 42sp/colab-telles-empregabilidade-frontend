@@ -315,13 +315,30 @@ export function DrawBody() {
 	}, [$service, buildQuery]);
 
 	let query: StudentsQuery;
+	const [debounce, setDebounce] = useState(filter);
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setDebounce(filter);
+		}, 150);
+
+		return () => clearTimeout(timer);
+	}, [filter]);
 
 	useEffect(() => {
 		setPage(0);
 	}, [activeLabel]);
 	useEffect(() => {
-		fetchStats();
-	}, [filter, activeLabel, activeFilter]);
+		// fetchStats();
+		const fetch = async () => {
+			try {
+				await fetchStats();
+			} catch (error) {
+				console.error("Failed to fetch students:", error);
+			}
+		};
+		fetch();
+	}, [debounce, activeLabel, activeFilter]);
 	useEffect(() => {
 		const run = async () => {
 			const q: StudentsQuery = await fetchData(page * rowsPerPage);

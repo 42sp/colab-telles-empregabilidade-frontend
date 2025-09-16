@@ -43,7 +43,7 @@ export function SearchBar(props: PropsType) {
 			if (myInput !== "-") {
 				updateFilter(myInput);
 			}
-		}, 500);
+		}, 150);
 
 		return () => clearTimeout(timer);
 	}, [input, props.setFilter, props.activeFilter]);
