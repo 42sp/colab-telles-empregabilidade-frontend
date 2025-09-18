@@ -61,7 +61,7 @@ export function InputFilter({
 					htmlFor={placeholder}
 					className={`
             absolute px-1 transition-all duration-200 
-            pointer-events-none left-10 text-slate-500
+            pointer-events-none left-10 text-slate-500 truncate max-w-[calc(100%-2.5rem)]
             ${isActive ? "top-1 text-xs scale-90" : "top-3.5 text-base"}
           `}
 				>
