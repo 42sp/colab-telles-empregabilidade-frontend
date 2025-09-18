@@ -216,7 +216,6 @@ export function DrawBody() {
 	});
 
 	const [activeFilter, setActiveFilter] = useState<ColumnKey>("name");
-
 	const [filter, setFilter] = useState<FilterType>(() => {
 		const saved = sessionStorage.getItem("userFilter");
 

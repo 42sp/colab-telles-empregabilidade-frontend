@@ -10,9 +10,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { LogoutButton } from "@/components/sidebar/LogoutButton";
 import { UserProfile } from "@/components/sidebar/UserProfile";
 
-
 export function SideBarFloating() {
-	const { isCollapsed, toggleSidebar, collapseSidebar, expandSidebar } = useSidebar();
+	const { isCollapsed, toggleSidebar, collapseSidebar, expandSidebar } =
+		useSidebar();
 	const [isLocked, setIsLocked] = useState(false);
 	const [darkMode, setDarkMode] = useState(false);
 	const [settingsOpen, setSettingsOpen] = useState(false);
@@ -47,7 +47,10 @@ export function SideBarFloating() {
 		>
 			<div className="flex flex-col justify-between h-full">
 				<div className="flex flex-col gap-4 relative">
-					<SidebarHeader isCollapsed={isCollapsed} toggleCollapse={toggleSidebar} />
+					<SidebarHeader
+						isCollapsed={isCollapsed}
+						toggleCollapse={toggleSidebar}
+					/>
 
 					<div className="absolute top-4 right-2 w-8 h-8">
 						{isCollapsed && (
