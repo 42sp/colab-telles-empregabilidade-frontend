@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { DrawResults } from "./DrawResults";
 import { DrawButtons } from "./DrawButtons";
 import type { PropsType } from "../../../pages/home/types";
@@ -59,6 +59,7 @@ export function SearchBar(props: PropsType) {
 					onChange={e => {
 						setInput(e.target.value);
 					}}
+					Icon={Search}
 				/>
 				<DrawButtons {...props} />
 			</div>
