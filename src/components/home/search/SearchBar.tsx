@@ -4,6 +4,7 @@ import { DrawResults } from "./DrawResults";
 import { DrawButtons } from "./DrawButtons";
 import type { PropsType } from "../../../pages/home/types";
 import { useEffect, useState } from "react";
+import { InputFilter } from "../utils/inputFilter";
 
 export function SearchBar(props: PropsType) {
 	const [input, setInput] = useState<string>(
@@ -51,10 +52,10 @@ export function SearchBar(props: PropsType) {
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex bg-white w-full gap-4 p-4 border border-b rounded-md">
-				<Input
+				<InputFilter
 					className="w-64"
 					value={input}
-					placeholder="Buscar estudante..."
+					placeholder={props.colums[props.activeFilter]?.label || ""}
 					onChange={e => {
 						setInput(e.target.value);
 					}}

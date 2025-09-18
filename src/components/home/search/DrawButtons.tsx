@@ -14,7 +14,12 @@ import {
 import { Funnel, Columns2, Download, File, FileText } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { Data, PropsType, ColumnKey, StudentsQuery } from "../../../pages/home/types";
+import type {
+	Data,
+	PropsType,
+	ColumnKey,
+	StudentsQuery,
+} from "../../../pages/home/types";
 import { columnGroups } from "../../../pages/home/columnGroups";
 import { useServices } from "@/hooks/useServices";
 
@@ -297,13 +302,13 @@ export function DrawButtons(props: PropsType) {
 					<DropdownMenuLabel>Exportar Dados</DropdownMenuLabel>
 					<DropdownMenuSeparator />
 					<DropdownMenuItem
-						onClick={() => downloadPdf(props.filteredRows)}
+						onClick={() => downloadPdf()}
 						className="hover:bg-gray-200 focus:bg-gray-200"
 					>
 						<FileText className="mr-2 h-4 w-4" /> Exportar como PDF
 					</DropdownMenuItem>
 					<DropdownMenuItem
-						onClick={() => downloadCsv(props.filteredRows)}
+						onClick={() => downloadCsv()}
 						className="hover:bg-gray-200 focus:bg-gray-200"
 					>
 						<File className="mr-2 h-4 w-4" /> Exportar como CSV
