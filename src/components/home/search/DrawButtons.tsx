@@ -1,57 +1,99 @@
 import { Button } from "@/components/ui/button";
 import {
-	Funnel,
-	Columns2,
-	Download,
-	Check,
-	File,
-	FileText,
-} from "lucide-react";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
-import { Checkbox } from "@radix-ui/react-checkbox";
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuTrigger,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuCheckboxItem,
+	DropdownMenuItem,
+	DropdownMenuSub,
+	DropdownMenuSubTrigger,
+	DropdownMenuSubContent,
+} from "@/components/ui/dropdown-menu";
+import { Funnel, Columns2, Download, File, FileText } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { Data, PropsType, ColumnKey } from "../../../pages/home/types";
+import type { Data, PropsType, ColumnKey, StudentsQuery } from "../../../pages/home/types";
+import { columnGroups } from "../../../pages/home/columnGroups";
+import { useServices } from "@/hooks/useServices";
 
 export function DrawButtons(props: PropsType) {
-	const buttons = [
-		{ label: "Filtros", icon: Funnel },
-		{ label: "Colunas", icon: Columns2 },
-		{ label: "Exportar", icon: Download },
-	];
-	const buttonProps = {
-		variant: "outline",
-		size: "default",
-	} as const;
-	const buttonHover = "bg-white hover:bg-blue-200";
-	const popoverBox =
-		"w-80 flex flex-col gap-4 border border-b border-slate-400 overflow-y-auto max-h-70";
-	const FilterIcon = buttons[0].icon;
-	const ColumnIcon = buttons[1].icon;
-	const ExportIcon = buttons[2].icon;
 	const exportName = "relatório";
+	const $service = useServices();
 
-	function downloadPdf(rows: Data[]) {
-		const doc = new jsPDF({ orientation: "landscape" });
+	async function downloadPdf() {
+		const rows: Data[] = [];
+		const limitPerRequest = 50;
+		let skip = 0;
+		let total = 0;
+
+		do {
+			const partialQuery: StudentsQuery = {
+				...props.query,
+				$limit: limitPerRequest,
+				$skip: skip,
+			};
+
+			const response = await $service.students(partialQuery);
+			const data: Data[] = response.data.data;
+			total = response.data.total;
+
+			rows.push(...data);
+			skip += limitPerRequest;
+		} while (rows.length < total);
+
 		const visibleKey = Object.keys(props.colums).filter(
 			key => props.colums[key as keyof typeof props.colums].isVisible
 		);
+		const format: string =
+			visibleKey.length <= 25
+				? "a4"
+				: visibleKey.length <= 50
+					? "a3"
+					: visibleKey.length <= 75
+						? "a2"
+						: "a1";
+
+		const doc = new jsPDF({
+			orientation: "landscape",
+			unit: "mm",
+			format: format,
+		});
+
 		const headers = visibleKey.map(
 			key => props.colums[key as keyof typeof props.colums].label
 		);
+
 		const data = rows.map(row =>
 			visibleKey.map(key => {
 				const typedKey = key as keyof Data;
-				if (key === "rent")
-					return row.rent.toLocaleString("pt-br", {
+
+				if (key === "compensation") {
+					const value = row[typedKey];
+					const num: number = Number(value);
+					const zeroValue = new Intl.NumberFormat("pt-BR", {
 						style: "currency",
 						currency: "BRL",
-					});
-				return row[typedKey];
+					}).format(0);
+					const formattedValue = new Intl.NumberFormat("pt-BR", {
+						style: "currency",
+						currency: "BRL",
+					}).format(num);
+
+					if (value === null || value === undefined || isNaN(num))
+						return zeroValue;
+					return formattedValue;
+				}
+
+				if (row[typedKey] !== null) {
+					const input = row[typedKey];
+					let value: string = String(input).trim();
+					if (typeof input === "boolean") value = input ? "Sim" : "Não";
+					return value === "" ? "-" : value;
+				}
+
+				return "-";
 			})
 		);
 
@@ -59,35 +101,77 @@ export function DrawButtons(props: PropsType) {
 			head: [headers],
 			body: data,
 			startY: 10,
-			margin: { left: 10, right: 10 },
+			margin: { left: 5, right: 5 },
+			styles: {
+				fontSize: 5,
+				cellPadding: 0.5,
+				overflow: "linebreak",
+				halign: "center",
+			},
+			headStyles: {
+				fontSize: 6,
+				fontStyle: "bold",
+				fillColor: [200, 200, 200],
+				halign: "center",
+			},
+			tableWidth: "auto",
+			theme: "grid",
+			showHead: "everyPage",
+			pageBreak: "auto",
+			rowPageBreak: "avoid",
 		});
 
 		doc.save(exportName + ".pdf");
 	}
 
-	function downloadCsv(rows: Data[]) {
+	async function downloadCsv() {
+		const rows: Data[] = [];
+		const limitPerRequest = 50;
+		let skip = 0;
+		let total = 0;
+
+		do {
+			const partialQuery: StudentsQuery = {
+				...props.query,
+				$limit: limitPerRequest,
+				$skip: skip,
+			};
+
+			const response = await $service.students(partialQuery);
+			const data: Data[] = response.data.data;
+			total = response.data.total;
+
+			rows.push(...data);
+			skip += limitPerRequest;
+		} while (rows.length < total);
+
+		// Monta CSV
 		const visibleKey = Object.keys(props.colums).filter(
 			key => props.colums[key as keyof typeof props.colums].isVisible
 		);
 		const header = visibleKey
 			.map(key => props.colums[key as keyof typeof props.colums].label || key)
-			.join(", ");
+			.join(",");
+
 		const body = rows
 			.map(row =>
 				visibleKey
 					.map(key => {
 						const typedKey = key as keyof Data;
-						if (key === "rent") {
-							const value = row.rent.toLocaleString("pt-br", {
-								style: "currency",
-								currency: "BRL",
-							});
-							return `"${value}"`;
-						}
 						const value = row[typedKey];
-						if (typeof value === "string" && value.includes(","))
-							return `"${value}"`;
-						return value;
+						const str =
+							value !== null && value !== undefined ? String(value).trim() : "";
+
+						if (key === "compensation") {
+							const num: number = Number(value);
+							return isNaN(num) ? "0.00" : num.toFixed(2);
+						}
+
+						if (str.includes(",") || str.includes('"') || str.includes("'")) {
+							return `"${str}"`;
+						}
+
+						return str === "" ? `""` : str;
 					})
 					.join(",")
 			)
@@ -101,104 +185,131 @@ export function DrawButtons(props: PropsType) {
 		link.setAttribute("download", exportName + ".csv");
 		link.click();
 	}
-
 	return (
-		<div className="flex w-full">
-			<Popover>
-				<PopoverTrigger asChild>
-					<Button {...buttonProps} className={buttonHover}>
-						<FilterIcon />
-						{buttons[0].label}
-					</Button>
-				</PopoverTrigger>
-				<PopoverContent className={popoverBox}>
-					{Object.entries(props.colums).map(([key, col]) => {
-						const isActive = key === props.activeFilter;
-						const activeClass = isActive ? "bg-blue-200" : "bg-white";
-						const typedKey = key as ColumnKey;
-						return (
-							<Button
-								{...buttonProps}
-								className={`${buttonHover} ${activeClass}`}
+		<div className="flex w-full justify-between gap-2">
+			<div className="flex gap-3">
+				{/* ---------------- Filtros ---------------- */}
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline" className="cursor-pointer text-base">
+							<Funnel className="mr-2 h-4 w-4" /> Filtros
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent className="w-56" side="bottom" align="start">
+						<DropdownMenuLabel>Filtros Disponíveis</DropdownMenuLabel>
+						<DropdownMenuSeparator />
+						{Object.entries(props.colums).map(([key, col]) => (
+							<DropdownMenuItem
 								key={key}
-								onClick={() => {
-									props.setActiveFilter(typedKey);
-								}}
+								className={`cursor-pointer ${key === props.activeFilter ? "bg-gray-300" : ""} hover:bg-gray-200 focus:bg-gray-200`}
+								onClick={() => props.setActiveFilter(key as ColumnKey)}
 							>
 								{col.label}
-							</Button>
-						);
-					})}
-				</PopoverContent>
-			</Popover>
+							</DropdownMenuItem>
+						))}
+					</DropdownMenuContent>
+				</DropdownMenu>
 
-			<div className="flex gap-4 ml-auto">
-				<Popover>
-					<PopoverTrigger asChild>
-						<Button {...buttonProps} className={buttonHover}>
-							<ColumnIcon />
-							Colunas
+				{/* ---------------- Colunas ---------------- */}
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline" className="cursor-pointer text-base">
+							<Columns2 className="mr-2 h-4 w-4" /> Colunas
 						</Button>
-					</PopoverTrigger>
-					<PopoverContent className={popoverBox}>
-						{Object.entries(props.colums).map(([key, col]) => {
-							const typedKey = key as ColumnKey;
-							return (
-								<div key={key} className="flex gap-2">
-									<Checkbox
-										id={`checkbox-${key}`}
-										checked={col.isVisible}
-										onCheckedChange={checked =>
-											props.setColums(prev => ({
-												...prev,
-												[key]: { ...prev[typedKey], isVisible: !!checked },
-											}))
+					</DropdownMenuTrigger>
+					<DropdownMenuContent className="w-56" side="bottom" align="start">
+						<DropdownMenuLabel>Exibir/Ocultar Colunas</DropdownMenuLabel>
+						<DropdownMenuSeparator />
+						{Object.entries(columnGroups).map(([group, items]) => (
+							<DropdownMenuSub key={group}>
+								<DropdownMenuSubTrigger className="hover:bg-gray-200 focus:bg-gray-200">
+									{group}
+								</DropdownMenuSubTrigger>
+								<DropdownMenuSubContent className="w-64">
+									{items.map(item => {
+										if (typeof item === "string") {
+											const col = props.colums[item];
+											if (!col) return null;
+											return (
+												<DropdownMenuCheckboxItem
+													key={item}
+													checked={col.isVisible}
+													className="hover:bg-gray-200 focus:bg-gray-200"
+													onCheckedChange={checked =>
+														props.setColums(prev => ({
+															...prev,
+															[item]: { ...prev[item], isVisible: !!checked },
+														}))
+													}
+												>
+													{col.label}
+												</DropdownMenuCheckboxItem>
+											);
+										} else {
+											return Object.entries(item).map(([subLabel, subKeys]) => (
+												<DropdownMenuSub key={subLabel}>
+													<DropdownMenuSubTrigger>
+														{subLabel}
+													</DropdownMenuSubTrigger>
+													<DropdownMenuSubContent className="w-64">
+														{subKeys.map(subKey => {
+															const col = props.colums[subKey];
+															if (!col) return null;
+															return (
+																<DropdownMenuCheckboxItem
+																	key={subKey}
+																	checked={col.isVisible}
+																	className="hover:bg-gray-200 focus:bg-gray-200"
+																	onCheckedChange={checked =>
+																		props.setColums(prev => ({
+																			...prev,
+																			[subKey]: {
+																				...prev[subKey],
+																				isVisible: !!checked,
+																			},
+																		}))
+																	}
+																>
+																	{col.label}
+																</DropdownMenuCheckboxItem>
+															);
+														})}
+													</DropdownMenuSubContent>
+												</DropdownMenuSub>
+											));
 										}
-									/>
-									<div
-										className={`w-5 h-5 flex justify-center items-center border border-gray-400
-												${col.isVisible ? "bg-blue-600 border-blue-300" : "bg-white"}`}
-									>
-										{col.isVisible && <Check className="w-4 h-4 text-white" />}
-									</div>
-									<label
-										htmlFor={`checkbox-${key}`}
-										className="flex justify-start items-start cursor-pointer select-none gap-2"
-									>
-										{col.label}
-									</label>
-								</div>
-							);
-						})}
-					</PopoverContent>
-				</Popover>
-				<Popover>
-					<PopoverTrigger asChild>
-						<Button {...buttonProps} className={buttonHover}>
-							<ExportIcon />
-							{buttons[2].label}
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent className={popoverBox}>
-						<Button
-							{...buttonProps}
-							onClick={() => downloadPdf(props.filteredRows)}
-							className={buttonHover}
-						>
-							<FileText />
-							Exportar como PDF
-						</Button>
-						<Button
-							{...buttonProps}
-							onClick={() => downloadCsv(props.filteredRows)}
-							className={buttonHover}
-						>
-							<File />
-							Exportar como CSV
-						</Button>
-					</PopoverContent>
-				</Popover>
+									})}
+								</DropdownMenuSubContent>
+							</DropdownMenuSub>
+						))}
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</div>
+
+			{/* ---------------- Exportar ---------------- */}
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<Button variant="outline" className="cursor-pointer text-base">
+						<Download className="mr-2 h-4 w-4" /> Exportar
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent className="w-56" side="bottom" align="start">
+					<DropdownMenuLabel>Exportar Dados</DropdownMenuLabel>
+					<DropdownMenuSeparator />
+					<DropdownMenuItem
+						onClick={() => downloadPdf(props.filteredRows)}
+						className="hover:bg-gray-200 focus:bg-gray-200"
+					>
+						<FileText className="mr-2 h-4 w-4" /> Exportar como PDF
+					</DropdownMenuItem>
+					<DropdownMenuItem
+						onClick={() => downloadCsv(props.filteredRows)}
+						className="hover:bg-gray-200 focus:bg-gray-200"
+					>
+						<File className="mr-2 h-4 w-4" /> Exportar como CSV
+					</DropdownMenuItem>
+				</DropdownMenuContent>
+			</DropdownMenu>
 		</div>
 	);
 }

@@ -5,6 +5,7 @@ import { OperationHistory } from "@/components/scrap-data/OperationHistory";
 import { FadeInOnScroll } from "@/components/utils/FadeInOnScroll";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { ScrapOperationsProvider } from "@/contexts/ScrapOperationsContext";
+import { DeletedOperations } from "@/components/scrap-data/DeletedOperations";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -37,6 +38,10 @@ function ScrapData() {
 
 				<FadeInOnScroll delay={0.2} enabled={animationsEnabled}>
 					<OperationHistory />
+				</FadeInOnScroll>
+
+				<FadeInOnScroll delay={0.2} enabled={animationsEnabled}>
+					<DeletedOperations />
 				</FadeInOnScroll>
 			</div>
 		</ScrapOperationsProvider>

@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { type ColumnVisibility, type Data } from "../../../pages/home/types";
+import { type ColumnsMap, type Data, type Stats } from "../../../pages/home/types";
 
 interface DrawResultsProps {
-	colums: ColumnVisibility;
+	colums: ColumnsMap;
 	visibleRows: Data[];
 	page: number;
 	setPage: (page: number) => void;
@@ -11,6 +11,7 @@ interface DrawResultsProps {
 	endPage: number;
 	filteredRows: Data[];
 	rowsPerPage: number;
+	stats: Stats;
 }
 
 export function DrawResults(props: DrawResultsProps) {
@@ -26,10 +27,10 @@ export function DrawResults(props: DrawResultsProps) {
 		const nextPage = props.page + 1;
 		const prevPage = props.page - 1;
 		const pageNumbers = [prevPage, props.page, nextPage];
-		const totalPages = Math.ceil(props.filteredRows.length / props.rowsPerPage);
+		const totalPages = Math.ceil(props.stats.total / props.rowsPerPage);
 
 		return (
-			<div className="flex justify-end items-end text-black">
+			<div className="flex gap-1 justify-end items-end text-black">
 				<Button
 					{...buttonProps}
 					onClick={() => {
@@ -68,49 +69,87 @@ export function DrawResults(props: DrawResultsProps) {
 		);
 	}
 
-	return (
-		<div className="flex flex-col border border-gray-200 rounded-md bg-white min-w-full w-full h-full">
-			<table className="table-auto border-collapse">
-				{/* Header */}
-				<thead className="bg-white border-b border-gray-200 text-zinc-400 font-bold">
-					<tr>
-						{visibleColums.map(([key, col]) => (
-							<th key={key} className="text-left px-4 py-2">
-								{col.label}
-							</th>
-						))}
-					</tr>
-				</thead>
+	function showContent(key: string, row: string, type: string): string {
+		if (key === "compensation") {
+			const num = Number(row);
+			return new Intl.NumberFormat("pt-BR", {
+				style: "currency",
+				currency: "BRL",
+			}).format(isNaN(num) ? 0 : num);
+		}
+		if (
+			row === null ||
+			row === undefined ||
+			row === "" ||
+			row === "null" ||
+			row === "undefined"
+		)
+			return "-";
+		if (type === "boolean") return row === "true" ? "Sim" : "Não";
 
-				{/* Body */}
-				<tbody className="text-black font-medium">
-					{props.visibleRows.map((row, i) => (
-						<tr key={i} className="border-b border-gray-200">
-							{visibleColums.map(([key]) => (
-								<td
+		return row === "0" ? "-" : row;
+	}
+
+	function renderCellContent(key: string, row: string, type: string) {
+		const value: string = showContent(key, row, type);
+
+		// key === "working" && value === "Sim" - only working students
+		if (value === "Sim")
+			return (
+				<div className="inline-flex bg-black text-white w-10 h-6 rounded-xl justify-center items-center">
+					{value}
+				</div>
+			);
+		else if (value === "Não")
+			return (
+				<div className="inline-flex bg-white w-10 h-6 rounded-xl justify-center items-center">{value}</div>
+			);
+		return value;
+	}
+
+	return (
+		<div className="flex flex-col flex-1 border border-gray-200 rounded-md bg-white max-w-full">
+			<div className="max-w-full overflow-x-auto">
+				<table className="min-w-[3000px] table-auto border-collapse">
+					{/* Header */}
+					<thead className="bg-white border-b border-gray-200 text-zinc-400 font-bold">
+						<tr>
+							{visibleColums.map(([key, col]) => (
+								<th
 									key={key}
-									className="px-4 py-2 truncate max-w-[200px]"
-									title={String(row[key as keyof typeof row])}
+									className="text-left px-6 py-3 min-w-[180px] whitespace-nowrap"
 								>
-									{key === "rent"
-										? new Intl.NumberFormat("pt-BR", {
-												style: "currency",
-												currency: "BRL",
-											}).format(row[key as keyof typeof row] as number)
-										: String(row[key as keyof typeof row])}
-								</td>
+									{col.label}
+								</th>
 							))}
 						</tr>
-					))}
-				</tbody>
-			</table>
+					</thead>
+
+					{/* Body */}
+					<tbody className="text-black font-medium text-sm">
+						{props.visibleRows.map((row, i) => (
+							<tr key={i} className="border-b border-gray-200">
+								{visibleColums.map(([key]) => (
+									<td
+										key={key}
+										className="px-4 py-2 truncate max-w-[200px]"
+										title={String(row[key as keyof typeof row])}
+									>
+										{renderCellContent(key, String(row[key]), typeof row[key])}
+									</td>
+								))}
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
 			{/*	botao para atualizar o estado das paginas*/}
-			<div className="flex border-b border-gray-200">
+			<div className="flex justify-between border-b border-gray-200">
 				<p className="p-4 text-slate-400">
 					Mostrando {props.startPage + 1} a {props.endPage} de{" "}
-					{props.filteredRows.length} resultados
+					{props.stats.total} resultados
 				</p>
-				<div className="ml-auto p-4">{pagination()}</div>
+				<div className="p-4">{pagination()}</div>
 			</div>
 		</div>
 	);
