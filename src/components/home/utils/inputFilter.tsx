@@ -1,3 +1,4 @@
+import { Search } from "lucide-react";
 import React, { useState } from "react";
 
 export function InputFilter({
@@ -27,6 +28,7 @@ export function InputFilter({
 
 	return (
 		<div className="relative field">
+			<Search className="absolute top-1/2 left-2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none border-r border-slate-200 p-0.5" />
 			<input
 				name={placeholder?.toLowerCase()}
 				id={placeholder}
@@ -40,8 +42,8 @@ export function InputFilter({
 				autoCapitalize="off"
 				data-testid={`input-${placeholder?.toLowerCase()}`}
 				className={`
-          peer w-full p-2 pt-5 pb-1 rounded-md bg-slate-100 pr-10
-          text-black placeholder-transparent
+          peer w-full pl-10 p-2 pt-4 rounded-md bg-white pr-10
+          text-black placeholder-transparent border border-slate-300
           focus:outline-none focus:ring-2 focus:ring-blue-500
           ${className}
         `}
@@ -54,9 +56,9 @@ export function InputFilter({
 				<label
 					htmlFor={placeholder}
 					className={`
-            absolute left-2 px-1 text-black bg-slate-100 transition-all duration-200 
-            pointer-events-none
-            ${isActive ? "top-1 text-xs scale-90" : "top-3 text-base"}
+            absolute px-1 transition-all duration-200 
+            pointer-events-none left-10 text-slate-500
+            ${isActive ? "top-1 text-xs scale-90" : "top-3.5 text-base pl-10"}
           `}
 				>
 					{placeholder}
