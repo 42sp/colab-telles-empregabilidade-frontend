@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	type ColumnKey,
 	type ColumnVisibility,
@@ -17,6 +17,8 @@ import { useFetchData } from "./utils/fetchData";
 import { useFetchStats } from "./utils/fetchStats";
 
 export function DrawBody() {
+	const filtersSave: string = "userFilter";
+	const columnsSave: string = "userColumns";
 	//#region States
 	const [dataRows, setDataRows] = useState<StudentsParameters[]>([]);
 	const [stats, setStats] = useState<Stats>({
@@ -30,13 +32,13 @@ export function DrawBody() {
 	const [activeLabel, setActiveLabel] = useState("Todos");
 	const [page, setPage] = useState(0);
 	const [colums, setColums] = useState<ColumnVisibility>(() => {
-		return loadFromSession("userColumns", myColumns);
+		return loadFromSession(columnsSave, myColumns);
 	});
 
 	const [activeFilter, setActiveFilter] = useState<ColumnKey>("name");
 	const [filter, setFilter] = useState<FilterType>(() => {
 		return loadFromSession(
-			"userFilter",
+			filtersSave,
 			Object.fromEntries(
 				(Object.keys(colums) as ColumnKey[]).map(key => [key as ColumnKey, ""])
 			) as FilterType
@@ -53,12 +55,12 @@ export function DrawBody() {
 
 	//Salva as colunas
 	useEffect(() => {
-		sessionStorage.setItem("userColumns", JSON.stringify(colums));
+		sessionStorage.setItem(columnsSave, JSON.stringify(colums));
 	}, [colums]);
 
 	//Salva os filtros
 	useEffect(() => {
-		sessionStorage.setItem("userFilter", JSON.stringify(filter));
+		sessionStorage.setItem(filtersSave, JSON.stringify(filter));
 	}, [filter]);
 
 	useEffect(() => {
