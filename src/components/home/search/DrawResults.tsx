@@ -3,23 +3,20 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
 	type ColumnsMap,
 	type Data,
+	type StateBundle,
 	type Stats,
 } from "../../../pages/home/types";
 
 interface DrawResultsProps {
-	colums: ColumnsMap;
 	visibleRows: Data[];
-	page: number;
-	setPage: (page: number) => void;
 	startPage: number;
 	endPage: number;
-	filteredRows: Data[];
 	rowsPerPage: number;
-	stats: Stats;
+	states: StateBundle;
 }
 
 export function DrawResults(props: DrawResultsProps) {
-	const visibleColums = Object.entries(props.colums).filter(
+	const visibleColums = Object.entries(props.states.colums).filter(
 		([_, col]) => col.isVisible
 	);
 	const buttonProps = {
@@ -28,17 +25,17 @@ export function DrawResults(props: DrawResultsProps) {
 	} as const;
 
 	function pagination() {
-		const nextPage = props.page + 1;
-		const prevPage = props.page - 1;
-		const pageNumbers = [prevPage, props.page, nextPage];
-		const totalPages = Math.ceil(props.stats.total / props.rowsPerPage);
+		const nextPage = props.states.page + 1;
+		const prevPage = props.states.page - 1;
+		const pageNumbers = [prevPage, props.states.page, nextPage];
+		const totalPages = Math.ceil(props.states.stats.total / props.rowsPerPage);
 
 		return (
 			<div className="flex gap-1 justify-end items-end text-black">
 				<Button
 					{...buttonProps}
 					onClick={() => {
-						if (prevPage >= 0) props.setPage(prevPage);
+						if (prevPage >= 0) props.states.setPage(prevPage);
 					}}
 				>
 					<ChevronLeft />
@@ -46,7 +43,7 @@ export function DrawResults(props: DrawResultsProps) {
 				{pageNumbers
 					.filter(p => p >= 0 && p < totalPages)
 					.map(p => {
-						const isActive = props.page === p;
+						const isActive = props.states.page === p;
 
 						return (
 							<Button
@@ -54,7 +51,7 @@ export function DrawResults(props: DrawResultsProps) {
 								key={p}
 								{...buttonProps}
 								onClick={() => {
-									props.setPage(p);
+									props.states.setPage(p);
 								}}
 							>
 								{p + 1}
@@ -64,7 +61,7 @@ export function DrawResults(props: DrawResultsProps) {
 				<Button
 					{...buttonProps}
 					onClick={() => {
-						if (nextPage < totalPages) props.setPage(nextPage);
+						if (nextPage < totalPages) props.states.setPage(nextPage);
 					}}
 				>
 					<ChevronRight />
@@ -153,7 +150,7 @@ export function DrawResults(props: DrawResultsProps) {
 			<div className="flex justify-between border-b border-gray-200">
 				<p className="p-4 text-slate-400">
 					Mostrando {props.startPage + 1} a {props.endPage} de{" "}
-					{props.stats.total} resultados
+					{props.states.stats.total} resultados
 				</p>
 				<div className="p-4">{pagination()}</div>
 			</div>

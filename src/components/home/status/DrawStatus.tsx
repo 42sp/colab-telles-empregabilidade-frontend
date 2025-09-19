@@ -1,17 +1,12 @@
-import type { Dispatch, SetStateAction } from "react";
-import type { ButtonType, Stats, StatusType } from "../../../pages/home/types";
+import type {
+	ButtonType,
+	StateBundle,
+	StatusType,
+} from "../../../pages/home/types";
 import { DrawStatusButton } from "./DrawStatusButton";
 import { DrawTotals } from "./DrawTotals";
-import type { StudentsParameters } from "@/types/requests";
 
-interface DrawStatusProps {
-	activeLabel: string;
-	setActiveLabel: Dispatch<SetStateAction<string>>;
-	filteredRows: StudentsParameters[];
-	stats: Stats;
-}
-
-export function DrawStatus(props: DrawStatusProps) {
+export function DrawStatus(props: StateBundle) {
 	const buttons: ButtonType[] = [
 		{ label: "Todos" },
 		{ label: "Ativos" },
@@ -20,7 +15,7 @@ export function DrawStatus(props: DrawStatusProps) {
 	];
 
 	const status: StatusType[] = [
-		{ label: "Total de estudantes", value: props.stats?.total ?? 0},
+		{ label: "Total de estudantes", value: props.stats?.total ?? 0 },
 		{
 			label: "Trabalhando",
 			value: props.stats?.working ?? 0,
@@ -29,7 +24,7 @@ export function DrawStatus(props: DrawStatusProps) {
 			label: "Não Trabalhando",
 			value: props.stats?.notWorking ?? 0,
 		},
-		{ label: "Salário Médio", value: props.stats?.avgCompensation ?? 0},
+		{ label: "Salário Médio", value: props.stats?.avgCompensation ?? 0 },
 	];
 
 	return (

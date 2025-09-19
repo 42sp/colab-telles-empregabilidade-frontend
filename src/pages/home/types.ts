@@ -1,3 +1,5 @@
+import type { StudentsParameters } from "@/types/requests";
+
 export type drawTitleType = {
 	title: string;
 	description: string;
@@ -189,4 +191,21 @@ export type Stats = {
 
 export type DrawButtonsProps = PropsType & {
 	buttonProps: ButtonProps;
+};
+
+export type StateBundle = {
+	filter: FilterType;
+	setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
+	page: number;
+	setPage: React.Dispatch<React.SetStateAction<number>>;
+	activeFilter: ColumnKey;
+	setActiveFilter: React.Dispatch<React.SetStateAction<ColumnKey>>;
+	colums: ColumnVisibility;
+	setColums: React.Dispatch<React.SetStateAction<ColumnVisibility>>;
+	filteredRows: StudentsParameters[];
+	setFilteredRows: React.Dispatch<React.SetStateAction<StudentsParameters[]>>;
+	activeLabel: string;
+	setActiveLabel: React.Dispatch<React.SetStateAction<string>>;
+	stats: Stats;
+	setStats: React.Dispatch<React.SetStateAction<Stats>>;
 };

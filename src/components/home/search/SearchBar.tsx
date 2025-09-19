@@ -1,11 +1,11 @@
 import { Search, X } from "lucide-react";
 import { DrawResults } from "./DrawResults";
 import { DrawButtons } from "./DrawButtons";
-import type { PropsType } from "../../../pages/home/types";
+import type { StateBundle } from "../../../pages/home/types";
 import { useEffect, useState } from "react";
 import { InputFilter } from "../utils/inputFilter";
 
-export function SearchBar(props: PropsType) {
+export function SearchBar(props: StateBundle) {
 	const [input, setInput] = useState<string>(
 		props.filter[props.activeFilter] || ""
 	);
@@ -79,7 +79,7 @@ export function SearchBar(props: PropsType) {
 					))}
 			</div>
 			<DrawResults
-				{...props}
+				states={props}
 				visibleRows={visibleRows}
 				startPage={startPage}
 				endPage={endPage}

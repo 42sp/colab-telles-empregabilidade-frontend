@@ -23,12 +23,6 @@ export function useBuildQuery(activeLabel: string, filter: FilterType) {
 				};
 			}
 
-			// const translate = (value: string) => {
-			// 	const lower = value.trim().toLowerCase();
-			// 	if (lower === "sim") return true;
-			// 	else if (["não", "nao"].includes(lower)) return false;
-			// 	return value;
-			// };
 			for (const key of Object.keys(filter)) {
 				const rawValue: string = filter[key]?.trim() ?? "";
 				if (!rawValue) continue;

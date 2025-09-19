@@ -13,7 +13,6 @@ export async function downloadPdf(
 	const limitPerRequest = 50;
 	let skip = 0;
 	let total = 0;
-	console.log({ query });
 
 	do {
 		const partialQuery: StudentsQuery = {
