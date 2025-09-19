@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { type ColumnsMap, type Data, type Stats } from "../../../pages/home/types";
+import {
+	type ColumnsMap,
+	type Data,
+	type Stats,
+} from "../../../pages/home/types";
 
 interface DrawResultsProps {
 	colums: ColumnsMap;
@@ -102,7 +106,9 @@ export function DrawResults(props: DrawResultsProps) {
 			);
 		else if (value === "Não")
 			return (
-				<div className="inline-flex bg-white w-10 h-6 rounded-xl justify-center items-center">{value}</div>
+				<div className="inline-flex bg-white w-10 h-6 rounded-xl justify-center items-center">
+					{value}
+				</div>
 			);
 		return value;
 	}

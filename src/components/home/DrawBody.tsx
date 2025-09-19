@@ -374,8 +374,8 @@ export function DrawBody() {
 				setColums={setColums}
 				setFilteredRows={setFilteredRows}
 				filteredRows={filteredRows}
+				activeLabel={activeLabel}
 				stats={stats}
-				query={query}
 			/>
 		</div>
 	);

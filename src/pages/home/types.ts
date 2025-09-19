@@ -141,6 +141,12 @@ export const booleanFields = new Set([
 	"working",
 ]);
 
+export const numberFields = new Set([
+	"currentCourseStartYear",
+	"currentCourseEndYear",
+	"projectYears",
+]);
+
 export type FilterType = {
 	[k in keyof Data]?: string;
 };
@@ -165,8 +171,8 @@ export type PropsType = {
 	setColums: React.Dispatch<React.SetStateAction<ColumnVisibility>>;
 	filteredRows: Data[];
 	setFilteredRows: React.Dispatch<React.SetStateAction<Data[]>>;
+	activeLabel: string;
 	stats: Stats;
-	query: StudentsQuery;
 };
 
 type ButtonProps = {

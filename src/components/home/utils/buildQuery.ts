@@ -1,5 +1,6 @@
 import {
 	booleanFields,
+	numberFields,
 	type FilterType,
 	type StudentsQuery,
 } from "@/pages/home/types";
@@ -22,20 +23,24 @@ export function useBuildQuery(activeLabel: string, filter: FilterType) {
 				};
 			}
 
-			const translate = (value: string) => {
-				const lower = value.trim().toLowerCase();
-				if (lower === "sim") return true;
-				else if (["não", "nao"].includes(lower)) return false;
-				return value;
-			};
+			// const translate = (value: string) => {
+			// 	const lower = value.trim().toLowerCase();
+			// 	if (lower === "sim") return true;
+			// 	else if (["não", "nao"].includes(lower)) return false;
+			// 	return value;
+			// };
 			for (const key of Object.keys(filter)) {
-				const value: string = filter[key]?.trim() ?? "";
-				if (!value) continue;
+				const rawValue: string = filter[key]?.trim() ?? "";
+				if (!rawValue) continue;
 
-				const translated: string | boolean = translate(value);
 				if (booleanFields.has(key)) {
-					if (typeof translated === "boolean") q[key] = translated;
-				} else if (value) q[key] = { $ilike: `${translated}%` };
+					const lower = rawValue.toLowerCase();
+					if (lower === "sim") q[key] = true;
+					else if (["não", "nao"].includes(lower)) q[key] = false;
+				} else if (numberFields.has(key)) {
+					const num = Number(rawValue);
+					if (!isNaN(num)) q[key] = { $eq: num };
+				} else q[key] = { $ilike: `${rawValue}%` };
 			}
 
 			return q;
