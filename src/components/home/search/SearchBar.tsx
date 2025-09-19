@@ -1,21 +1,17 @@
 import { Search, X } from "lucide-react";
 import { DrawResults } from "./DrawResults";
 import { DrawButtons } from "./DrawButtons";
-import type { StateBundle } from "../../../pages/home/types";
+import type { Data, StateBundle } from "../../../pages/home/types";
 import { useEffect, useState } from "react";
 import { InputFilter } from "../utils/inputFilter";
+import { debounceDelay, rowsPerPage } from "../utils/globalValues";
 
 export function SearchBar(props: StateBundle) {
 	const [input, setInput] = useState<string>(
 		props.filter[props.activeFilter] || ""
 	);
 
-	function updateFilter(value: string) {
-		props.setFilter(prev => ({ ...prev, [props.activeFilter]: value }));
-		props.setPage(0);
-	}
 	//Page config
-	const rowsPerPage = 10;
 	const startPage = props.page * rowsPerPage;
 	const pagesPerGroup = 1;
 	const intraGroupPage = props.page % pagesPerGroup;
@@ -41,12 +37,13 @@ export function SearchBar(props: StateBundle) {
 		const timer = setTimeout(() => {
 			const myInput = input.trim();
 			if (myInput !== "-") {
-				updateFilter(myInput);
+				props.setFilter(prev => ({ ...prev, [props.activeFilter]: myInput }));
+				props.setPage(0);
 			}
-		}, 150);
+		}, debounceDelay);
 
 		return () => clearTimeout(timer);
-	}, [input, props.setFilter, props.activeFilter]);
+	}, [input, props.setFilter, props.activeFilter, props.setPage]);
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -83,7 +80,6 @@ export function SearchBar(props: StateBundle) {
 				visibleRows={visibleRows}
 				startPage={startPage}
 				endPage={endPage}
-				rowsPerPage={rowsPerPage}
 			/>
 		</div>
 	);

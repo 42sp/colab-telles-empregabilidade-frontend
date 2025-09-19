@@ -5,10 +5,9 @@ import {
 	type StudentsQuery,
 } from "@/pages/home/types";
 import { useCallback } from "react";
+import { rowsPerPage } from "./globalValues";
 
 export function useBuildQuery(activeLabel: string, filter: FilterType) {
-	const rowsPerPage = 10;
-
 	const buildQuery = useCallback(
 		(skipIndex: number): StudentsQuery => {
 			const q: StudentsQuery = {

@@ -162,35 +162,11 @@ export interface StudentsQuery {
 	[key: string]: string | number | boolean | undefined | Record<string, any>;
 }
 
-export type PropsType = {
-	filter: FilterType;
-	setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
-	page: number;
-	setPage: React.Dispatch<React.SetStateAction<number>>;
-	activeFilter: ColumnKey;
-	setActiveFilter: React.Dispatch<React.SetStateAction<ColumnKey>>;
-	colums: ColumnVisibility;
-	setColums: React.Dispatch<React.SetStateAction<ColumnVisibility>>;
-	filteredRows: Data[];
-	setFilteredRows: React.Dispatch<React.SetStateAction<Data[]>>;
-	activeLabel: string;
-	stats: Stats;
-};
-
-type ButtonProps = {
-	variant: "outline" | "solid" | "ghost"; // ou os valores possíveis no seu design system
-	size: "default" | "sm" | "lg"; // idem aqui
-};
-
 export type Stats = {
 	total: number;
 	working: number;
 	notWorking: number;
 	avgCompensation: number;
-};
-
-export type DrawButtonsProps = PropsType & {
-	buttonProps: ButtonProps;
 };
 
 export type StateBundle = {

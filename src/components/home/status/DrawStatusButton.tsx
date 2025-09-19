@@ -1,20 +1,17 @@
 import { Button } from "@/components/ui/button";
-import type { Data } from "@/pages/home/types";
-import type { StudentsParameters } from "@/types/requests";
-import type { Dispatch, SetStateAction } from "react";
+import type { StateBundle } from "@/pages/home/types";
 
 interface MyButtontype {
 	label: string;
 }
 
-interface DrawStatusButtonType {
+export function DrawStatusButton({
+	states,
+	buttons,
+}: {
+	states: StateBundle;
 	buttons: MyButtontype[];
-	activeLabel: string;
-	setActiveLabel: Dispatch<SetStateAction<string>>;
-	filteredRows: StudentsParameters[];
-}
-
-export function DrawStatusButton(props: DrawStatusButtonType) {
+}) {
 	const buttonProps = {
 		variant: null,
 		size: "default",
@@ -22,8 +19,8 @@ export function DrawStatusButton(props: DrawStatusButtonType) {
 
 	return (
 		<div className="contain-layout container flex">
-			{props.buttons.map(({ label }) => {
-				const isActive: boolean = props.activeLabel === label;
+			{buttons.map(({ label }) => {
+				const isActive: boolean = states.activeLabel === label;
 				const textColour: string = isActive ? "text-black" : "text-zinc-500";
 				const buttonStyle: string = `flex items-center gap-2 justify-start font-geist text-base px-4 py-2 ${textColour}`;
 
@@ -33,7 +30,7 @@ export function DrawStatusButton(props: DrawStatusButtonType) {
 						{...buttonProps}
 						className={buttonStyle}
 						onClick={() => {
-							props.setActiveLabel(label);
+							states.setActiveLabel(label);
 						}}
 					>
 						{label}

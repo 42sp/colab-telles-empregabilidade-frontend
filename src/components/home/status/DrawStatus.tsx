@@ -29,12 +29,7 @@ export function DrawStatus(props: StateBundle) {
 
 	return (
 		<div className="flex flex-col flex-wrap gap-4 w-full">
-			<DrawStatusButton
-				buttons={buttons}
-				activeLabel={props.activeLabel}
-				setActiveLabel={props.setActiveLabel}
-				filteredRows={props.filteredRows}
-			/>
+			<DrawStatusButton buttons={buttons} states={props} />
 			<DrawTotals status={status} />
 		</div>
 	);

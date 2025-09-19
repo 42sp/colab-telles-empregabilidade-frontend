@@ -1,17 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import {
-	type ColumnsMap,
-	type Data,
-	type StateBundle,
-	type Stats,
-} from "../../../pages/home/types";
+import { type Data, type StateBundle } from "../../../pages/home/types";
+import { rowsPerPage } from "../utils/globalValues";
 
 interface DrawResultsProps {
 	visibleRows: Data[];
 	startPage: number;
 	endPage: number;
-	rowsPerPage: number;
 	states: StateBundle;
 }
 
@@ -28,7 +23,7 @@ export function DrawResults(props: DrawResultsProps) {
 		const nextPage = props.states.page + 1;
 		const prevPage = props.states.page - 1;
 		const pageNumbers = [prevPage, props.states.page, nextPage];
-		const totalPages = Math.ceil(props.states.stats.total / props.rowsPerPage);
+		const totalPages = Math.ceil(props.states.stats.total / rowsPerPage);
 
 		return (
 			<div className="flex gap-1 justify-end items-end text-black">
