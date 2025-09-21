@@ -30,7 +30,7 @@ import {
 	type SortingState,
 	type VisibilityState,
 } from "@tanstack/react-table";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -69,6 +69,7 @@ interface DrawResultsProps {
 	filteredRows: Data[];
 	rowsPerPage: number;
 	stats: Stats;
+	updateHome: () => void;
 }
 
 export const columns: ColumnDef<collection.StudentsResponse>[] = [
@@ -314,6 +315,19 @@ export function DrawResults(props: DrawResultsProps) {
 		collection.StudentsResponse | undefined
 	>(undefined);
 
+	useEffect(() => {
+		if (open) {
+			window.scrollTo({ top: 0, behavior: "smooth" });
+			document.body.style.overflow = "hidden";
+		} else {
+			document.body.style.overflow = "unset";
+		}
+
+		return () => {
+			document.body.style.overflow = "unset";
+		};
+	}, [open]);
+
 	const handleModal = (item: collection.StudentsResponse) => {
 		setSelectedItem(item);
 		setOpen(true);
@@ -381,9 +395,7 @@ export function DrawResults(props: DrawResultsProps) {
 												data={selectedItem}
 												className="h-[600px] p-4"
 												cancelar={() => setOpen(false)}
-												salvar={item => {
-													console.log(item);
-												}}
+												updateHome={props.updateHome}
 											/>
 										</Modal>
 										<MoreHorizontal />

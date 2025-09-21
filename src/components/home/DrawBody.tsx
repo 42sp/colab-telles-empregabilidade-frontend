@@ -352,6 +352,10 @@ export function DrawBody() {
 				filteredRows={filteredRows}
 				stats={stats}
 				query={query}
+				updateHome={() => {
+					fetchStats();
+					fetchData(groupIndex);
+				}}
 			/>
 		</div>
 	);

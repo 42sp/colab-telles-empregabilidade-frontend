@@ -1,5 +1,5 @@
 import type { AxiosInstance } from "axios";
-import type * as collection from "../index";
+import * as collection from "../index";
 
 export default class Service {
 	$axios: AxiosInstance;
@@ -74,10 +74,7 @@ export default class Service {
 		});
 
 		const response = await this.$axios.get(
-			"/students/stats?${query.toString()}",
-			{
-				headers: { Authorization: "Bearer ${token}" },
-			}
+			`/students/stats?${query.toString()}`
 		);
 
 		return response.data;
@@ -117,6 +114,19 @@ export default class Service {
 	// -------------------------------------------------------------------- POST --------------------------------------------------------------------
 
 	// -------------------------------------------------------------------- PUT --------------------------------------------------------------------
+	async putStudents(params: collection.StudentsParameters) {
+		try {
+			const response = await this.$axios.patch<collection.StudentsParameters>(
+				`/students/${params.id}`,
+				params
+			);
+
+			return response;
+		} catch (error) {
+			console.error('Error updating student:', error);
+			// throw error;
+		}
+	}
 	// -------------------------------------------------------------------- PUT --------------------------------------------------------------------
 
 	// -------------------------------------------------------------------- DELETE --------------------------------------------------------------------

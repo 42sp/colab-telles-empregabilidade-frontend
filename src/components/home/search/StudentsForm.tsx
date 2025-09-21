@@ -3,12 +3,15 @@ import type * as collection from "../../../types/requests/index";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useServices } from "@/hooks/useServices";
+import { toast } from "react-hot-toast";
+import { ToastContainer } from "react-toastify";
 
 interface StudentsFormProps {
 	data: collection.StudentsParameters;
 	className?: string;
 	cancelar?: () => void;
-	salvar?: (item: collection.StudentsParameters) => void;
+	updateHome?: () => void;
 }
 
 const StudentsForm = (props: StudentsFormProps) => {
@@ -16,12 +19,32 @@ const StudentsForm = (props: StudentsFormProps) => {
 		props.data
 	);
 
+	const service = useServices();
+
+	const handleSave = async () => {
+		const response = await toast.promise(
+			service.putStudents(formData),
+			{
+				pending: "Atualizando informações...",
+				success: "Informações atualizadas com sucesso 👌",
+				error: "Erro ao atualizar informações 🤯",
+			}
+		);
+
+		if ([200, 201].includes(response.status))
+		{
+			setIsEditing(false);
+			props.updateHome && props.updateHome();
+		}
+	};
+
 	const [isEditing, setIsEditing] = useState(false);
 
 	const scrollRef = useRef<HTMLDivElement>(null);
 
 	return (
 		<>
+			<ToastContainer position="top-center" hideProgressBar={true} />
 			<ScrollArea className={props.className} ref={scrollRef}>
 				<div>
 					<h2 className="text-lg font-medium mt-4">Informações cadastrais</h2>
@@ -843,7 +866,7 @@ const StudentsForm = (props: StudentsFormProps) => {
 					<Button
 						variant="default"
 						className="mt-4"
-						onClick={() => props.salvar(formData)}
+						onClick={() => handleSave()}
 					>
 						Salvar
 					</Button>

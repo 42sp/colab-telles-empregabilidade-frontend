@@ -19,12 +19,12 @@ const Modal: React.FC<ModalEditProps> = props => {
 				top: 0,
 				left: 0,
 				width: "100vw",
-				height: "100%",
+				height: "100vh",
 				background: "rgba(0,0,0,0.1)",
 				display: "flex",
 				alignItems: "center",
 				justifyContent: "center",
-				zIndex: 10000,
+				zIndex: 10000
 			}}
 			onClick={props.onClose}
 		>
@@ -36,6 +36,7 @@ const Modal: React.FC<ModalEditProps> = props => {
 					minWidth: "300px",
 					position: "relative",
 					width: "80%",
+					marginTop: "10px"
 				}}
 				onClick={e => e.stopPropagation()}
 			>

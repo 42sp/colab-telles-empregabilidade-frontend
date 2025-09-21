@@ -83,6 +83,7 @@ export function SearchBar(props: PropsType) {
 				startPage={startPage}
 				endPage={endPage}
 				rowsPerPage={rowsPerPage}
+				updateHome={props.updateHome}
 			/>
 		</div>
 	);

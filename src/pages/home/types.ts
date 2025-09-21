@@ -161,6 +161,7 @@ export type PropsType = {
 	setFilteredRows: React.Dispatch<React.SetStateAction<Data[]>>;
 	stats: Stats;
 	query: StudentsQuery;
+	updateHome: () => void;
 };
 
 type ButtonProps = {
