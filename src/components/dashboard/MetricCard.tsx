@@ -47,7 +47,7 @@ export const MetricCard = memo(function MetricCard({
 								</span>
 							)) ||
 								(!title && <Skeleton className="h-4 w-8 mr-1" />)}
-							{description || <Skeleton className="h-4 w-[300px]" />}
+							{description || <Skeleton className="h-4 w-[100%]" />}
 						</div>
 					</CardContent>
 				</div>

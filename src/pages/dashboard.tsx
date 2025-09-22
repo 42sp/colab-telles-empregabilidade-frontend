@@ -184,13 +184,17 @@ export function Dashboard() {
 
 				{/* Charts */}
 				<div className="grid grid-cols-2 gap-3 md:gap-5 lg:gap-10 mb-10">
-					<FadeInOnScroll enabled={animationsEnabled}>
-						<EmploymentStatusChart data={getEmploymentByMonth} />
-					</FadeInOnScroll>
+					{getEmploymentByMonth.length > 0 && (
+						<FadeInOnScroll enabled={animationsEnabled}>
+							<EmploymentStatusChart data={getEmploymentByMonth} />
+						</FadeInOnScroll>
+					)}
 
-					<FadeInOnScroll delay={0.1} enabled={animationsEnabled}>
-						<SectorDistributionChart data={getSectorDistribution} />
-					</FadeInOnScroll>
+					{getSectorDistribution.length > 0 && (
+						<FadeInOnScroll delay={0.1} enabled={animationsEnabled}>
+							<SectorDistributionChart data={getSectorDistribution} />
+						</FadeInOnScroll>
+					)}
 
 					<FadeInOnScroll
 						className="lg:col-span-2"
@@ -202,25 +206,27 @@ export function Dashboard() {
 				</div>
 
 				{/* Tabela de Status */}
-				<FadeInOnScroll
-					className="grid grid-cols-2 gap-3 md:gap-5 lg:gap-10 mb-10"
-					delay={0.3}
-					enabled={animationsEnabled}
-				>
-					<Card className="lg:col-span-2 p-6">
-						<CardHeader className="mb-6">
-							<CardTitle className="flex items-center gap-2 text-2xl font-bold">
-								Status de Sincronia de Dados
-							</CardTitle>
-							<p className="text-sm text-muted-foreground">
-								Informações sobre a última sincronização de dados
-							</p>
-						</CardHeader>
-						<CardContent>
-							<SyncStatusTable data={getStatusSync} />
-						</CardContent>
-					</Card>
-				</FadeInOnScroll>
+				{getStatusSync && getStatusSync.processingTime && (
+					<FadeInOnScroll
+						className="grid grid-cols-2 gap-3 md:gap-5 lg:gap-10 mb-10"
+						delay={0.3}
+						enabled={animationsEnabled}
+					>
+						<Card className="lg:col-span-2 p-6">
+							<CardHeader className="mb-6">
+								<CardTitle className="flex items-center gap-2 text-2xl font-bold">
+									Status de Sincronia de Dados
+								</CardTitle>
+								<p className="text-sm text-muted-foreground">
+									Informações sobre a última sincronização de dados
+								</p>
+							</CardHeader>
+							<CardContent>
+								<SyncStatusTable data={getStatusSync} />
+							</CardContent>
+						</Card>
+					</FadeInOnScroll>
+				)}
 			</div>
 		</div>
 	);
