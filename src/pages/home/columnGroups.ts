@@ -1,4 +1,4 @@
-import type { ColumnKey } from "./types"; // ajuste o caminho conforme sua estrutura
+import type { ColumnKey } from "./types";
 
 export const columnGroups: Record<
 	string,

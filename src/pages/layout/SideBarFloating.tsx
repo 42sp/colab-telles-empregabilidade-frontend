@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { NavigationButtons } from "@/components/sidebar/NavigationButtons";
-import { SettingsMenu } from "@/components/sidebar/SettingsMenu";
+import { SettingsButton } from "@/components/sidebar/SettingsButton";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogoutButton } from "@/components/sidebar/LogoutButton";
 import { UserProfile } from "@/components/sidebar/UserProfile";
+import { motion } from "framer-motion";
 
 export function SideBarFloating() {
 	const { isCollapsed, toggleSidebar, collapseSidebar, expandSidebar } =
@@ -22,20 +23,38 @@ export function SideBarFloating() {
 
 	const toggleSettings = () => setSettingsOpen(!settingsOpen);
 
+	// util: verifica se um elemento é um botão/link/input (interativo)
+	const isInteractiveElement = (el: Element | null) => {
+		if (!el) return false;
+		return !!el.closest(
+			"button, [role='button'], a, input, select, textarea, label, [data-sidebar-ignore]"
+		);
+	};
+
 	useEffect(() => {
-		function handleClickOutside(event: MouseEvent) {
-			if (
-				sidebarRef.current &&
-				!sidebarRef.current.contains(event.target as Node)
-			) {
+		function handleClick(event: MouseEvent) {
+			const target = event.target as Element | null;
+			if (!sidebarRef.current || !target) return;
+
+			const clickedInside = sidebarRef.current.contains(target);
+
+			if (clickedInside) {
+				if (isInteractiveElement(target)) {
+					// clique em botão/link/input → não expande nem colapsa
+					return;
+				} else {
+					// clique dentro da sidebar mas fora de botões → expande (se não estiver locked)
+					if (!isLocked) expandSidebar();
+				}
+			} else {
+				// clique fora da sidebar → colapsa (se não estiver locked)
 				if (!isLocked) collapseSidebar();
 				setSettingsOpen(false);
-			} else {
-				if (!isLocked) expandSidebar();
 			}
 		}
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => document.removeEventListener("mousedown", handleClickOutside);
+
+		document.addEventListener("mousedown", handleClick);
+		return () => document.removeEventListener("mousedown", handleClick);
 	}, [isLocked, collapseSidebar, expandSidebar]);
 
 	return (
@@ -53,16 +72,29 @@ export function SideBarFloating() {
 					/>
 
 					<div className="absolute top-4 right-2 w-8 h-8">
-						{isCollapsed && (
+						<motion.div
+							initial={{ opacity: 0, x: 10 }}
+							animate={{
+								opacity: isCollapsed ? 1 : 0,
+								x: isCollapsed ? 0 : 10,
+							}}
+							transition={{
+								duration: 0.3,
+								delay: isCollapsed ? 0.3 : 0, // aparece com delay quando sidebar colapsa
+							}}
+						>
 							<Button
 								size="icon"
 								variant="ghost"
 								onClick={toggleSidebar}
-								className="w-8 h-8"
+								className={`w-8 h-8 cursor-pointer ${
+									isCollapsed ? "pointer-events-auto" : "pointer-events-none"
+								}`}
+								aria-label="Expandir barra"
 							>
 								<ChevronRight size={16} />
 							</Button>
-						)}
+						</motion.div>
 					</div>
 
 					<hr className="border-gray-300 border-t-2" />
@@ -76,14 +108,12 @@ export function SideBarFloating() {
 				</div>
 
 				<div className="flex flex-col gap-2 items-stretch">
-					<SettingsMenu
+					<SettingsButton
 						isCollapsed={isCollapsed}
 						isLocked={isLocked}
 						setIsLocked={setIsLocked}
 						darkMode={darkMode}
 						setDarkMode={setDarkMode}
-						settingsOpen={settingsOpen}
-						toggleSettings={toggleSettings}
 					/>
 					<LogoutButton isCollapsed={isCollapsed} />
 					<hr className="border-gray-300 border-t-2 w-full" />
