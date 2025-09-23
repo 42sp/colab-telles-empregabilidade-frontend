@@ -2,48 +2,113 @@ import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2 } from "lucide-react";
 import type { Message } from "@/components/chat/types";
+import { DBStatusIndicator } from "@/components/chat/DBStatusIndicator"; 
+
+interface TableMessageType {
+  colunas: string[];
+  dados: string[][];
+}
+
+interface ChatMessage extends Message {
+  tabela?: TableMessageType;
+}
+
+// Componente para exibir tabela
+function TableMessage({ tabela }: { tabela: TableMessageType }) {
+  return (
+    <div className="overflow-x-auto border rounded-md mt-2">
+      <table className="table-auto w-full text-left border-collapse">
+        <thead className="bg-gray-200">
+          <tr>
+            {tabela.colunas.map((col, i) => (
+              <th key={i} className="px-4 py-2 border">
+                {col}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {tabela.dados.map((linha, i) => (
+            <tr key={i} className="even:bg-gray-50">
+              {linha.map((celula, j) => (
+                <td key={j} className="px-4 py-2 border">
+                  {celula}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export default function Chat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Scroll automático para a última mensagem
   useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [messages]);
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, loading]);
 
   async function handleSend() {
     if (!inputValue.trim()) return;
 
-    const userMessage: Message = { role: "user", content: inputValue };
+    const userMessage: ChatMessage = { role: "user", content: inputValue };
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
     setLoading(true);
 
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch("http://localhost:8000/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: inputValue }),
+        body: JSON.stringify({ pergunta: inputValue }),
       });
-      const data = await response.json();
 
-      const aiMessage: Message = {
-        role: "assistant",
-        content: data?.response || "Não foi possível processar sua solicitação.",
-      };
+      const data = await response.json();
+      let raw = data?.resposta || "";
+      let aiMessage: ChatMessage;
+
+      if (raw.startsWith("hasTable")) {
+        const lines: string[] = raw.split("\n").map(line => line.trim());
+        const textoLine = lines.find(line => line.startsWith("texto:")) || "";
+        const colunasLine = lines.find(line => line.startsWith("colunas:")) || "";
+        const linhasLine = lines.find(line => line.startsWith("linhas:")) || "";
+
+        const texto = textoLine.replace("texto:", "").trim();
+        const colunas = colunasLine
+          .replace("colunas:", "")
+          .split(",")
+          .map(c => c.trim())
+          .filter(Boolean);
+
+        const dados: string[][] = [];
+        const regex = /\[([^\]]+)\]/g;
+        let match;
+        while ((match = regex.exec(linhasLine)) !== null) {
+          const linha = match[1]
+            .split(",")
+            .map(c => c.trim())
+            .filter(Boolean);
+          dados.push(linha);
+        }
+
+        aiMessage = { role: "assistant", content: texto, tabela: { colunas, dados } };
+      } else {
+        aiMessage = { role: "assistant", content: raw };
+      }
+
       setMessages(prev => [...prev, aiMessage]);
     } catch {
-      const errorMessage: Message = {
+      const errorMessage: ChatMessage = {
         role: "assistant",
         content: "Ocorreu um erro ao tentar se comunicar com a IA.",
       };
@@ -63,36 +128,38 @@ export default function Chat() {
   return (
     <div className="bg-slate-50 min-h-screen h-full container mx-auto p-6 space-y-8">
       <div className="flex flex-col h-full">
-        {/* Cabeçalho sem animação */}
-        <div className="space-y-1 mb-8">
-          <h1 className="text-2xl font-bold">Chat com IA</h1>
-          <p className="text-md text-gray-600">
-            Tire suas dúvidas com o agente IA
-          </p>
+        {/* Cabeçalho */}
+        <div className="space-y-1 mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Chat com IA</h1>
+            <p className="text-md text-gray-600 flex items-center gap-4">
+              Tire suas dúvidas com o agente IA
+              <DBStatusIndicator /> {/* <- componente importado */}
+            </p>
+          </div>
         </div>
 
-        {/* ScrollArea com animação */}
+        {/* Área do chat */}
         <motion.div
-          className="flex-1 h-full"
+          className="flex-1"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <ScrollArea
-            className="flex-1 border rounded-md p-4 bg-white h-full"
+          <div
             ref={scrollRef}
+            className="h-[500px] border rounded-md p-4 bg-white overflow-y-auto"
           >
             <div className="flex flex-col gap-2">
               {messages.map((msg, index) => (
                 <div
                   key={index}
                   className={`p-2 rounded-md ${
-                    msg.role === "user"
-                      ? "bg-blue-100 self-end"
-                      : "bg-gray-100 self-start"
+                    msg.role === "user" ? "bg-blue-100 self-end" : "bg-gray-100 self-start"
                   } max-w-[70%]`}
                 >
-                  {msg.content}
+                  <div>{msg.content}</div>
+                  {msg.tabela && <TableMessage tabela={msg.tabela} />}
                 </div>
               ))}
               {loading && (
@@ -101,10 +168,10 @@ export default function Chat() {
                 </div>
               )}
             </div>
-          </ScrollArea>
+          </div>
         </motion.div>
 
-        {/* Campo de input com animação */}
+        {/* Campo de input */}
         <motion.div
           className="flex gap-2 mt-2"
           initial={{ opacity: 0, y: 10 }}
