@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import type { Message } from "@/components/chat/types";
 import { DBStatusIndicator } from "@/components/chat/DBStatusIndicator"; 
+const VITE_TOOLFRONT_API_URL = import.meta.env.VITE_API_URL;
 
 interface TableMessageType {
   colunas: string[];
@@ -67,7 +68,7 @@ export default function Chat() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/ask", {
+      const response = await fetch(`${VITE_TOOLFRONT_API_URL}/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pergunta: inputValue }),
