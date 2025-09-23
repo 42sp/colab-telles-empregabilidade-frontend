@@ -1,5 +1,5 @@
 import type { AxiosInstance } from "axios";
-import type * as collection from "../index";
+import * as collection from "../index";
 
 function buildQueryString(params: collection.StudentsType): string {
 	const query = new URLSearchParams();
@@ -41,6 +41,16 @@ export default class Service {
 		}>("/imported-files", { params: { lastThree: true } });
 		return response.data;
 	}
+
+	async getLinkedinDashboard() {
+		const response =
+			await this.$axios.get<collection.GetLinkedinDashboardResponse>(
+				"/linkedin/dashboard"
+			);
+
+		return response.data;
+	}
+
 	async students(params: collection.StudentsType = {}) {
 		try {
 			const token = sessionStorage.getItem("accessToken");
@@ -56,6 +66,21 @@ export default class Service {
 			throw error;
 		}
 	}
+
+	async studentsStats(params: collection.StudentsType = {}) {
+		const token = sessionStorage.getItem("accessToken");
+		if (!token) throw new Error("No access token found");
+
+		const query = new URLSearchParams();
+		Object.entries(params).forEach(([key, value]) => {
+			if (value !== undefined && value !== null) {
+				query.append(key, String(value));
+			}
+		});
+
+		const response = await this.$axios.get(
+			`/students/stats?${query.toString()}`
+		);
 
 	async studentsStats(params: collection.StudentsType = {}) {
 		try {
@@ -106,6 +131,19 @@ export default class Service {
 	// -------------------------------------------------------------------- POST --------------------------------------------------------------------
 
 	// -------------------------------------------------------------------- PUT --------------------------------------------------------------------
+	async putStudents(params: collection.StudentsParameters) {
+		try {
+			const response = await this.$axios.patch<collection.StudentsParameters>(
+				`/students/${params.id}`,
+				params
+			);
+
+			return response;
+		} catch (error) {
+			console.error('Error updating student:', error);
+			// throw error;
+		}
+	}
 	// -------------------------------------------------------------------- PUT --------------------------------------------------------------------
 
 	// -------------------------------------------------------------------- DELETE --------------------------------------------------------------------

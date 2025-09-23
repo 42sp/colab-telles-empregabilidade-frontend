@@ -25,7 +25,7 @@ const Configuration = () => {
 
 		for (const file of files) {
 			try {
-				if (file.file === undefined) continue;
+				if (file.file === undefined || file.status === "Sucesso") continue;
 				const response = await toast.promise(
 					$services.postImportFiles({ file }),
 					{

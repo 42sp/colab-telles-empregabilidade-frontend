@@ -80,6 +80,8 @@ export function SearchBar(props: StateBundle) {
 				visibleRows={visibleRows}
 				startPage={startPage}
 				endPage={endPage}
+				rowsPerPage={rowsPerPage}
+				updateHome={props.updateHome}
 			/>
 		</div>
 	);

@@ -120,8 +120,31 @@ export function DrawBody() {
 
 	return (
 		<div className={background}>
-			<DrawStatus {...states} />
-			<SearchBar {...states} />
+			<DrawStatus
+				activeLabel={activeLabel}
+				setActiveLabel={setActiveLabel}
+				filteredRows={filteredRows}
+				dataRows={dataRows}
+				stats={stats}
+			/>
+			<SearchBar
+				filter={filter}
+				setFilter={setFilter}
+				page={page}
+				setPage={setPage}
+				activeFilter={activeFilter}
+				setActiveFilter={setActiveFilter}
+				colums={colums}
+				setColums={setColums}
+				setFilteredRows={setFilteredRows}
+				filteredRows={filteredRows}
+				stats={stats}
+				query={query}
+				updateHome={() => {
+					fetchStats();
+					fetchData(groupIndex);
+				}}
+			/>
 		</div>
 	);
 }

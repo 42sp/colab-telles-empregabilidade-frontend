@@ -183,5 +183,22 @@ export type StateBundle = {
 	activeLabel: string;
 	setActiveLabel: React.Dispatch<React.SetStateAction<string>>;
 	stats: Stats;
-	setStats: React.Dispatch<React.SetStateAction<Stats>>;
+	query: StudentsQuery;
+	updateHome: () => void;
+};
+
+type ButtonProps = {
+	variant: "outline" | "solid" | "ghost"; // ou os valores possíveis no seu design system
+	size: "default" | "sm" | "lg"; // idem aqui
+};
+
+export type Stats = {
+	total: number;
+	working: number;
+	notWorking: number;
+	avgCompensation: number;
+};
+
+export type DrawButtonsProps = PropsType & {
+	buttonProps: ButtonProps;
 };
