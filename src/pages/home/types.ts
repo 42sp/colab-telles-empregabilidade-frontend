@@ -1,3 +1,5 @@
+import type { StudentsParameters } from "@/types/requests";
+
 export type drawTitleType = {
 	title: string;
 	description: string;
@@ -135,6 +137,18 @@ export type ColumnVisibility = {
 	};
 };
 
+export const booleanFields = new Set([
+	"hasDisability",
+	"transferredCourseOrUniversity",
+	"working",
+]);
+
+export const numberFields = new Set([
+	"currentCourseStartYear",
+	"currentCourseEndYear",
+	"projectYears",
+]);
+
 export type FilterType = {
 	[k in keyof Data]?: string;
 };
@@ -148,7 +162,14 @@ export interface StudentsQuery {
 	[key: string]: string | number | boolean | undefined | Record<string, any>;
 }
 
-export type PropsType = {
+export type Stats = {
+	total: number;
+	working: number;
+	notWorking: number;
+	avgCompensation: number;
+};
+
+export type StateBundle = {
 	filter: FilterType;
 	setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
 	page: number;
@@ -157,8 +178,10 @@ export type PropsType = {
 	setActiveFilter: React.Dispatch<React.SetStateAction<ColumnKey>>;
 	colums: ColumnVisibility;
 	setColums: React.Dispatch<React.SetStateAction<ColumnVisibility>>;
-	filteredRows: Data[];
-	setFilteredRows: React.Dispatch<React.SetStateAction<Data[]>>;
+	filteredRows: StudentsParameters[];
+	setFilteredRows: React.Dispatch<React.SetStateAction<StudentsParameters[]>>;
+	activeLabel: string;
+	setActiveLabel: React.Dispatch<React.SetStateAction<string>>;
 	stats: Stats;
 	query: StudentsQuery;
 	updateHome: () => void;
