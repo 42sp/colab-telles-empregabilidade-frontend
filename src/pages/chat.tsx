@@ -67,6 +67,9 @@ export default function Chat() {
     setInputValue("");
     setLoading(true);
 
+    console.log("API URL usada:", VITE_TOOLFRONT_API_URL);
+    console.log("URL completa do endpoint:", `${VITE_TOOLFRONT_API_URL}/ask`);
+    
     try {
       const response = await fetch(`${VITE_TOOLFRONT_API_URL}/ask`, {
         method: "POST",
