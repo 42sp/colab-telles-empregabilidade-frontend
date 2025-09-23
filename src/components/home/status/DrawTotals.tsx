@@ -14,11 +14,11 @@ export function DrawTotals({ status }: DrawTotalsProps) {
 			{status.map(({ label, value }) => {
 				const displayValue =
 					label === "Salário Médio"
-						? value.toLocaleString("pt-BR", {
+						? (value ?? 0).toLocaleString("pt-BR", {
 								style: "currency",
 								currency: "BRL",
 							})
-						: value;
+						: (value ?? 0);
 
 				return (
 					<div key={label} className={background}>

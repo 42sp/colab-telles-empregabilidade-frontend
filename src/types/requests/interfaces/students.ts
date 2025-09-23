@@ -114,6 +114,13 @@ export interface StudentsResponse {
 	data: StudentsParameters[];
 }
 
+export interface StudentsStats {
+	total: number;
+	working: number;
+	notWorking: number;
+	avgCompensation: string;
+}
+
 export interface StudentsType {
 	$limit?: number;
 	$skip?: number;

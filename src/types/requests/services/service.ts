@@ -1,6 +1,32 @@
 import type { AxiosInstance } from "axios";
 import type * as collection from "../index";
 
+function buildQueryString(params: collection.StudentsType): string {
+	const query = new URLSearchParams();
+
+	for (const [key, value] of Object.entries(params)) {
+		if (value && typeof value === "object") {
+			if ("$in" in value && Array.isArray(value.$in)) {
+				value.$in.forEach((item, index) => {
+					query.append(`${key}[$in][${index}]`, String(item));
+				});
+			} else if ("$eq" in value) {
+				query.append(`${key}[$eq]`, String(value.$eq));
+			} else if ("$ilike" in value) {
+				const like = String(value.$ilike ?? "").trim();
+				if (like !== "") query.append(`${key}[$ilike]`, like);
+			} else if ("$like" in value) {
+				const like = String(value.$like ?? "").trim();
+				if (like !== "") query.append(`${key}[$like]`, like);
+			}
+		} else if (value !== undefined && value !== null) {
+			query.append(key, String(value));
+		}
+	}
+
+	return query.toString();
+}
+
 export default class Service {
 	$axios: AxiosInstance;
 
@@ -16,40 +42,35 @@ export default class Service {
 		return response.data;
 	}
 	async students(params: collection.StudentsType = {}) {
-		const token = sessionStorage.getItem("accessToken");
-		if (!token) {
-			throw new Error("No access token found");
+		try {
+			const token = sessionStorage.getItem("accessToken");
+			if (!token) throw new Error("No access token found");
+
+			const query = buildQueryString(params);
+			return await this.$axios.get<collection.StudentsResponse>(
+				`/students?${query}`,
+				{ headers: { Authorization: `Bearer ${token}` } }
+			);
+		} catch (error) {
+			console.error("Error in students:", error);
+			throw error;
 		}
+	}
 
-		const query = new URLSearchParams();
-		for (const [key, value] of Object.entries(params)) {
-			if (value && typeof value === "object") {
-				if ("$in" in value && Array.isArray(value.$in)) {
-					value.$in.forEach((item, index) => {
-						query.append(`${key}[$in][${index}]`, String(item));
-					});
-				} else if ("$ilike" in value) {
-					const like = String(value.$ilike ?? "").trim();
-					if (like !== "") query.append(`${key}[$ilike]`, like);
-				} else if ("$like" in value) {
-					const like = String(value.$like ?? "").trim();
-					if (like !== "") query.append(`${key}[$like]`, like);
-				}
-			} else if (value !== undefined && value !== null) {
-				query.append(key, String(value));
-			}
+	async studentsStats(params: collection.StudentsType = {}) {
+		try {
+			const token = sessionStorage.getItem("accessToken");
+			if (!token) throw new Error("No access token found");
+
+			const query = buildQueryString(params);
+			return await this.$axios.get<collection.StudentsStats>(
+				`/students-stats?${query}`,
+				{ headers: { Authorization: `Bearer ${token}` } }
+			);
+		} catch (error) {
+			console.error("Error in studentsStats:", error);
+			throw error;
 		}
-
-		const response = await this.$axios.get<collection.StudentsResponse>(
-			`/students?${query.toString()}`,
-			{
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}
-		);
-
-		return response;
 	}
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
 
