@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
-import { useState } from "react";
-import { SettingsMenu } from "./SettingsMenu";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { SettingsMenu } from "./SettingsMenu";
 
 interface SettingsButtonProps {
   isCollapsed: boolean;
@@ -15,6 +15,9 @@ interface SettingsButtonProps {
   setIsLocked: (value: boolean) => void;
   darkMode: boolean;
   setDarkMode: (value: boolean) => void;
+  // Configuração do popover
+  side?: "left" | "right" | "top" | "bottom";
+  align?: "start" | "center" | "end";
 }
 
 export const SettingsButton = ({
@@ -23,56 +26,57 @@ export const SettingsButton = ({
   setIsLocked,
   darkMode,
   setDarkMode,
+  side = "top",
+  align = "start",
 }: SettingsButtonProps) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const toggleMenu = () => setMenuOpen((prev) => !prev);
-
   return (
-    <TooltipProvider>
-      <div className="w-full">
-        <div className="w-full px-2">
-          <Tooltip>
-            {isCollapsed ? (
-              <>
-                <TooltipTrigger asChild>
-                  {/* Botão configurações */}
+    <div className="w-full px-2">
+      <Popover>
+        {isCollapsed ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <PopoverTrigger asChild>
                   <Button
-                    onClick={toggleMenu}
                     variant="ghost"
                     className="cursor-pointer w-full px-4 py-2.5 flex justify-start text-gray-500 hover:bg-slate-100 transition-all duration-300"
                   >
                     <Settings className="w-5 h-5" />
                   </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p>Configurações</p>
-                </TooltipContent>
-              </>
-            ) : (
-              // Botão normal quando a barra está expandida
-              <Button
-                onClick={toggleMenu}
-                variant="ghost"
-                className="cursor-pointer w-full px-4 py-2.5 flex justify-start gap-3 text-gray-500 hover:bg-slate-100 transition-all duration-300"
-              >
-                <Settings className="w-5 h-5" />
-                <span className="transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap inline-block opacity-100 max-w-[160px]">
-                  Configurações
-                </span>
-              </Button>
-            )}
-          </Tooltip>
+                </PopoverTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>Configurações</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <PopoverTrigger asChild>
+            <Button
+              variant="ghost"
+              className="cursor-pointer w-full px-4 py-2.5 flex justify-start gap-3 text-gray-500 hover:bg-slate-100 transition-all duration-300"
+            >
+              <Settings className="w-5 h-5" />
+              <span className="transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap inline-block opacity-100 max-w-[160px]">
+                Configurações
+              </span>
+            </Button>
+          </PopoverTrigger>
+        )}
 
-          {/* Menu flutuante independente */}
+        <PopoverContent
+          side={side}
+          align={align}
+          className="w-60 bg-white border border-gray-200 rounded-md shadow-lg"
+        >
           <SettingsMenu
             isLocked={isLocked}
             setIsLocked={setIsLocked}
             darkMode={darkMode}
             setDarkMode={setDarkMode}
-            isOpen={menuOpen}
           />
-        </div>
-      </div>
-    </TooltipProvider>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 };
