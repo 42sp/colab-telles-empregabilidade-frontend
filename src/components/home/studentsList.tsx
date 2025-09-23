@@ -7,7 +7,7 @@ export function StudentsList() {
 	const { animationsEnabled } = useSidebar();
 
 	return (
-		<div className="flex flex-col w-full overflow-hidden">
+		<div className="flex flex-col absolute w-full h-full overflow-y-auto">
 			<DrawTitle
 				title={"Lista de estudantes"}
 				description={"Gerencie e visualize os alunos registrados."}
