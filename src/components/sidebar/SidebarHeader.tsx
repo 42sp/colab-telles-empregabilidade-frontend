@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { motion } from "framer-motion"
 
 export const SidebarHeader = ({
 	isCollapsed,
@@ -19,17 +20,21 @@ export const SidebarHeader = ({
 			</h1>
 
 			{/* Botão sempre presente no DOM, apenas escondido visualmente */}
-			<Button
-				size="icon"
-				variant="ghost"
-				onClick={toggleCollapse}
-				aria-label={isCollapsed ? "Expandir barra" : "Colapsar barra"}
-				className={`cursor-pointer transition-transform duration-300 ease-in-out z-30 ${
-					isCollapsed ? "opacity-0 pointer-events-none" : "opacity-100"
-				}`}
+			<motion.div
+				initial={{ opacity: 0, x: 10 }}
+				animate={{ opacity: isCollapsed ? 0 : 1, x: isCollapsed ? 10 : 0 }}
+				transition={{ duration: 0.3, delay: isCollapsed ? 0 : 0.3 }}
 			>
-				<ChevronLeft size={16} />
-			</Button>
+				<Button
+					size="icon"
+					variant="ghost"
+					onClick={toggleCollapse}
+					aria-label={isCollapsed ? "Expandir barra" : "Colapsar barra"}
+					className="cursor-pointer z-30"
+				>
+					<ChevronLeft size={16} />
+				</Button>
+			</motion.div>
 		</div>
 	);
 };
