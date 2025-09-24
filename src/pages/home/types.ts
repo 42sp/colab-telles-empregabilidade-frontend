@@ -191,14 +191,3 @@ type ButtonProps = {
 	variant: "outline" | "solid" | "ghost"; // ou os valores possíveis no seu design system
 	size: "default" | "sm" | "lg"; // idem aqui
 };
-
-export type Stats = {
-	total: number;
-	working: number;
-	notWorking: number;
-	avgCompensation: number;
-};
-
-export type DrawButtonsProps = PropsType & {
-	buttonProps: ButtonProps;
-};
