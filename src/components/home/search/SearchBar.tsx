@@ -32,12 +32,10 @@ export function SearchBar(props: StateBundle) {
 	}
 
 	useEffect(() => {
-		console.log("Fetching input");
 		setInput(props.filter[props.activeFilter] || "");
 	}, [props.activeFilter, props.filter]);
 
 	useEffect(() => {
-		console.log("Fetching filter");
 		const timer = setTimeout(() => {
 			const myInput = input.trim();
 			if (myInput !== "-") {
