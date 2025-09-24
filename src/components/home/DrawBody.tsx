@@ -48,6 +48,7 @@ export function DrawBody() {
 	//#endregion
 
 	const buildQuery = useBuildQuery(activeLabel, filter);
+	const query = buildQuery(0); // Query padrão com skip 0
 	const fetchData = useFetchData(buildQuery, setDataRows);
 	const fetchStats = useFetchStats(buildQuery, setStats);
 
@@ -138,11 +139,13 @@ export function DrawBody() {
 				setColums={setColums}
 				setFilteredRows={setFilteredRows}
 				filteredRows={filteredRows}
+				activeLabel={activeLabel}
+				setActiveLabel={setActiveLabel}
 				stats={stats}
 				query={query}
 				updateHome={() => {
 					fetchStats();
-					fetchData(groupIndex);
+					fetchData(page * rowsPerPage);
 				}}
 			/>
 		</div>

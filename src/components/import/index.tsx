@@ -97,7 +97,7 @@ const ConfigurationUploadArquivo = (props: ConfigurationUploadArquivoProps) => {
 					<input
 						id="file-input"
 						type="file"
-						accept=".csv,.xls,.xlsx"
+						accept=".xls,.xlsx"
 						style={{ display: "none" }}
 						onChange={e => {
 							const selectedFiles = e.target.files;

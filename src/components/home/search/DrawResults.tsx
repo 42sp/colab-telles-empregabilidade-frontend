@@ -12,6 +12,7 @@ import {
 	type Data,
 	type Stats,
 } from "../../../pages/home/types";
+import { rowsPerPage } from "../utils/globalValues";
 import {
 	Table,
 	TableBody,
@@ -187,7 +188,7 @@ export const columns: ColumnDef<collection.StudentsResponse>[] = [
 
 export function DrawResults(props: DrawResultsProps) {
 	const visibleColumns: collection.StudentsParameters = Object.entries(
-		props.colums
+		props.colums || {}
 	).filter(([_, col]) => col.isVisible);
 	const buttonProps = {
 		variant: "outline",
