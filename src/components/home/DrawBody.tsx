@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
 	type ColumnKey,
 	type ColumnVisibility,
@@ -65,32 +65,12 @@ export function DrawBody() {
 	}, [filter]);
 
 	useEffect(() => {
-		const timer = setTimeout(() => {
-			setDebounce(filter);
-		}, debounceDelay);
-
-		return () => clearTimeout(timer);
-	}, [filter]);
+		fetchStats();
+	}, [activeLabel, filter]);
 
 	useEffect(() => {
-		setPage(0);
-	}, [activeLabel]);
-	useEffect(() => {
-		const fetch = async () => {
-			try {
-				await fetchStats();
-			} catch (error) {
-				console.error("Failed to fetch students:", error);
-			}
-		};
-		fetch();
-	}, [debounce, activeLabel, activeFilter]);
-	useEffect(() => {
-		const run = async () => {
-			await fetchData(page * rowsPerPage);
-		};
-		run();
-	}, [filter, activeLabel, activeFilter, page]);
+		fetchData(page * rowsPerPage);
+	}, [activeLabel, page, filter]);
 
 	const [filteredRows, setFilteredRows] = useState(dataRows);
 
@@ -115,6 +95,8 @@ export function DrawBody() {
 		setActiveLabel,
 		stats,
 		setStats,
+		dataRows,
+		setDebounce,
 	};
 	const background: string =
 		"flex flex-col bg-white w-full min-h-screen max-w-full p-4 gap-4 overflow-hidden";

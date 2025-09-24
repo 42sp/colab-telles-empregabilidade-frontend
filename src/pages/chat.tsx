@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import type { Message } from "@/components/chat/types";
 import { DBStatusIndicator } from "@/components/chat/DBStatusIndicator"; 
-const VITE_TOOLFRONT_API_URL = import.meta.env.VITE_API_URL;
+const VITE_TOOLFRONT_API_URL = import.meta.env.VITE_TOOLFRONT_API_URL ;
 
 interface TableMessageType {
   colunas: string[];

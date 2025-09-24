@@ -1,14 +1,12 @@
 import { Button } from "@/components/ui/button";
 
 import {
-	ArrowUpDown,
 	ChevronLeft,
 	ChevronRight,
 	Edit,
 	MoreHorizontal,
 } from "lucide-react";
 import {
-	type ColumnsMap,
 	type Data,
 	type Stats,
 } from "../../../pages/home/types";
@@ -33,18 +31,7 @@ import {
 	type VisibilityState,
 } from "@tanstack/react-table";
 import React, { useState, useEffect } from "react";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Checkbox } from "@/components/ui/checkbox";
 import type * as collection from "../../../types/requests/index";
-import ModalEdit from "../Modal";
-import { set } from "zod";
 import StudentsForm from "./StudentsForm";
 import Modal from "../Modal";
 
