@@ -10,15 +10,15 @@ export function DrawTotals({ status }: DrawTotalsProps) {
 		" flex flex-col flex-1 w-full bg-white rounded-md p-4 gap-4 border border-b border-gray-200 flex-shrink-0";
 
 	return (
-		<div className="flex flex-wrap gap-4">
+		<div className="flex flex-wrap gap-4 flex-1">
 			{status.map(({ label, value }) => {
 				const displayValue =
 					label === "Salário Médio"
-						? value.toLocaleString("pt-BR", {
+						? (value ?? 0).toLocaleString("pt-BR", {
 								style: "currency",
 								currency: "BRL",
 							})
-						: value;
+						: (value ?? 0);
 
 				return (
 					<div key={label} className={background}>

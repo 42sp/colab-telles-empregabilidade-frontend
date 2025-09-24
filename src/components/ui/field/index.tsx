@@ -16,6 +16,7 @@ interface FieldProps {
 	onIconAppendClick?: () => void;
 	required?: boolean;
 	autoComplete?: string;
+	readonly?: boolean;
 }
 
 const Field = (props: FieldProps) => {
@@ -42,6 +43,7 @@ const Field = (props: FieldProps) => {
 					onChange={props.onChange}
 					required={props.required}
 					autoComplete={props.autoComplete}
+					readOnly={props.readonly}
 				/>
 				{props.iconAppend && (
 					<span className="appendIcon">

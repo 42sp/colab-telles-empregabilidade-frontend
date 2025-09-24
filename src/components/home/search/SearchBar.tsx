@@ -1,28 +1,27 @@
-import { Input } from "@/components/ui/input";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { DrawResults } from "./DrawResults";
 import { DrawButtons } from "./DrawButtons";
-import type { PropsType } from "../../../pages/home/types";
+import type { Data, StateBundle } from "../../../pages/home/types";
 import { useEffect, useState } from "react";
+import { InputFilter } from "../utils/inputFilter";
+import { debounceDelay, rowsPerPage } from "../utils/globalValues";
+import { useFetchStats } from "../utils/fetchStats";
+import { useBuildQuery } from "../utils/buildQuery";
 
-export function SearchBar(props: PropsType) {
-	const [input, setInput] = useState<string>(props.filter[props.activeFilter] || "");
+export function SearchBar(props: StateBundle) {
+	const [input, setInput] = useState<string>(
+		props.filter[props.activeFilter] || ""
+	);
 
-	function updateFilter(value: string) {
-		props.setFilter(prev => ({ ...prev, [props.activeFilter]: value }));
-		props.setPage(0);
-	}
 	//Page config
-	const rowsPerPage = 10;
 	const startPage = props.page * rowsPerPage;
+	const pagesPerGroup = 1;
+	const intraGroupPage = props.page % pagesPerGroup;
 	const visibleRows = props.filteredRows.slice(
-		startPage,
-		startPage + rowsPerPage
+		intraGroupPage * rowsPerPage,
+		intraGroupPage * rowsPerPage + rowsPerPage
 	);
-	const endPage = Math.min(
-		(props.page + 1) * rowsPerPage,
-		props.filteredRows.length
-	);
+	const endPage = Math.min((props.page + 1) * rowsPerPage, props.stats.total);
 
 	function removeFilter(toRemove: string) {
 		props.setFilter(prev => ({
@@ -34,29 +33,31 @@ export function SearchBar(props: PropsType) {
 
 	useEffect(() => {
 		setInput(props.filter[props.activeFilter] || "");
-	}, [props.filter, props.activeFilter]);
+	}, [props.activeFilter, props.filter]);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			const myInput = input.trim();
 			if (myInput !== "-") {
-				updateFilter(myInput);
+				props.setFilter(prev => ({ ...prev, [props.activeFilter]: myInput }));
+				props.setPage(0);
 			}
-		}, 500);
+		}, debounceDelay);
 
 		return () => clearTimeout(timer);
-	}, [input, props.setFilter, props.activeFilter]);
+	}, [input]);
 
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex bg-white w-full gap-4 p-4 border border-b rounded-md">
-				<Input
+				<InputFilter
 					className="w-64"
 					value={input}
-					placeholder="Buscar estudante..."
+					placeholder={props.colums[props.activeFilter]?.label || ""}
 					onChange={e => {
 						setInput(e.target.value);
 					}}
+					Icon={Search}
 				/>
 				<DrawButtons {...props} />
 			</div>
@@ -77,11 +78,12 @@ export function SearchBar(props: PropsType) {
 					))}
 			</div>
 			<DrawResults
-				{...props}
+				states={props}
 				visibleRows={visibleRows}
 				startPage={startPage}
 				endPage={endPage}
 				rowsPerPage={rowsPerPage}
+				updateHome={props.updateHome}
 			/>
 		</div>
 	);

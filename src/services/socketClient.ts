@@ -6,51 +6,66 @@ import rest from "@feathersjs/rest-client";
 import authClient from "@feathersjs/authentication-client";
 
 /**
- * Cliente Feathers seguro:
- * - WebSocket + REST
- * - JWT com localStorage
- * - Auto-reautenticação e auto-connect do socket
+ * Configuração de logs centralizada:
+ * - Ativável/desativável via VITE_SOCKET_LOGS
+ * - Inclui timestamp e tag
  */
+const ENABLE_LOGS = import.meta.env.VITE_SOCKET_LOGS === "true";
+
+function log(...args: any[]) {
+  if (!ENABLE_LOGS) return;
+  console.debug(`[socketClient ${new Date().toISOString()}]`, ...args);
+}
+
+function logInfo(...args: any[]) {
+  if (!ENABLE_LOGS) return;
+  console.info(`[socketClient ${new Date().toISOString()}]`, ...args);
+}
+
+function logWarn(...args: any[]) {
+  if (!ENABLE_LOGS) return;
+  console.warn(`[socketClient ${new Date().toISOString()}]`, ...args);
+}
+
+function logError(...args: any[]) {
+  if (!ENABLE_LOGS) return;
+  console.error(`[socketClient ${new Date().toISOString()}]`, ...args);
+}
 
 // SSR-safe
-const isBrowser =
-	typeof window !== "undefined" && typeof window.document !== "undefined";
-
-// Dev mode para logs
-console.debug(`import.meta.env.MODE = ${import.meta.env.MODE}`)
-const isDev = import.meta.env.MODE === "development";
-const log = (...args: any[]) => {
-  if (isDev) console.debug("[socketClient]", ...args);
-};
+const isBrowser = typeof window !== "undefined" && typeof window.document !== "undefined";
 
 // --- URLs de backend ---
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3030";
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || API_URL;
+logInfo("API_URL:", API_URL, "SOCKET_URL:", SOCKET_URL);
 
 // --- Opções do socket ---
 const socketOptions = { transports: ["websocket"], autoConnect: false };
 
 // --- Instância do socket ---
-export const socket: Socket | null = isBrowser
-	? io(SOCKET_URL, socketOptions)
-	: null;
+export const socket: Socket | null = isBrowser ? io(SOCKET_URL, socketOptions) : null;
 
 if (isBrowser && socket) {
-	log("Socket instanciado (ainda não conectado).");
+  logInfo("Socket instanciado (ainda não conectado). URL:", SOCKET_URL);
 
-	socket.on("connect", () => log("Socket conectado", socket.id));
-	socket.on("disconnect", reason => log("Socket desconectado", reason));
-	socket.on("connect_error", err =>
-		console.error("[socketClient] connect_error:", err)
-	);
+  socket.on("connect", () => {
+    logInfo("Socket conectado", { id: socket.id, url: SOCKET_URL });
+  });
 
-	if (isDev) {
-		socket.onAny((event, ...args) =>
-			console.debug(`[socketClient DEBUG] Evento recebido: ${event}`, args)
-		);
-	}
+  socket.on("disconnect", reason => {
+    logWarn("Socket desconectado", { reason, url: SOCKET_URL });
+  });
+
+  socket.on("connect_error", err => {
+    logError("connect_error:", err, { url: SOCKET_URL });
+  });
+
+  socket.onAny((event, ...args) => {
+    log("[Evento WS recebido]", event, args);
+  });
 } else {
-	log("Não é ambiente browser — socket não instanciado.");
+  logWarn("Não é ambiente browser — socket não instanciado.");
 }
 
 // --- Feathers client ---
@@ -63,49 +78,57 @@ if (socket) client.configure(socketio(socket));
 const restClient = rest(API_URL);
 client.configure(restClient.axios(axios));
 
-// Configurar autenticação JWT (SSR-safe)
+// Configurar autenticação JWT
 if (isBrowser) {
-	try {
-		client.configure(authClient({ storage: window.localStorage }));
-	} catch (err) {
-		console.warn("[socketClient] auth client plugin não carregado:", err);
-	}
+  try {
+    client.configure(authClient({ storage: window.localStorage }));
+  } catch (err) {
+    logWarn("auth client plugin não carregado:", err);
+  }
 }
 
 // --- Helpers ---
 export async function authenticateWithToken(accessToken: string) {
-	try {
-		await client.authenticate({ strategy: "jwt", accessToken });
-		log("Autenticado com JWT");
-		// Auto-connect do socket após autenticação
-		if (socket && !socket.connected) socket.connect();
-	} catch (err) {
-		console.error("[socketClient] Falha ao autenticar com JWT:", err);
-		throw err;
-	}
+  try {
+    await client.authenticate({ strategy: "jwt", accessToken });
+    logInfo("Autenticado com JWT");
+    if (socket && !socket.connected) {
+      socket.connect();
+      logInfo("Tentativa de conectar socket após autenticação");
+    }
+  } catch (err) {
+    logError("Falha ao autenticar com JWT:", err);
+    throw err;
+  }
 }
 
 export async function reauthenticate() {
-	if (!isBrowser) return null;
-	try {
-		const result = await client.reAuthenticate();
-		log("Reautenticação bem-sucedida:", result);
-		if (socket && !socket.connected) socket.connect();
-		return result;
-	} catch (err) {
-		console.warn("[socketClient] Reautenticação falhou:", err);
-		return null;
-	}
+  if (!isBrowser) return null;
+  try {
+    const result = await client.reAuthenticate();
+    logInfo("Reautenticação bem-sucedida:", result);
+    if (socket && !socket.connected) {
+      socket.connect();
+      logInfo("Tentativa de reconectar socket após reautenticação");
+    }
+    return result;
+  } catch (err) {
+    logWarn("Reautenticação falhou:", err);
+    return null;
+  }
 }
 
 export async function logout() {
-	try {
-		await client.logout();
-		log("Logout realizado");
-	} catch (err) {
-		console.error("[socketClient] Erro no logout:", err);
-	}
-	if (socket && socket.connected) socket.disconnect();
+  try {
+    await client.logout();
+    logInfo("Logout realizado");
+  } catch (err) {
+    logError("Erro no logout:", err);
+  }
+  if (socket && socket.connected) {
+    socket.disconnect();
+    logInfo("Socket desconectado manualmente no logout");
+  }
 }
 
 // --- Serviços ---

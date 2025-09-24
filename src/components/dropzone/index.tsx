@@ -32,7 +32,6 @@ const Dropzone = (props: DropzoneProps) => {
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop,
 		accept: {
-			"text/csv": [".csv"],
 			"application/vnd.ms-excel": [".xls"],
 			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
 				".xlsx",
@@ -52,7 +51,7 @@ const Dropzone = (props: DropzoneProps) => {
 						Arraste e solte o arquivo aqui ou clique para selecionar
 					</p>
 					<p className={`${props.textClassName} text-sm text-gray-300`}>
-						Formatos aceitos: CSV, XLS, XLSX (máx. 10MB)
+						Formatos aceitos: XLS, XLSX (máx. 10MB)
 					</p>
 				</div>
 			)}

@@ -12,19 +12,10 @@ import {
 } from "recharts";
 import { memo } from "react";
 import { LazyLoadWrapper } from "./LazyLoadWrapper";
+import type { EmploymentByMonthProps } from "@/types/requests";
+import { Skeleton } from "../ui/skeleton";
 
-const data = [
-	{ month: "Jan", Trabalhando: 650, "Sem Trabalho": 300 },
-	{ month: "Fev", Trabalhando: 680, "Sem Trabalho": 280 },
-	{ month: "Mar", Trabalhando: 700, "Sem Trabalho": 270 },
-	{ month: "Abr", Trabalhando: 720, "Sem Trabalho": 260 },
-	{ month: "Mai", Trabalhando: 750, "Sem Trabalho": 250 },
-	{ month: "Jun", Trabalhando: 780, "Sem Trabalho": 240 },
-	{ month: "Jul", Trabalhando: 800, "Sem Trabalho": 230 },
-	{ month: "Ago", Trabalhando: 820, "Sem Trabalho": 220 },
-];
-
-function EmploymentStatusChart() {
+function EmploymentStatusChart({ data }: { data: EmploymentByMonthProps[] }) {
 	return (
 		<Card className="bg-white">
 			<CardHeader className="pb-0">
@@ -47,20 +38,32 @@ function EmploymentStatusChart() {
 							<div className="w-10 h-10 border-4 border-t-4 border-black border-t-white rounded-full animate-spin" />
 						}
 					>
-						<ResponsiveContainer width="100%" height="100%">
-							<BarChart
-								data={data}
-								margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-							>
-								<CartesianGrid strokeDasharray="3 3" />
-								<XAxis dataKey="month" />
-								<YAxis />
-								<Tooltip />
-								<Legend />
-								<Bar dataKey="Sem Trabalho" fill="#10b981" />
-								<Bar dataKey="Trabalhando" fill="#f97316" />
-							</BarChart>
-						</ResponsiveContainer>
+						{data.length > 0 ? (
+							<ResponsiveContainer width="100%" height="100%">
+								<BarChart
+									data={data}
+									margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+								>
+									<CartesianGrid strokeDasharray="3 3" />
+									<XAxis dataKey="month" />
+									<YAxis />
+									<Tooltip />
+									<Legend />
+									<Bar
+										dataKey="sem_trabalho"
+										fill="#10b981"
+										name="Sem Trabalho"
+									/>
+									<Bar
+										dataKey="trabalhando"
+										fill="#f97316"
+										name="Trabalhando"
+									/>
+								</BarChart>
+							</ResponsiveContainer>
+						) : (
+							<Skeleton className="h-[250px] w-[800px] rounded-xl" />
+						)}
 					</LazyLoadWrapper>
 				</div>
 			</CardContent>
