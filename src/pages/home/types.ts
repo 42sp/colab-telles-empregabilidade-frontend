@@ -184,4 +184,6 @@ export type StateBundle = {
 	setActiveLabel: React.Dispatch<React.SetStateAction<string>>;
 	stats: Stats;
 	setStats: React.Dispatch<React.SetStateAction<Stats>>;
+	dataRows: StudentsParameters[];
+	setDebounce: React.Dispatch<React.SetStateAction<FilterType>>;
 };

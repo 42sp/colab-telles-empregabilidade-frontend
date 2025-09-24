@@ -5,6 +5,8 @@ import type { Data, StateBundle } from "../../../pages/home/types";
 import { useEffect, useState } from "react";
 import { InputFilter } from "../utils/inputFilter";
 import { debounceDelay, rowsPerPage } from "../utils/globalValues";
+import { useFetchStats } from "../utils/fetchStats";
+import { useBuildQuery } from "../utils/buildQuery";
 
 export function SearchBar(props: StateBundle) {
 	const [input, setInput] = useState<string>(
@@ -30,10 +32,12 @@ export function SearchBar(props: StateBundle) {
 	}
 
 	useEffect(() => {
+		console.log("Fetching input");
 		setInput(props.filter[props.activeFilter] || "");
-	}, [props.filter, props.activeFilter]);
+	}, [props.activeFilter, props.filter]);
 
 	useEffect(() => {
+		console.log("Fetching filter");
 		const timer = setTimeout(() => {
 			const myInput = input.trim();
 			if (myInput !== "-") {
@@ -43,7 +47,7 @@ export function SearchBar(props: StateBundle) {
 		}, debounceDelay);
 
 		return () => clearTimeout(timer);
-	}, [input, props.setFilter, props.activeFilter, props.setPage]);
+	}, [input]);
 
 	return (
 		<div className="flex flex-col gap-4">
