@@ -74,7 +74,7 @@ export default class Service {
 
 			const query = buildQueryString(params);
 			return await this.$axios.get<collection.StudentsStats>(
-				`/students-stats?${query}`,
+				`/students-stats`,
 				{ headers: { Authorization: `Bearer ${token}` } }
 			);
 		} catch (error) {
