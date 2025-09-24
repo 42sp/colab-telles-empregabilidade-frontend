@@ -56,11 +56,11 @@ export function NewOperationForm() {
 				deleted: false,
 			};
 
-			const created = await createOperation(payload); // Atualiza o contexto
-			if (created) {
-				toast.success("Operação agendada com sucesso!");
-				form.reset();
-			}
+			// const created = await createOperation(payload); // Atualiza o contexto
+			// if (created) {
+			// 	toast.success("Operação agendada com sucesso!");
+			// 	form.reset();
+			// }
 		} catch (err) {
 			console.error("Erro ao criar operação:", err);
 			toast.error("Erro ao agendar operação");
