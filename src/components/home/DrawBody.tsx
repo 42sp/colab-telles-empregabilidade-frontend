@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	type ColumnKey,
 	type ColumnVisibility,
@@ -7,14 +7,14 @@ import {
 	type Stats,
 } from "../../pages/home/types";
 import { DrawStatus } from "./status/DrawStatus";
-import { SearchBar } from "./search/SearchBar";
 import type { StudentsParameters } from "@/types/requests";
 import { myColumns } from "./utils/columns";
 import { useBuildQuery } from "./utils/buildQuery";
-import { debounceDelay, rowsPerPage } from "./utils/globalValues";
+import { rowsPerPage } from "./utils/globalValues";
 import { loadFromSession } from "./utils/loadSessionStorage";
 import { useFetchData } from "./utils/fetchData";
 import { useFetchStats } from "./utils/fetchStats";
+import { SearchBar } from "./search/SearchBar";
 
 export function DrawBody() {
 	const filtersSave: string = "userFilter";
@@ -98,8 +98,7 @@ export function DrawBody() {
 		dataRows,
 		setDebounce,
 	};
-	const background: string =
-		"flex flex-col bg-white w-full min-h-screen max-w-full p-4 gap-4 overflow-hidden";
+	const background: string = "flex flex-col bg-white px-6";
 
 	return (
 		<div className={background}>
