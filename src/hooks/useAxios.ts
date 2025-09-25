@@ -48,14 +48,13 @@ export function useAxios<T = unknown>(): UseAxiosResult<T> {
 		}
 	}
 
-	const baseURL =
-		process.env.NODE_ENV === "development"
-			? "http://localhost:3030"
-			: "https://colab-telles-empregabilidade-backend.onrender.com";
+	const baseURL = import.meta.env.VITE_API_URL;
 
-	const instance = axios.create({
-		baseURL,
-	});
+	if (!baseURL) {
+		throw new Error("VITE_API_URL não está definido no ambiente!");
+	}
+
+	const instance = axios.create({ baseURL });
 
 	// Adiciona o accessToken do sessionStorage no header Authorization
 	instance.interceptors.request.use(config => {
