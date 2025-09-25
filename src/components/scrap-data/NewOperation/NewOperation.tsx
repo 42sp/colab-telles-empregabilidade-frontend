@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/formInput";
-import { Calendar, Clock, Tag, Repeat, Plus, Filter } from "lucide-react";
+import { Calendar, Clock, Tag, Repeat, Plus } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { AnimatePresence, motion } from "framer-motion";
@@ -13,15 +13,20 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { TbTargetArrow } from "react-icons/tb";
 
 type NewOperationProps = {
 	isSubmitting: boolean;
 };
 
 const availableConditions = [
-	{ value: "working", label: "Trabalhando atualmente", options: ["Sim", "Não"] },
-	{ value: "salary", label: "Faixa salarial", options: ["Até 2k", "2k-5k", "5k+"] },
-	{ value: "location", label: "Localização", options: ["SP", "RJ", "Remoto"] },
+	{ value: "working", label: "Trabalhando", options: ["Sim", "Não"] },
+	{ value: "currentState", label: "Estado", options: ["AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO"] },
+	{ value: "gender", label: "Sexo", options: ["Masculino", "Feminino"]},
+	{ value: "linkedin", label: "LinkedIn", options: ["Sem LinkedIn", "Tem LinkedIn"]},
+	{ value: "raceEthnicity", label: "Etnicidade", options: ["Branca", "Parda", "Preta", "Amarela" ]},
+	{ value: "hasDisability", label: "PcD", options: ["Sim", "Não"] },
+	{ value: "currentArea", label: "Área", options: ["Humanas", "Tecnologia", "Exatas"]}
 ];
 
 export function NewOperation({ isSubmitting }: NewOperationProps) {
@@ -138,7 +143,7 @@ export function NewOperation({ isSubmitting }: NewOperationProps) {
 					{/* Alvo */}
 					<div>
 						<Label className="font-semibold flex items-center gap-2 mb-4">
-							<Filter size={18} /> Alvo
+							<TbTargetArrow size={18} /> Alvo
 						</Label>
 
 						<div className="flex flex-col gap-4">

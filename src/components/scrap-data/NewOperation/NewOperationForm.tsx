@@ -13,6 +13,7 @@ import {
 } from "@/contexts/useOperationFormContext";
 import type { Operation } from "@/types/operations";
 
+
 export function NewOperationForm() {
 	const { user } = useAuth();
 	const form = useForm<OperationFormData>({
