@@ -5,12 +5,14 @@ import {
 	ConfigurationUploadArquivo,
 } from "@/components/import";
 import { FadeInOnScroll } from "@/components/utils/FadeInOnScroll";
+import { useSidebar } from "@/contexts/SidebarContext";
 import { useServices } from "@/hooks/useServices";
 import type { fileProps } from "@/types/requests/interfaces/fileProps";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 const Configuration = () => {
+	const { animationsEnabled } = useSidebar();
 	const [files, setFiles] = useState<fileProps[]>([]);
 
 	const $services = useServices();
@@ -60,15 +62,11 @@ const Configuration = () => {
 	};
 
 	return (
-		<div>
+		<div className="contain-layout container mx-auto">
 			<ConfigurationHeader />
-			<FadeInOnScroll>
+			<FadeInOnScroll enabled={animationsEnabled}>
 				<ConfigurationUploadArquivo setFiles={setFiles} files={files} />
-			</FadeInOnScroll>
-			<FadeInOnScroll>
 				<ConfigurationIntegracaoApi />
-			</FadeInOnScroll>
-			<FadeInOnScroll>
 				<ConfigurationFooter uploadFiles={uploadFiles} />
 			</FadeInOnScroll>
 		</div>

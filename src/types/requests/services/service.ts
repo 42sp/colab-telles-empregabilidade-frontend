@@ -1,6 +1,32 @@
 import type { AxiosInstance } from "axios";
 import type * as collection from "../index";
 
+function buildQueryString(params: collection.StudentsType): string {
+	const query = new URLSearchParams();
+
+	for (const [key, value] of Object.entries(params)) {
+		if (value && typeof value === "object") {
+			if ("$in" in value && Array.isArray(value.$in)) {
+				value.$in.forEach((item, index) => {
+					query.append(`${key}[$in][${index}]`, String(item));
+				});
+			} else if ("$eq" in value) {
+				query.append(`${key}[$eq]`, String(value.$eq));
+			} else if ("$ilike" in value) {
+				const like = String(value.$ilike ?? "").trim();
+				if (like !== "") query.append(`${key}[$ilike]`, like);
+			} else if ("$like" in value) {
+				const like = String(value.$like ?? "").trim();
+				if (like !== "") query.append(`${key}[$like]`, like);
+			}
+		} else if (value !== undefined && value !== null) {
+			query.append(key, String(value));
+		}
+	}
+
+	return query.toString();
+}
+
 export default class Service {
 	$axios: AxiosInstance;
 
@@ -23,6 +49,38 @@ export default class Service {
 			);
 
 		return response.data;
+  }
+
+	async students(params: collection.StudentsType = {}) {
+		try {
+			const token = sessionStorage.getItem("accessToken");
+			if (!token) throw new Error("No access token found");
+
+			const query = buildQueryString(params);
+			return await this.$axios.get<collection.StudentsResponse>(
+				`/students?${query}`,
+				{ headers: { Authorization: `Bearer ${token}` } }
+			);
+		} catch (error) {
+			console.error("Error in students:", error);
+			throw error;
+		}
+	}
+
+	async studentsStats(params: collection.StudentsType = {}) {
+		try {
+			const token = sessionStorage.getItem("accessToken");
+			if (!token) throw new Error("No access token found");
+
+			const query = buildQueryString(params);
+			return await this.$axios.get<collection.StudentsStats>(
+				`/students-stats?${query}`,
+				{ headers: { Authorization: `Bearer ${token}` } }
+			);
+		} catch (error) {
+			console.error("Error in studentsStats:", error);
+			throw error;
+		}
 	}
 	// -------------------------------------------------------------------- GET --------------------------------------------------------------------
 
@@ -32,10 +90,11 @@ export default class Service {
 			"/authentication",
 			params
 		);
-		if (response?.data?.accessToken) {
-			sessionStorage.setItem("accessToken", response.data.accessToken);
-		}
-		return response;
+
+		// NÃO salva token aqui — responsabilidade do AuthContext
+		// sessionStorage.setItem("accessToken", response.data.accessToken);
+
+		return response; // retorna o objeto completo { accessToken, user }
 	}
 
 	async postImportFiles(params: collection.ImportFilesParameters) {
