@@ -25,7 +25,7 @@ export function NewOperationForm() {
 			isRecurring: false,
 			repeat_days: "",
 			repeat_time: "",
-			conditions: [],
+			target_conditions: [],
 		},
 	});
 
@@ -57,8 +57,8 @@ export function NewOperationForm() {
 					data.isRecurring && data.repeat_time ? data.repeat_time : undefined,
 				deleted: false,
 				target_conditions:
-					data.conditions && data.conditions.length > 0
-						? JSON.stringify(data.conditions.map(c => ({ field: c.field, value: c.value })))
+					data.target_conditions && data.target_conditions.length > 0
+						? JSON.stringify(data.target_conditions.map(c => ({ field: c.field, value: c.value })))
 						: null,
 			};
 
@@ -71,7 +71,7 @@ export function NewOperationForm() {
 					isRecurring: false,
 					repeat_days: "",
 					repeat_time: "",
-					conditions: [],
+					target_conditions: [],
 				});
 			}
 		} catch (err) {

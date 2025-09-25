@@ -32,17 +32,17 @@ const availableConditions = [
 export function NewOperation({ isSubmitting }: NewOperationProps) {
 	const form = useOperationFormContext();
 	const isRecurring = form.watch("isRecurring");
-	const conditions = form.watch("conditions") || [];
+	const conditions = form.watch("target_conditions") || [];
 
 	function addCondition() {
 		const newConditions = [...conditions, { field: "", value: "" }];
-		form.setValue("conditions", newConditions);
+		form.setValue("target_conditions", newConditions);
 	}
 
 	function updateCondition(index: number, key: "field" | "value", value: string) {
 		const updated = [...conditions];
 		updated[index][key] = value;
-		form.setValue("conditions", updated);
+		form.setValue("target_conditions", updated);
 	}
 
 	return (
