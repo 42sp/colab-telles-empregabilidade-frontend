@@ -7,7 +7,8 @@ export function StudentsList() {
 	const { animationsEnabled } = useSidebar();
 
 	return (
-		<div className="flex flex-col absolute flex-1 w-full h-full overflow-y-auto ">
+		// <div className="flex flex-col absolute flex-1 w-full h-full overflow-y-auto ">
+		<>
 			<DrawTitle
 				title={"Lista de estudantes"}
 				description={"Gerencie e visualize os alunos registrados."}
@@ -15,6 +16,7 @@ export function StudentsList() {
 			<FadeInOnScroll enabled={animationsEnabled}>
 				<DrawBody />
 			</FadeInOnScroll>
-		</div>
+		</>
+		// </div>
 	);
 }

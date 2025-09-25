@@ -1,12 +1,8 @@
 import { Button } from "@/components/ui/button";
 
+import { ChevronLeft, ChevronRight, Edit, MoreHorizontal } from "lucide-react";
 import {
-	ChevronLeft,
-	ChevronRight,
-	Edit,
-	MoreHorizontal,
-} from "lucide-react";
-import {
+	type ColumnVisibility,
 	type Data,
 	type Stats,
 } from "../../../pages/home/types";
@@ -20,7 +16,6 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import {
-	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
 	getPaginationRowModel,
@@ -48,15 +43,18 @@ import Modal from "../Modal";
 // 	VisibilityState,
 // } from "@tanstack/react-table";
 
-
 interface DrawResultsProps {
 	visibleRows: Data[];
 	startPage: number;
 	endPage: number;
-	filteredRows: Data[];
 	rowsPerPage: number;
-	stats: Stats;
 	updateHome: () => void;
+	columns: ColumnVisibility;
+	states: {
+		page: number;
+		setPage: React.Dispatch<React.SetStateAction<number>>;
+		stats?: Stats;
+	};
 }
 
 export const columns: ColumnDef<collection.StudentsResponse>[] = [
@@ -174,19 +172,22 @@ export const columns: ColumnDef<collection.StudentsResponse>[] = [
 ];
 
 export function DrawResults(props: DrawResultsProps) {
-	const visibleColumns: collection.StudentsParameters = Object.entries(
-		props.colums || {}
-	).filter(([_, col]) => col.isVisible);
 	const buttonProps = {
 		variant: "outline",
 		size: "default",
 	} as const;
+	const columnsList = Object.entries(props.columns).map(([key, value]) => ({
+		key,
+		...value,
+	}));
 
 	function pagination() {
 		const nextPage = props.states.page + 1;
 		const prevPage = props.states.page - 1;
 		const pageNumbers = [prevPage, props.states.page, nextPage];
-		const totalPages = Math.ceil(props.states.stats.total / rowsPerPage);
+		const totalPages = Math.ceil(
+			(props.states.stats?.total || 0) / rowsPerPage
+		);
 
 		return (
 			<div className="flex gap-1 justify-end items-end text-black">
@@ -228,46 +229,6 @@ export function DrawResults(props: DrawResultsProps) {
 		);
 	}
 
-	function showContent(key: string, row: string, type: string): string {
-		if (key === "compensation") {
-			const num = Number(row);
-			return new Intl.NumberFormat("pt-BR", {
-				style: "currency",
-				currency: "BRL",
-			}).format(isNaN(num) ? 0 : num);
-		}
-		if (
-			row === null ||
-			row === undefined ||
-			row === "" ||
-			row === "null" ||
-			row === "undefined"
-		)
-			return "-";
-		if (type === "boolean") return row === "true" ? "Sim" : "Não";
-
-		return row === "0" ? "-" : row;
-	}
-
-	function renderCellContent(key: string, row: string, type: string) {
-		const value: string = showContent(key, row, type);
-
-		// key === "working" && value === "Sim" - only working students
-		if (value === "Sim")
-			return (
-				<div className="inline-flex bg-black text-white w-10 h-6 rounded-xl justify-center items-center">
-					{value}
-				</div>
-			);
-		else if (value === "Não")
-			return (
-				<div className="inline-flex bg-white w-10 h-6 rounded-xl justify-center items-center">
-					{value}
-				</div>
-			);
-		return value;
-	}
-
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
 		[]
@@ -277,7 +238,7 @@ export function DrawResults(props: DrawResultsProps) {
 	const [rowSelection, setRowSelection] = React.useState({});
 
 	const table = useReactTable({
-		visibleColumns,
+		data: props.visibleRows,
 		columns,
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,
@@ -299,7 +260,7 @@ export function DrawResults(props: DrawResultsProps) {
 
 	const [open, setOpen] = useState(false);
 	const [selectedItem, setSelectedItem] = useState<
-		collection.StudentsResponse | undefined
+		collection.StudentsParameters | undefined
 	>(undefined);
 
 	useEffect(() => {
@@ -315,8 +276,14 @@ export function DrawResults(props: DrawResultsProps) {
 		};
 	}, [open]);
 
-	const handleModal = (item: collection.StudentsResponse) => {
-		setSelectedItem(item);
+	const handleModal = (item: Data) => {
+		// Convert Data type to StudentsParameters type
+		const convertedItem = {} as collection.StudentsParameters;
+		Object.keys(item).forEach(key => {
+			(convertedItem as unknown as Record<string, unknown>)[key] =
+				item[key].data;
+		});
+		setSelectedItem(convertedItem);
 		setOpen(true);
 	};
 
@@ -327,16 +294,12 @@ export function DrawResults(props: DrawResultsProps) {
 					<TableHeader className="bg-white border-b border-gray-200 text-zinc-400 font-bold">
 						{table.getHeaderGroups().map(headerGroup => (
 							<TableRow key={headerGroup.id}>
-								{headerGroup.headers.map(header => (
-									<TableHead key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext()
-												)}
-									</TableHead>
-								))}
+								{columnsList
+									.filter(col => col.isVisible)
+									.map(col => (
+										<TableHead key={col.key}>{col.label}</TableHead>
+									))}
+								<TableHead>Ações</TableHead>
 							</TableRow>
 						))}
 					</TableHeader>
@@ -344,27 +307,15 @@ export function DrawResults(props: DrawResultsProps) {
 					<TableBody className="text-black font-medium text-sm">
 						{props.visibleRows.map((row, i) => (
 							<TableRow key={i} className="border-b border-gray-200">
-								<TableCell>{String(row.name)}</TableCell>
-								<TableCell>{String(row.linkedin)}</TableCell>
-								<TableCell>{String(row.ismartEmail)}</TableCell>
-								<TableCell>{String(row.phoneNumber)}</TableCell>
-								<TableCell>{String(row.gender)}</TableCell>
-								<TableCell>
-									{row.currentCourseStart
-										? String(
-												new Date(
-													typeof row.currentCourseStart === "string" ||
-													typeof row.currentCourseStart === "number"
-														? row.currentCourseStart
-														: ""
-												).toLocaleDateString("pt-BR", {
-													day: "2-digit",
-													month: "2-digit",
-													year: "numeric",
-												})
-											)
-										: "-"}
-								</TableCell>
+								{columnsList
+									.filter(col => col.isVisible)
+									.map(col => (
+										<TableCell key={col.key}>
+											{String(row[col.key]) == "null"
+												? "-"
+												: String(row[col.key])}
+										</TableCell>
+									))}
 								<TableCell>
 									<Button
 										variant="ghost"
@@ -373,18 +324,6 @@ export function DrawResults(props: DrawResultsProps) {
 											handleModal(row);
 										}}
 									>
-										<Modal
-											isOpen={open}
-											onClose={() => setOpen(false)}
-											title="Detalhes do Estudante"
-										>
-											<StudentsForm
-												data={selectedItem}
-												className="h-[600px] p-4"
-												cancelar={() => setOpen(false)}
-												updateHome={props.updateHome}
-											/>
-										</Modal>
 										<MoreHorizontal />
 									</Button>
 								</TableCell>
@@ -397,10 +336,25 @@ export function DrawResults(props: DrawResultsProps) {
 			<div className="flex justify-between border-b border-gray-200">
 				<p className="p-4 text-slate-400">
 					Mostrando {props.startPage + 1} a {props.endPage} de{" "}
-					{props.states.stats.total} resultados
+					{props.states.stats?.total || 0} resultados
 				</p>
 				<div className="p-4">{pagination()}</div>
 			</div>
+
+			<Modal
+				isOpen={open}
+				onClose={() => setOpen(false)}
+				title="Detalhes do Estudante"
+			>
+				{selectedItem && (
+					<StudentsForm
+						data={selectedItem}
+						className="h-[600px] p-4"
+						cancelar={() => setOpen(false)}
+						updateHome={props.updateHome}
+					/>
+				)}
+			</Modal>
 		</div>
 	);
 }
