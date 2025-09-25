@@ -10,6 +10,14 @@ export const operationFormSchema = z
     isRecurring: z.boolean(),
     repeat_days: z.string().optional(),
     repeat_time: z.string().optional(),
+    conditions: z
+      .array(
+        z.object({
+          field: z.string().min(1, "Selecione um campo"),
+          value: z.string().min(1, "Selecione um valor"),
+        })
+      )
+      .optional(),
 
     // Campos de auditoria opcionais
     created_by: z.string().optional(),

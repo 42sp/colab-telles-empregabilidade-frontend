@@ -24,6 +24,7 @@ export function NewOperationForm() {
 			isRecurring: false,
 			repeat_days: "",
 			repeat_time: "",
+			conditions: [],
 		},
 	});
 
@@ -47,17 +48,31 @@ export function NewOperationForm() {
 				user_tag: user.email,
 				created_by: user.email,
 				created_at: now,
-				scheduled_date: data.initial_date || undefined,
-				scheduled_time: data.initial_time || undefined,
+				scheduled_date: data.initial_date,
+				scheduled_time: data.initial_time,
 				repeat_days:
 					data.isRecurring && data.repeat_days ? data.repeat_days : undefined,
 				repeat_time:
 					data.isRecurring && data.repeat_time ? data.repeat_time : undefined,
 				deleted: false,
+				target_conditions:
+					data.conditions && data.conditions.length > 0
+						? JSON.stringify(data.conditions.map(c => ({ field: c.field, value: c.value })))
+						: null,
 			};
 
 			const created = await createOperation(payload);
-			if (created) form.reset();
+			if (created) {
+				form.reset({
+					name: "",
+					initial_date: "",
+					initial_time: "",
+					isRecurring: false,
+					repeat_days: "",
+					repeat_time: "",
+					conditions: [],
+				});
+			}
 		} catch (err) {
 			console.error("Erro ao criar operação:", err);
 			toast.error("Erro ao agendar operação");

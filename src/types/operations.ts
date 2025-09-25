@@ -28,6 +28,7 @@ export type Operation = {
   finished_at?: string | null; // ISO date-time
   result?: Record<string, any>; 
   error_message?: string | null;
+  target_conditions?: string | null;
 
   // ------------------------------
   // 🔹 Auditoria
