@@ -139,7 +139,7 @@ export function DrawResults(props: DrawResultsProps) {
 						<TableHeader className="bg-white border-b border-gray-200 text-zinc-400 font-bold">
 							{table.getHeaderGroups().map(headerGroup => (
 								<TableRow key={headerGroup.id}>
-									<Button variant="ghost" className="h-8 w-8 p-0"></Button>
+									<TableHead>Exibir</TableHead>
 									{headerGroup.headers.map(header => {
 										return (
 											<TableHead key={header.id}>
