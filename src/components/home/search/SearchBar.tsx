@@ -1,18 +1,15 @@
 import { Search, X } from "lucide-react";
 import { DrawResults } from "./DrawResults";
 import { DrawButtons } from "./DrawButtons";
-import type { Data, StateBundle } from "../../../pages/home/types";
+import type { StateBundle } from "../../../pages/home/types";
 import { useEffect, useState } from "react";
 import { InputFilter } from "../utils/inputFilter";
 import { debounceDelay, rowsPerPage } from "../utils/globalValues";
-import { useFetchStats } from "../utils/fetchStats";
-import { useBuildQuery } from "../utils/buildQuery";
 
 export function SearchBar(props: StateBundle) {
 	const [input, setInput] = useState<string>(
 		props.filter[props.activeFilter] || ""
 	);
-
 	//Page config
 	const startPage = props.page * rowsPerPage;
 	const pagesPerGroup = 1;
@@ -48,7 +45,7 @@ export function SearchBar(props: StateBundle) {
 	}, [input]);
 
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-col gap-4 mt-4">
 			<div className="flex bg-white w-full gap-4 p-4 border border-b rounded-md">
 				<InputFilter
 					className="w-64"
@@ -78,6 +75,7 @@ export function SearchBar(props: StateBundle) {
 					))}
 			</div>
 			<DrawResults
+				columns={props.colums}
 				states={props}
 				visibleRows={visibleRows}
 				startPage={startPage}

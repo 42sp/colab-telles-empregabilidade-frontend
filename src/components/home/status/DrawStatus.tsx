@@ -28,7 +28,10 @@ export function DrawStatus(props: StateBundle) {
 	];
 
 	return (
-		<div className="flex flex-col flex-wrap gap-4 flex-1">
+		<div
+			style={{ maxHeight: "200px" }}
+			className="flex flex-col flex-wrap gap-4 flex-1"
+		>
 			<DrawStatusButton buttons={buttons} states={props} />
 			<DrawTotals status={status} />
 		</div>
