@@ -45,7 +45,7 @@ export function SearchBar(props: StateBundle) {
 	}, [input]);
 
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-col gap-4 mt-4">
 			<div className="flex bg-white w-full gap-4 p-4 border border-b rounded-md">
 				<InputFilter
 					className="w-64"
