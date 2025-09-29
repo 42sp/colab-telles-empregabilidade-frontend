@@ -125,7 +125,7 @@ export function NewOperation({ isSubmitting }: NewOperationProps) {
 											name="repeat_days"
 											label="A cada quantos dias?"
 											type="number"
-											min={1}
+											min={0}
 											placeholder="Ex: 7"
 											wrapperClassName="flex-1 min-w-[150px]"
 											inputClassName="w-full"

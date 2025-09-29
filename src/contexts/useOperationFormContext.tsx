@@ -14,7 +14,7 @@ export const operationFormSchema = z
 			.array(
 				z.object({
 					field: z.string().min(1, "Selecione um campo"),
-					value: z.union([z.string().min(1), z.boolean()]), // aceita string ou boolean
+					value: z.union([z.string().min(1), z.boolean()]),
 				})
 			)
 			.optional(),
@@ -27,7 +27,7 @@ export const operationFormSchema = z
 	})
 	.superRefine((val, ctx) => {
 		if (val.isRecurring) {
-			if (!val.repeat_days || val.repeat_days.trim() === "") {
+			if (!val.repeat_days || val.repeat_days.trim() === "" || isNaN(Number(val.repeat_days))) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
 					message: "Selecione os dias da recorrência",
