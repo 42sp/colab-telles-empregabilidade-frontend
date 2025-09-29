@@ -59,7 +59,7 @@ export function NewOperationForm() {
 				target_conditions:
 					data.target_conditions && data.target_conditions.length > 0
 						? JSON.stringify(data.target_conditions.map(c => ({ field: c.field, value: c.value })))
-						: null,
+						: undefined,
 			};
 
 			const created = await createOperation(payload);

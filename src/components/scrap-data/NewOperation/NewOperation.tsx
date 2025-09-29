@@ -29,10 +29,8 @@ const availableConditions = [
     "Sergipe", "São Paulo", "Tocantins"
   ] },
 	{ value: "gender", label: "Sexo", options: ["Masculino", "Feminino"]},
-	{ value: "linkedin", label: "LinkedIn", options: ["Sem LinkedIn", "Tem LinkedIn"]},
 	{ value: "raceEthnicity", label: "Etnicidade", options: ["Branca", "Parda", "Preta", "Amarela" ]},
 	{ value: "hasDisability", label: "PcD", options: ["Sim", "Não"] },
-	{ value: "currentArea", label: "Área", options: ["Humanas", "Tecnologia", "Exatas"]}
 ];
 
 export function NewOperation({ isSubmitting }: NewOperationProps) {
