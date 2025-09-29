@@ -32,19 +32,22 @@ export function ActiveBooking({ onDeleted: onDeletedFromProps, minRows = 6 }: Ac
   });
 
   // ------------------------------
-  // 🔹 Filtrar operações ativas 
+  // 🔹 Filtrar operações ativas
   // ------------------------------
   const today = new Date().toISOString().split("T")[0];
 
   const activeOperations = useMemo(() => {
     if (!operations) return [];
-    return operations.filter(op => {
+    const filteredOperations = operations.filter(op => {
       const notDeleted = !op.deleted;
       const hasDate = Boolean(op.scheduled_date);
       const futureOrToday = !op.scheduled_date || op.scheduled_date >= today;
       const notConcluded = op.status !== "Concluído";
       return notDeleted && hasDate && futureOrToday && notConcluded;
     });
+
+    console.log("Operações ativas:", filteredOperations); // Log adicionado aqui!
+    return filteredOperations;
   }, [operations, today]);
 
   // ------------------------------

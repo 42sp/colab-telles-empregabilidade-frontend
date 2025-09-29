@@ -21,7 +21,13 @@ type NewOperationProps = {
 
 const availableConditions = [
 	{ value: "working", label: "Trabalhando", options: ["Sim", "Não"] },
-	{ value: "currentState", label: "Estado", options: ["AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO"] },
+	{ value: "currentState", label: "Estado", options: [
+    "Acre", "Alagoas", "Amazonas", "Amapá", "Bahia", "Ceará", "Distrito Federal", 
+    "Espírito Santo", "Goiás", "Maranhão", "Minas Gerais", "Mato Grosso do Sul", 
+    "Mato Grosso", "Pará", "Paraíba", "Pernambuco", "Piauí", "Paraná", "Rio de Janeiro", 
+    "Rio Grande do Norte", "Rondônia", "Roraima", "Rio Grande do Sul", "Santa Catarina", 
+    "Sergipe", "São Paulo", "Tocantins"
+  ] },
 	{ value: "gender", label: "Sexo", options: ["Masculino", "Feminino"]},
 	{ value: "linkedin", label: "LinkedIn", options: ["Sem LinkedIn", "Tem LinkedIn"]},
 	{ value: "raceEthnicity", label: "Etnicidade", options: ["Branca", "Parda", "Preta", "Amarela" ]},
