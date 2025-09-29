@@ -30,7 +30,7 @@ export const SidebarHeader = ({
 					variant="ghost"
 					onClick={toggleCollapse}
 					aria-label={isCollapsed ? "Expandir barra" : "Colapsar barra"}
-					className="cursor-pointer z-30"
+					className=" cursor-pointer z-100"
 				>
 					<ChevronLeft size={16} />
 				</Button>

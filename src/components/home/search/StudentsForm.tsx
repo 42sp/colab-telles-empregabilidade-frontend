@@ -23,14 +23,16 @@ const StudentsForm = (props: StudentsFormProps) => {
 
 	const handleSave = async () => {
 		const response = await toast.promise(service.putStudents(formData), {
-			pending: "Atualizando informações...",
+			loading: "Atualizando informações...",
 			success: "Informações atualizadas com sucesso 👌",
 			error: "Erro ao atualizar informações 🤯",
 		});
 
-		if ([200, 201].includes(response.status)) {
+		if (response && [200, 201].includes(response.status)) {
 			setIsEditing(false);
-			props.updateHome && props.updateHome();
+			if (props.updateHome) {
+				props.updateHome();
+			}
 		}
 	};
 

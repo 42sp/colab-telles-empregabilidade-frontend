@@ -71,7 +71,9 @@ export function SideBarFloating() {
 						toggleCollapse={toggleSidebar}
 					/>
 
-					<div className="absolute top-4 right-2 w-8 h-8">
+					<div className={`absolute top-4 right-2 w-8 h-8 ${
+									isCollapsed ? "pointer-events-auto" : "pointer-events-none"
+								}`}>
 						<motion.div
 							initial={{ opacity: 0, x: 10 }}
 							animate={{
@@ -82,6 +84,7 @@ export function SideBarFloating() {
 								duration: 0.3,
 								delay: isCollapsed ? 0.3 : 0, // aparece com delay quando sidebar colapsa
 							}}
+							className={isCollapsed ? "pointer-events-auto" : "pointer-events-none"}
 						>
 							<Button
 								size="icon"
