@@ -18,6 +18,7 @@ import { useServices } from "@/hooks/useServices";
 import { useBuildQuery } from "../utils/buildQuery";
 import { downloadPdf } from "../utils/downloadPdf";
 import { downloadCsv } from "../utils/downloadCsv";
+import "./style.css";
 
 export function DrawButtons(props: StateBundle) {
 	const exportName = "relatório";
@@ -25,14 +26,14 @@ export function DrawButtons(props: StateBundle) {
 	const buildQuery = useBuildQuery(props.activeLabel, props.filter);
 
 	return (
-		<div className="flex w-full justify-between gap-2">
-			<div className="flex gap-3">
+		<div className="flex flex-wrap w-full justify-between gap-2">
+			<div className="drawer-buttons-container">
 				{/* ---------------- Filtros ---------------- */}
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button
 							variant="outline"
-							className="cursor-pointer h-full text-base"
+							className="drawer-buttons cursor-pointer text-base"
 						>
 							<Funnel className="mr-2 h-4 w-4" /> Filtros
 						</Button>
@@ -57,7 +58,7 @@ export function DrawButtons(props: StateBundle) {
 					<DropdownMenuTrigger asChild>
 						<Button
 							variant="outline"
-							className="cursor-pointer h-full text-base"
+							className="drawer-buttons cursor-pointer text-base"
 						>
 							<Columns2 className="mr-2 h-4 w-4" /> Colunas
 						</Button>
@@ -134,7 +135,10 @@ export function DrawButtons(props: StateBundle) {
 			{/* ---------------- Exportar ---------------- */}
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
-					<Button variant="outline" className="cursor-pointer h-full text-base">
+					<Button
+						variant="outline"
+						className="drawer-buttons cursor-pointer text-base"
+					>
 						<Download className="mr-2 h-4 w-4" /> Exportar
 					</Button>
 				</DropdownMenuTrigger>

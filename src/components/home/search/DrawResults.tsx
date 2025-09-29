@@ -202,7 +202,7 @@ export function DrawResults(props: DrawResultsProps) {
 				</div>
 			</div>
 
-			<div className="flex justify-between border-b border-gray-200">
+			<div className="flex flex-wrap justify-between border-b border-gray-200">
 				<p className="p-4 text-slate-400">
 					Mostrando {props.startPage + 1} a {props.endPage} de{" "}
 					{props.states.stats?.total || 0} resultados

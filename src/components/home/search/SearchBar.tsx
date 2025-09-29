@@ -5,6 +5,7 @@ import type { StateBundle } from "../../../pages/home/types";
 import { useEffect, useState } from "react";
 import { InputFilter } from "../utils/inputFilter";
 import { debounceDelay, rowsPerPage } from "../utils/globalValues";
+import "./style.css";
 
 export function SearchBar(props: StateBundle) {
 	const [input, setInput] = useState<string>(
@@ -46,9 +47,8 @@ export function SearchBar(props: StateBundle) {
 
 	return (
 		<div className="flex flex-col gap-4 mt-4">
-			<div className="flex bg-white w-full gap-4 p-4 border border-b rounded-md">
+			<div className="container-home-search flex bg-white w-full gap-4 p-4 border border-b rounded-md">
 				<InputFilter
-					className="w-64"
 					value={input}
 					placeholder={props.colums[props.activeFilter]?.label || ""}
 					onChange={e => {
