@@ -94,7 +94,7 @@ export function NewOperation({ isSubmitting }: NewOperationProps) {
 					</div>
 
 					{/* Recorrência */}
-					<div>
+					{/* <div>
 						<div className="flex items-center gap-4 mb-6">
 							<Switch
 								id="recorrente"
@@ -142,7 +142,7 @@ export function NewOperation({ isSubmitting }: NewOperationProps) {
 								</motion.div>
 							)}
 						</AnimatePresence>
-					</div>
+					</div> */}
 
 					{/* Alvo */}
 					<div>
