@@ -101,7 +101,6 @@ export function DrawBody() {
 	}, [activeLabel, debounce]);
 
 	useEffect(() => {
-		console.log("Data rows updated:", dataRows);
 		setFilteredRows(dataRows);
 	}, [dataRows, fetchData]);
 
