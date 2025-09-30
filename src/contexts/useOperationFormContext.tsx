@@ -19,7 +19,6 @@ export const operationFormSchema = z
 			)
 			.optional(),
 
-		// Campos de auditoria opcionais
 		created_by: z.string().optional(),
 		created_at: z.string().optional(),
 		last_edited_by: z.string().optional(),
