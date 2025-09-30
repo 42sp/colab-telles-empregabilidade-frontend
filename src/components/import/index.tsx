@@ -20,11 +20,11 @@ import { v4 as uuidv4 } from "uuid";
 import { useServices } from "@/hooks/useServices";
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "react-hot-toast";
 
 interface ConfigurationUploadArquivoProps {
 	setFiles: React.Dispatch<React.SetStateAction<fileProps[]>>;
 	files: fileProps[];
+	uploadFiles: () => Promise<void>;
 }
 
 interface ConfigurationFooterProps {
@@ -183,6 +183,17 @@ const ConfigurationUploadArquivo = (props: ConfigurationUploadArquivoProps) => {
 					</TableBody>
 				</Table>
 			</div>
+			<div className="flex justify-end mt-[16px]">
+				<Button
+					className={`footer-btns ${props.files.filter(file => file.status === "Pendente").length === 0 ? "bg-gray-400 hover:bg-gray-400 cursor-not-allowed" : "bg-[#16A34A] hover:bg-[#15803D]"}`}
+					onClick={props.uploadFiles}
+					disabled={
+						props.files.filter(file => file.status === "Pendente").length === 0
+					}
+				>
+					Importar Dados
+				</Button>
+			</div>
 		</div>
 	);
 };
@@ -274,7 +285,7 @@ const ConfigurationIntegracaoApi = () => {
 const ConfigurationFooter = (params: ConfigurationFooterProps) => {
 	return (
 		<div className="container-footer">
-			<Button className="footer-btns" variant="outline">
+			<Button className="footer-btns" variant="outline" disabled>
 				Restaurar Configurações Padrão
 			</Button>
 			<Button
