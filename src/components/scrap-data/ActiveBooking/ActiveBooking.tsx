@@ -113,15 +113,15 @@ export function ActiveBooking({ onDeleted: onDeletedFromProps, minRows = 6 }: Ac
         <div className={`border border-gray-200 rounded-lg overflow-x-auto ${enableScroll ? "overflow-y-auto max-h-[360px]" : "overflow-y-hidden"}`}>
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-100 sticky top-0 z-10">
-                <TableHead>Nome</TableHead>
-                <TableHead>Data</TableHead>
-                <TableHead>Hora</TableHead>
-                <TableHead>Usuário</TableHead>
+              <TableRow className="bg-gray-100 sticky top-0 z-10 ">
+                <TableHead className="text-zinc-500 font-medium">Nome</TableHead>
+                <TableHead className="text-zinc-500 font-medium">Data</TableHead>
+                <TableHead className="text-zinc-500 font-medium">Hora</TableHead>
+                <TableHead className="text-zinc-500 font-medium">Usuário</TableHead>
 
                 <AnimatePresence>
                   {columnVisibility.lastOccurrence && (
-                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-gray-700">
+                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-zinc-500">
                       Última ocorrência
                     </motion.th>
                   )}
@@ -129,7 +129,7 @@ export function ActiveBooking({ onDeleted: onDeletedFromProps, minRows = 6 }: Ac
 
                 <AnimatePresence>
                   {columnVisibility.lastOccurrencePrice && (
-                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-gray-700">
+                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-zinc-500">
                       Preço da última ocorrência
                     </motion.th>
                   )}
@@ -137,7 +137,7 @@ export function ActiveBooking({ onDeleted: onDeletedFromProps, minRows = 6 }: Ac
 
                 <AnimatePresence>
                   {columnVisibility.recurrenceInterval && (
-                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-gray-700">
+                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-zinc-500">
                       Intervalo de recorrência
                     </motion.th>
                   )}
@@ -145,7 +145,7 @@ export function ActiveBooking({ onDeleted: onDeletedFromProps, minRows = 6 }: Ac
 
                 <AnimatePresence>
                   {columnVisibility.executionInfo && (
-                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-gray-700">
+                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-zinc-500">
                       Status
                     </motion.th>
                   )}
@@ -153,7 +153,7 @@ export function ActiveBooking({ onDeleted: onDeletedFromProps, minRows = 6 }: Ac
 
                 <AnimatePresence>
                   {columnVisibility.createdBy && (
-                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-gray-700">
+                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-zinc-500">
                       Criado por
                     </motion.th>
                   )}
@@ -161,13 +161,13 @@ export function ActiveBooking({ onDeleted: onDeletedFromProps, minRows = 6 }: Ac
 
                 <AnimatePresence>
                   {columnVisibility.createdAt && (
-                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-gray-700">
+                    <motion.th initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="px-2 text-left font-medium text-zinc-500">
                       Data de criação
                     </motion.th>
                   )}
                 </AnimatePresence>
 
-                <TableHead>Ações</TableHead>
+                <TableHead className="text-zinc-500 font-medium">Ações</TableHead>
               </TableRow>
             </TableHeader>
 

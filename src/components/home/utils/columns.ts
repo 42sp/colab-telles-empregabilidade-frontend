@@ -4,7 +4,7 @@ export const myColumns: ColumnVisibility = {
 	name: { label: "Nome", isVisible: true },
 	socialName: { label: "Nome Social", isVisible: true },
 	preferredName: { label: "Nome Preferido", isVisible: false },
-	ismartEmail: { label: "Email iSmart", isVisible: true }, // Assumindo que é o email
+	ismartEmail: { label: "Email iSmart", isVisible: true },
 	phoneNumber: { label: "Número de Telefone", isVisible: true },
 	gender: { label: "Gênero", isVisible: true },
 	sexualOrientation: { label: "Orientação Sexual", isVisible: true },
