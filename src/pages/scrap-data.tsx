@@ -1,4 +1,3 @@
-import { LinkedInAuthForm } from "@/components/scrap-data/LinkedInAuthForm";
 import { NewOperationForm } from "@/components/scrap-data/NewOperation/NewOperationForm";
 import { ActiveBooking } from "@/components/scrap-data/ActiveBooking/ActiveBooking";
 import { OperationHistory } from "@/components/scrap-data/OperationHistory";
@@ -23,10 +22,6 @@ function ScrapData() {
 						Agendamento e monitoramento de operações de scraping do LinkedIn
 					</p>
 				</div>
-
-				<FadeInOnScroll delay={0} enabled={animationsEnabled}>
-					<LinkedInAuthForm />
-				</FadeInOnScroll>
 
 				<FadeInOnScroll delay={0.1} enabled={animationsEnabled}>
 					<NewOperationForm />

@@ -20,6 +20,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useServices } from "@/hooks/useServices";
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-hot-toast";
 
 interface ConfigurationUploadArquivoProps {
 	setFiles: React.Dispatch<React.SetStateAction<fileProps[]>>;
@@ -189,7 +190,15 @@ const ConfigurationUploadArquivo = (props: ConfigurationUploadArquivoProps) => {
 const ConfigurationIntegracaoApi = () => {
 	return (
 		<div className="container-integracao-api">
-			<h2 className="text-xl font-bold">Integração via API</h2>
+			<h2 className="text-xl font-bold">🚧🚧 Integração via API 🚧🚧</h2>
+			<p className="my-[6px] text-yellow-500">
+				Esta funcionalidade é uma sugestão de integração com o sistema do
+				cliente, permitindo a conexão automática com uma API externa para
+				facilitar a importação de dados. O objetivo é otimizar processos,
+				reduzir tarefas manuais e garantir que as informações estejam sempre
+				atualizadas no sistema do cliente. A implementação pode ser
+				personalizada conforme as necessidades específicas do projeto.
+			</p>
 			<p className="mt-[6px]">
 				Configure a integração com API externa para importação automática
 			</p>
@@ -198,12 +207,14 @@ const ConfigurationIntegracaoApi = () => {
 					id="urlApi"
 					label="URL da API"
 					placeholder="https://api.exemplo.com/estudantes"
+					readonly
 				/>
 				<Field
 					id="tokenAutenticacao"
 					label="Token de Autenticação"
 					placeholder="Insira seu token de autenticação"
 					type="password"
+					readonly
 				/>
 				{/* <Field
 					id="frequenciaSincronizacao"
@@ -211,7 +222,7 @@ const ConfigurationIntegracaoApi = () => {
 					placeholder="Selecione a frequência"
 				/> */}
 				<Label>Frequência de Sincronização</Label>
-				<Select>
+				<Select disabled>
 					<SelectTrigger className="w-full">
 						<SelectValue placeholder="Selecione a frequência" />
 					</SelectTrigger>
@@ -240,7 +251,7 @@ const ConfigurationIntegracaoApi = () => {
 							Nunca sincronizado
 						</span>
 					</div>
-					<Button variant="outline">
+					<Button variant="outline" disabled={true}>
 						<img
 							src={IconsSvg.sync}
 							alt="Clock Icon"
@@ -251,7 +262,9 @@ const ConfigurationIntegracaoApi = () => {
 				</div>
 
 				<div className="container-salvar-configuracoes">
-					<Button className="configuration-btns">Salvar Configurações</Button>
+					<Button className="configuration-btns" disabled={true}>
+						Salvar Configurações
+					</Button>
 				</div>
 			</form>
 		</div>
