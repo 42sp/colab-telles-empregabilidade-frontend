@@ -131,27 +131,55 @@ export function DrawResults(props: DrawResultsProps) {
 		setOpen(true);
 	};
 
-	const exibirValor = (value: string) => {
-		if (value === null || value === undefined || String(value) === "null") {
+	function formatCellValue(key: string, value: any): string {
+		if (
+			value === null ||
+			value === undefined ||
+			value === "" ||
+			value === "null" ||
+			value === "undefined"
+		) {
 			return "-";
 		}
-		if (String(value) === "true") {
-			return "Sim";
+
+		if (key === "compensation") {
+			const num = Number(value);
+			return new Intl.NumberFormat("pt-BR", {
+				style: "currency",
+				currency: "BRL",
+			}).format(isNaN(num) ? 0 : num);
 		}
-		if (String(value) === "false") {
-			return "Não";
+
+		if (typeof value === "boolean") return value ? "Sim" : "Não";
+
+		// Se for string "true"/"false" (da API) como boolean
+		if (value === "true") return "Sim";
+		if (value === "false") return "Não";
+
+		return value === "0" ? "-" : String(value);
+	}
+
+	function renderCell(key: string, value: any) {
+		const formatted = formatCellValue(key, value);
+
+		if (formatted === "Sim") {
+			return (
+				<div className="inline-flex bg-black text-white w-10 h-6 rounded-xl justify-center items-center">
+					{formatted}
+				</div>
+			);
 		}
-		if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) {
-			const date = new Date(value);
-			if (!isNaN(date.getTime())) {
-				const day = String(date.getDate()).padStart(2, "0");
-				const month = String(date.getMonth() + 1).padStart(2, "0");
-				const year = date.getFullYear();
-				return `${day}/${month}/${year}`;
-			}
+
+		if (formatted === "Não") {
+			return (
+				<div className="inline-flex bg-white w-10 h-6 rounded-xl justify-center items-center">
+					{formatted}
+				</div>
+			);
 		}
-		return String(value);
-	};
+
+		return formatted;
+	}
 
 	return (
 		<>
@@ -200,8 +228,10 @@ export function DrawResults(props: DrawResultsProps) {
 												key={cell.id}
 												className="whitespace-nowrap px-4 py-2 min-w-[200px]"
 											>
-
-												{exibirValor(String(cell.row.original[cell.column.id]))}
+												{renderCell(
+													cell.column.id,
+													String(cell.row.original[cell.column.id])
+												)}
 											</TableCell>
 										))}
 									</TableRow>

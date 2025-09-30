@@ -27,6 +27,7 @@ export function SearchBar(props: StateBundle) {
 			[toRemove]: "",
 		}));
 		props.setPage(0);
+		// props.updateHome();
 	}
 
 	useEffect(() => {
@@ -39,7 +40,8 @@ export function SearchBar(props: StateBundle) {
 			if (myInput !== "-") {
 				props.setFilter(prev => ({ ...prev, [props.activeFilter]: myInput }));
 				props.setPage(0);
-				props.updateHome();
+				props.setDebounce(prev => ({ ...prev, [props.activeFilter]: myInput }));
+				// props.updateHome();
 			}
 		}, debounceDelay);
 

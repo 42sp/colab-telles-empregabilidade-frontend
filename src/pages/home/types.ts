@@ -183,8 +183,10 @@ export type StateBundle = {
 	activeLabel: string;
 	setActiveLabel: React.Dispatch<React.SetStateAction<string>>;
 	stats: Stats;
-	query: StudentsQuery;
+	setStats: React.Dispatch<React.SetStateAction<Stats>>;
 	updateHome: () => void;
+	dataRows: StudentsParameters[];
+	setDebounce: React.Dispatch<React.SetStateAction<FilterType>>;
 };
 
 type ButtonProps = {
