@@ -18,7 +18,7 @@ export function DrawStatusButton({
 	} as const;
 
 	return (
-		<div className="contain-layout container flex">
+		<div className="contain-layout container flex flex-wrap">
 			{buttons.map(({ label }) => {
 				const isActive: boolean = states.activeLabel === label;
 				const textColour: string = isActive ? "text-black" : "text-zinc-500";

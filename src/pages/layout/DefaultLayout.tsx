@@ -6,12 +6,14 @@ import { ToastContainer } from "react-toastify";
 
 export function DefaultLayout() {
 	return (
-		<div className="flex min-h-screen relative">
+		<div className="flex min-h-screen relative" style={{ overflowX: "hidden" }}>
 			<ToastContainer position="top-center" hideProgressBar={true} />
 			<SideBar />
-			<main className="flex-1 relative">
+			<main className="flex-1 relative overflow-hidden">
 				<SideBarFloating />
-				<Outlet />
+				<div className="h-full overflow-auto">
+					<Outlet />
+				</div>
 			</main>
 		</div>
 	);

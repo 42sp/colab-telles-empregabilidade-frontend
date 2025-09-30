@@ -1,5 +1,6 @@
 import type { AxiosInstance } from "axios";
 import * as collection from "../index";
+import type { Data } from "@/pages/home/types";
 
 function buildQueryString(params: collection.StudentsType): string {
 	const query = new URLSearchParams();
@@ -125,7 +126,7 @@ export default class Service {
 
 			return response;
 		} catch (error) {
-			console.error('Error updating student:', error);
+			console.error("Error updating student:", error);
 			// throw error;
 		}
 	}

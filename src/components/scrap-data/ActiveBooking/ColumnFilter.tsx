@@ -47,7 +47,7 @@ export function ColumnFilter({
 
       <DropdownMenuContent className="w-60">
         {/* ---------------- Agendamento ---------------- */}
-        <DropdownMenuLabel>Agendamento</DropdownMenuLabel>
+        {/* <DropdownMenuLabel>Agendamento</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem
           checked={showLastOccurrence}
@@ -66,7 +66,7 @@ export function ColumnFilter({
           onCheckedChange={setShowRecurrenceInterval}
         >
           Intervalo de Recorrência
-        </DropdownMenuCheckboxItem>
+        </DropdownMenuCheckboxItem> */}
 
         {/* ---------------- Execução ---------------- */}
         {setShowExecutionInfo && (

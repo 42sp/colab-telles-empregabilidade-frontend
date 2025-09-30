@@ -96,7 +96,7 @@ export const OperationTableRow = React.memo(function OperationTableRow({
       )}
 
       <TableCell className="flex gap-2 justify-start py-1">
-        <RecurrenceIndicatorButton isRecurring={isRecurring} />
+        {/* <RecurrenceIndicatorButton isRecurring={isRecurring} /> */}
 
         <TooltipProvider delayDuration={300}>
           <Tooltip>
