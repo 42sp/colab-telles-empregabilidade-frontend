@@ -1,5 +1,4 @@
 import {
-	ConfigurationFooter,
 	ConfigurationHeader,
 	ConfigurationIntegracaoApi,
 	ConfigurationUploadArquivo,
@@ -9,7 +8,7 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import { useServices } from "@/hooks/useServices";
 import type { fileProps } from "@/types/requests/interfaces/fileProps";
 import { useState } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const Configuration = () => {
 	const { animationsEnabled } = useSidebar();
@@ -18,7 +17,7 @@ const Configuration = () => {
 	const $services = useServices();
 
 	const uploadFiles = async () => {
-		if (files.length === 0) {
+		if (files.filter(file => file.status === "Pendente").length === 0) {
 			toast.info("Nenhum arquivo selecionado");
 			return;
 		}
@@ -63,11 +62,16 @@ const Configuration = () => {
 
 	return (
 		<div className="contain-layout container mx-auto">
+			<ToastContainer position="top-center" hideProgressBar={true} />
 			<ConfigurationHeader />
 			<FadeInOnScroll enabled={animationsEnabled}>
-				<ConfigurationUploadArquivo setFiles={setFiles} files={files} />
+				<ConfigurationUploadArquivo
+					setFiles={setFiles}
+					files={files}
+					uploadFiles={uploadFiles}
+				/>
 				<ConfigurationIntegracaoApi />
-				<ConfigurationFooter uploadFiles={uploadFiles} />
+				{/* <ConfigurationFooter uploadFiles={uploadFiles} /> */}
 			</FadeInOnScroll>
 		</div>
 	);
