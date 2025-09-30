@@ -200,6 +200,7 @@ export function DrawResults(props: DrawResultsProps) {
 												key={cell.id}
 												className="whitespace-nowrap px-4 py-2 min-w-[200px]"
 											>
+
 												{exibirValor(String(cell.row.original[cell.column.id]))}
 											</TableCell>
 										))}

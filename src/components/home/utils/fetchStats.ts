@@ -4,7 +4,7 @@ import { useServices } from "@/hooks/useServices";
 
 export function useFetchStats(
 	buildQuery: (skipIndex: number) => StudentsQuery,
-	setStats: (s: Stats) => void,
+	setStats: (s: Stats) => void
 ) {
 	const $service = useServices();
 	return useCallback(async () => {
