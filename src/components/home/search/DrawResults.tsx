@@ -180,7 +180,12 @@ export function DrawResults(props: DrawResultsProps) {
 											>
 												{String(cell.row.original[cell.column.id]) == "null"
 													? "-"
-													: String(cell.row.original[cell.column.id])}
+													: typeof cell.row.original[cell.column.id] ===
+														  "boolean"
+														? cell.row.original[cell.column.id]
+															? "Sim"
+															: "Não"
+														: String(cell.row.original[cell.column.id])}
 											</TableCell>
 										))}
 									</TableRow>
