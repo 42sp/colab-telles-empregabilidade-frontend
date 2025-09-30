@@ -131,6 +131,56 @@ export function DrawResults(props: DrawResultsProps) {
 		setOpen(true);
 	};
 
+	function formatCellValue(key: string, value: any): string {
+		if (
+			value === null ||
+			value === undefined ||
+			value === "" ||
+			value === "null" ||
+			value === "undefined"
+		) {
+			return "-";
+		}
+
+		if (key === "compensation") {
+			const num = Number(value);
+			return new Intl.NumberFormat("pt-BR", {
+				style: "currency",
+				currency: "BRL",
+			}).format(isNaN(num) ? 0 : num);
+		}
+
+		if (typeof value === "boolean") return value ? "Sim" : "Não";
+
+		// Se for string "true"/"false" (da API) como boolean
+		if (value === "true") return "Sim";
+		if (value === "false") return "Não";
+
+		return value === "0" ? "-" : String(value);
+	}
+
+	function renderCell(key: string, value: any) {
+		const formatted = formatCellValue(key, value);
+
+		if (formatted === "Sim") {
+			return (
+				<div className="inline-flex bg-black text-white w-10 h-6 rounded-xl justify-center items-center">
+					{formatted}
+				</div>
+			);
+		}
+
+		if (formatted === "Não") {
+			return (
+				<div className="inline-flex bg-white w-10 h-6 rounded-xl justify-center items-center">
+					{formatted}
+				</div>
+			);
+		}
+
+		return formatted;
+	}
+
 	return (
 		<>
 			<div className="w-full">
@@ -178,14 +228,10 @@ export function DrawResults(props: DrawResultsProps) {
 												key={cell.id}
 												className="whitespace-nowrap px-4 py-2 min-w-[200px]"
 											>
-												{String(cell.row.original[cell.column.id]) == "null"
-													? "-"
-													: typeof cell.row.original[cell.column.id] ===
-														  "boolean"
-														? cell.row.original[cell.column.id]
-															? "Sim"
-															: "Não"
-														: String(cell.row.original[cell.column.id])}
+												{renderCell(
+													cell.column.id,
+													String(cell.row.original[cell.column.id])
+												)}
 											</TableCell>
 										))}
 									</TableRow>

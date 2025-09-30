@@ -21,6 +21,7 @@ export function DrawBody() {
 	const columnsSave: string = "userColumns";
 	//#region States
 	const [dataRows, setDataRows] = useState<StudentsParameters[]>([]);
+	const [filteredRows, setFilteredRows] = useState(dataRows);
 	const [stats, setStats] = useState<Stats>({
 		total: 0,
 		working: 0,
@@ -44,11 +45,10 @@ export function DrawBody() {
 			) as FilterType
 		);
 	});
-	const [debounce, setDebounce] = useState(filter);
+	const [debounce, setDebounce] = useState<FilterType>(filter);
 	//#endregion
 
 	const buildQuery = useBuildQuery(activeLabel, filter);
-	const query = buildQuery(0); // Query padrão com skip 0
 	const fetchData = useFetchData(buildQuery, setDataRows);
 	const fetchStats = useFetchStats(buildQuery, setStats);
 
@@ -64,20 +64,13 @@ export function DrawBody() {
 		sessionStorage.setItem(filtersSave, JSON.stringify(filter));
 	}, [filter]);
 
-	useEffect(() => {
-		fetchStats();
-	}, [activeLabel, filter]);
+	// useEffect(() => {
+	// 	fetchStats();
+	// }, [activeLabel, filter]);
 
 	useEffect(() => {
 		fetchData(page * rowsPerPage);
-	}, [activeLabel, page, filter]);
-
-	const [filteredRows, setFilteredRows] = useState(dataRows);
-
-	useEffect(() => {
-		setFilteredRows(dataRows);
-	}, [dataRows]);
-
+	}, [page]);
 	//#endregion
 
 	const states: StateBundle = {
@@ -96,39 +89,28 @@ export function DrawBody() {
 		stats,
 		setStats,
 		dataRows,
+		updateHome: () => {
+			fetchStats();
+			fetchData(page * rowsPerPage);
+		},
 		setDebounce,
 	};
+
+	useEffect(() => {
+		states.updateHome();
+	}, [activeLabel, debounce]);
+
+	useEffect(() => {
+		console.log("Data rows updated:", dataRows);
+		setFilteredRows(dataRows);
+	}, [dataRows, fetchData]);
+
 	const background: string = "flex flex-col bg-white px-6";
 
 	return (
 		<div className={background}>
-			<DrawStatus
-				activeLabel={activeLabel}
-				setActiveLabel={setActiveLabel}
-				filteredRows={filteredRows}
-				dataRows={dataRows}
-				stats={stats}
-			/>
-			<SearchBar
-				filter={filter}
-				setFilter={setFilter}
-				page={page}
-				setPage={setPage}
-				activeFilter={activeFilter}
-				setActiveFilter={setActiveFilter}
-				colums={colums}
-				setColums={setColums}
-				setFilteredRows={setFilteredRows}
-				filteredRows={filteredRows}
-				activeLabel={activeLabel}
-				setActiveLabel={setActiveLabel}
-				stats={stats}
-				query={query}
-				updateHome={() => {
-					fetchStats();
-					fetchData(page * rowsPerPage);
-				}}
-			/>
+			<DrawStatus {...states} />
+			<SearchBar {...states} />
 		</div>
 	);
 }
