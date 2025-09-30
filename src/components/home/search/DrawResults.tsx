@@ -131,6 +131,28 @@ export function DrawResults(props: DrawResultsProps) {
 		setOpen(true);
 	};
 
+	const exibirValor = (value: string) => {
+		if (value === null || value === undefined || String(value) === "null") {
+			return "-";
+		}
+		if (String(value) === "true") {
+			return "Sim";
+		}
+		if (String(value) === "false") {
+			return "Não";
+		}
+		if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+			const date = new Date(value);
+			if (!isNaN(date.getTime())) {
+				const day = String(date.getDate()).padStart(2, "0");
+				const month = String(date.getMonth() + 1).padStart(2, "0");
+				const year = date.getFullYear();
+				return `${day}/${month}/${year}`;
+			}
+		}
+		return String(value);
+	};
+
 	return (
 		<>
 			<div className="w-full">
@@ -178,14 +200,8 @@ export function DrawResults(props: DrawResultsProps) {
 												key={cell.id}
 												className="whitespace-nowrap px-4 py-2 min-w-[200px]"
 											>
-												{String(cell.row.original[cell.column.id]) == "null"
-													? "-"
-													: typeof cell.row.original[cell.column.id] ===
-														  "boolean"
-														? cell.row.original[cell.column.id]
-															? "Sim"
-															: "Não"
-														: String(cell.row.original[cell.column.id])}
+
+												{exibirValor(String(cell.row.original[cell.column.id]))}
 											</TableCell>
 										))}
 									</TableRow>
