@@ -28,8 +28,8 @@ const Configuration = () => {
 				const response = await toast.promise(
 					$services.postImportFiles({ file }),
 					{
-						pending: `Exportando arquivo ${file.name}...`,
-						success: `Arquivo ${file.name} importado com sucesso 👌`,
+						pending: `Importando arquivo ${file.name}...`,
+						success: `Arquivo ${file.name} importado com sucesso 👌. Aguarde alguns instantes para que os dados sejam atualizados.`,
 						error: `Erro ao importar o arquivo ${file.name} 🤯`,
 					}
 				);

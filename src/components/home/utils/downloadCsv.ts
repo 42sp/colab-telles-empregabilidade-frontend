@@ -14,9 +14,9 @@ export async function downloadCsv(
 
 	do {
 		const partialQuery: StudentsQuery = {
+			...query,
 			$limit: limitPerRequest,
 			$skip: skip,
-			...query,
 		};
 
 		const response = await $service.students(partialQuery);
