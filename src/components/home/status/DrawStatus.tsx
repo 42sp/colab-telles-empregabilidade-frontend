@@ -9,8 +9,8 @@ import { DrawTotals } from "./DrawTotals";
 export function DrawStatus(props: StateBundle) {
 	const buttons: ButtonType[] = [
 		{ label: "Todos" },
-		{ label: "Ativos" },
-		{ label: "Inativos" },
+		{ label: "Telles" },
+		{ label: "Ismart" },
 		{ label: "Formados" },
 	];
 
