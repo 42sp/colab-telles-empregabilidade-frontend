@@ -29,6 +29,9 @@ const EmploymentStatusChart = lazy(
 const SectorDistributionChart = lazy(
 	() => import("@/components/dashboard/SectorDistributionChart")
 );
+const OrganizationDistributionChart = lazy(
+	() => import("@/components/dashboard/OrganizationDistributionChart")
+);
 const SalaryDistributionChart = lazy(
 	() => import("@/components/dashboard/SalaryDistributionChart")
 );
@@ -52,6 +55,9 @@ export function Dashboard() {
 		EmploymentByMonthProps[]
 	>([]);
 	const [getSectorDistribution, setSectorDistribution] = useState<
+		SectorDistributionProps[]
+	>([]);
+	const [getOrganizationDistribution, setOrganizationDistribution] = useState<
 		SectorDistributionProps[]
 	>([]);
 	const [getStatusSync, setStatusSync] = useState<SyncStatusData | undefined>(
@@ -111,6 +117,7 @@ export function Dashboard() {
 			);
 			setGetEmploymentByMonth(linkedinDashboard.employmentByMonth);
 			setSectorDistribution(linkedinDashboard.sectorDistribution);
+			setOrganizationDistribution(linkedinDashboard.organizationDistribution);
 			setStatusSync(linkedinDashboard.statusSync);
 		}
 		fetchLinkedinDashboard();
@@ -196,9 +203,19 @@ export function Dashboard() {
 						</FadeInOnScroll>
 					)}
 
+					{getOrganizationDistribution.length > 0 && (
+						<FadeInOnScroll
+							className="lg:col-span-2"
+							delay={0.2}
+							enabled={animationsEnabled}
+						>
+							<OrganizationDistributionChart data={getOrganizationDistribution} />
+						</FadeInOnScroll>
+					)}
+
 					<FadeInOnScroll
 						className="lg:col-span-2"
-						delay={0.2}
+						delay={0.3}
 						enabled={animationsEnabled}
 					>
 						<SalaryDistributionChart />
