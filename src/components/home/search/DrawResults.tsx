@@ -142,6 +142,24 @@ export function DrawResults(props: DrawResultsProps) {
 			return "-";
 		}
 
+		// Formatar datas (campos que terminam com Date ou contém date)
+		if (
+			key.toLowerCase().includes("date") ||
+			key === "startDate" ||
+			key === "endDate" ||
+			key === "transferDate" ||
+			key === "currentCourseStart" ||
+			key === "currentCourseEnd"
+		) {
+			const dateValue = new Date(value);
+			if (!isNaN(dateValue.getTime())) {
+				const day = String(dateValue.getDate()).padStart(2, "0");
+				const month = String(dateValue.getMonth() + 1).padStart(2, "0");
+				const year = dateValue.getFullYear();
+				return `${day}/${month}/${year}`;
+			}
+		}
+
 		if (key === "compensation") {
 			const num = Number(value);
 			return new Intl.NumberFormat("pt-BR", {

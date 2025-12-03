@@ -15,9 +15,30 @@ interface StudentsFormProps {
 }
 
 const StudentsForm = (props: StudentsFormProps) => {
-	const [formData, setFormData] = useState<collection.StudentsParameters>(
-		props.data
-	);
+	// Função helper para converter data ISO para formato YYYY-MM-DD
+	const formatDateForInput = (dateString: string | undefined | null): string => {
+		if (!dateString) return "";
+		try {
+			const date = new Date(dateString);
+			if (isNaN(date.getTime())) return "";
+
+			const year = date.getFullYear();
+			const month = String(date.getMonth() + 1).padStart(2, "0");
+			const day = String(date.getDate()).padStart(2, "0");
+			return `${year}-${month}-${day}`;
+		} catch {
+			return "";
+		}
+	};
+
+	const [formData, setFormData] = useState<collection.StudentsParameters>({
+		...props.data,
+		startDate: formatDateForInput(props.data.startDate),
+		endDate: formatDateForInput(props.data.endDate),
+		transferDate: formatDateForInput(props.data.transferDate),
+		currentCourseStart: formatDateForInput(props.data.currentCourseStart),
+		currentCourseEnd: formatDateForInput(props.data.currentCourseEnd),
+	});
 
 	const service = useServices();
 

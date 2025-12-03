@@ -128,7 +128,9 @@ export type ColumnKey =
 	| "officePackageKnowledge"
 	| "wordProficiencyLevel"
 	| "excelProficiencyLevel"
-	| "powerPointProficiencyLevel";
+	| "powerPointProficiencyLevel"
+	| "telles_foundation"
+	| "ismart";
 
 export type ColumnVisibility = {
 	[key in ColumnKey]: {
@@ -141,6 +143,8 @@ export const booleanFields = new Set([
 	"hasDisability",
 	"transferredCourseOrUniversity",
 	"working",
+	"telles_foundation",
+	"ismart",
 ]);
 
 export const numberFields = new Set([

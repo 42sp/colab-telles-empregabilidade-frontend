@@ -76,7 +76,7 @@ export const myColumns: ColumnVisibility = {
 	targetAudience: { label: "Público Alvo", isVisible: false },
 	working: { label: "Trabalhando", isVisible: true },
 	opportunityType: { label: "Tipo de Oportunidade", isVisible: false },
-	details: { label: "Detalhes", isVisible: false },
+	details: { label: "Detalhes", isVisible: true },
 	sector: { label: "Setor", isVisible: true },
 	careerTrack: { label: "Trilha de Carreira", isVisible: false },
 	organization: { label: "Organização", isVisible: true },

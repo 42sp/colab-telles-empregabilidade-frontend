@@ -16,6 +16,10 @@ export function useBuildQuery(activeLabel: string, filter: FilterType) {
 			};
 			if (activeLabel === "Formados") {
 				q.realStatus = { $ilike: `formad%` };
+			} else if (activeLabel === "Telles") {
+				q.telles_foundation = true;
+			} else if (activeLabel === "Ismart") {
+				q.ismart = true;
 			} else if (activeLabel !== "Todos") {
 				q.holderContractStatus = {
 					$ilike: activeLabel === "Ativos" ? "Ativ%" : "Inativ%",
