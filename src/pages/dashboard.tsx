@@ -23,8 +23,8 @@ import type { EmploymentByMonthProps } from "@/types/requests";
 import type { SectorDistributionProps } from "@/components/dashboard/SectorDistributionChart";
 
 // Lazy charts
-const EmploymentStatusChart = lazy(
-	() => import("@/components/dashboard/EmploymentStatusChart")
+const UniversityDistributionChart = lazy(
+	() => import("@/components/dashboard/UniversityDistributionChart")
 );
 const SectorDistributionChart = lazy(
 	() => import("@/components/dashboard/SectorDistributionChart")
@@ -32,8 +32,11 @@ const SectorDistributionChart = lazy(
 const OrganizationDistributionChart = lazy(
 	() => import("@/components/dashboard/OrganizationDistributionChart")
 );
-const SalaryDistributionChart = lazy(
-	() => import("@/components/dashboard/SalaryDistributionChart")
+const StateDistributionChart = lazy(
+	() => import("@/components/dashboard/StateDistributionChart")
+);
+const CityDistributionChart = lazy(
+	() => import("@/components/dashboard/CityDistributionChart")
 );
 
 const icons = {
@@ -51,13 +54,19 @@ export function Dashboard() {
 		{} as MetricCardProps,
 		{} as MetricCardProps,
 	]);
-	const [getEmploymentByMonth, setGetEmploymentByMonth] = useState<
-		EmploymentByMonthProps[]
+	const [getUniversityDistribution, setUniversityDistribution] = useState<
+		SectorDistributionProps[]
 	>([]);
 	const [getSectorDistribution, setSectorDistribution] = useState<
 		SectorDistributionProps[]
 	>([]);
 	const [getOrganizationDistribution, setOrganizationDistribution] = useState<
+		SectorDistributionProps[]
+	>([]);
+	const [getStateDistribution, setStateDistribution] = useState<
+		SectorDistributionProps[]
+	>([]);
+	const [getCityDistribution, setCityDistribution] = useState<
 		SectorDistributionProps[]
 	>([]);
 	const [getStatusSync, setStatusSync] = useState<SyncStatusData | undefined>(
@@ -115,9 +124,11 @@ export function Dashboard() {
 					return mapped;
 				})
 			);
-			setGetEmploymentByMonth(linkedinDashboard.employmentByMonth);
+			setUniversityDistribution(linkedinDashboard.universityDistribution);
 			setSectorDistribution(linkedinDashboard.sectorDistribution);
 			setOrganizationDistribution(linkedinDashboard.organizationDistribution);
+			setStateDistribution(linkedinDashboard.stateDistribution);
+			setCityDistribution(linkedinDashboard.cityDistribution);
 			setStatusSync(linkedinDashboard.statusSync);
 		}
 		fetchLinkedinDashboard();
@@ -191,9 +202,9 @@ export function Dashboard() {
 
 				{/* Charts */}
 				<div className="grid grid-cols-2 gap-3 md:gap-5 lg:gap-10 mb-10">
-					{getEmploymentByMonth.length > 0 && (
+					{getUniversityDistribution.length > 0 && (
 						<FadeInOnScroll enabled={animationsEnabled}>
-							<EmploymentStatusChart data={getEmploymentByMonth} />
+							<UniversityDistributionChart data={getUniversityDistribution} />
 						</FadeInOnScroll>
 					)}
 
@@ -213,13 +224,23 @@ export function Dashboard() {
 						</FadeInOnScroll>
 					)}
 
-					<FadeInOnScroll
-						className="lg:col-span-2"
-						delay={0.3}
-						enabled={animationsEnabled}
-					>
-						<SalaryDistributionChart />
-					</FadeInOnScroll>
+					{getStateDistribution.length > 0 && (
+						<FadeInOnScroll
+							delay={0.3}
+							enabled={animationsEnabled}
+						>
+							<StateDistributionChart data={getStateDistribution} />
+						</FadeInOnScroll>
+					)}
+
+					{getCityDistribution.length > 0 && (
+						<FadeInOnScroll
+							delay={0.4}
+							enabled={animationsEnabled}
+						>
+							<CityDistributionChart data={getCityDistribution} />
+						</FadeInOnScroll>
+					)}
 				</div>
 
 				{/* Tabela de Status */}
