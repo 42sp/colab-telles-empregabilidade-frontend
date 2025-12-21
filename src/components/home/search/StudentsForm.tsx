@@ -57,6 +57,27 @@ const StudentsForm = (props: StudentsFormProps) => {
 		}
 	};
 
+	const handleDelete = async () => {
+		if (!window.confirm("Tem certeza que deseja apagar este aluno?")) {
+			return;
+		}
+
+		const response = await toast.promise(service.deleteStudent(formData.id), {
+			loading: "Apagando aluno...",
+			success: "Aluno apagado com sucesso 👌",
+			error: "Erro ao apagar aluno 🤯",
+		});
+
+		if (response && [200, 204].includes(response.status)) {
+			if (props.updateHome) {
+				props.updateHome();
+			}
+			if (props.cancelar) {
+				props.cancelar();
+			}
+		}
+	};
+
 	const [isEditing, setIsEditing] = useState(false);
 
 	const scrollRef = useRef<HTMLDivElement>(null);
@@ -383,28 +404,39 @@ const StudentsForm = (props: StudentsFormProps) => {
 				</div>
 			</ScrollArea>
 
-			{!isEditing ? (
+			<div className="flex gap-2 justify-between">
+				<div className="flex gap-2">
+					{!isEditing ? (
+						<Button
+							variant="secondary"
+							className="mt-4"
+							onClick={() => setIsEditing(true)}
+						>
+							Editar
+						</Button>
+					) : (
+						<>
+							<Button
+								variant="default"
+								className="mt-4"
+								onClick={() => handleSave()}
+							>
+								Salvar
+							</Button>
+							<Button variant="secondary" className="mt-4" onClick={props.cancelar}>
+								Cancelar
+							</Button>
+						</>
+					)}
+				</div>
 				<Button
-					variant="secondary"
+					variant="destructive"
 					className="mt-4"
-					onClick={() => setIsEditing(true)}
+					onClick={handleDelete}
 				>
-					Editar
+					Apagar Aluno
 				</Button>
-			) : (
-				<>
-					<Button
-						variant="default"
-						className="mt-4"
-						onClick={() => handleSave()}
-					>
-						Salvar
-					</Button>
-					<Button variant="secondary" className="mt-4" onClick={props.cancelar}>
-						Cancelar
-					</Button>
-				</>
-			)}
+			</div>
 		</>
 	);
 };
